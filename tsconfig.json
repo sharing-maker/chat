@@ -21,11 +21,10 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@chat-sdk/*": ["packages/chat-sdk/src/*"],
-      "@web/*": ["apps/web/*"]
+      "@web/*": ["./apps/web/*"],
+      "@ui/*": ["./packages/ui/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"],
-  "references": [{ "path": "apps/web" }, { "path": "packages/chat-sdk" }]
+  "exclude": ["node_modules"]
 }

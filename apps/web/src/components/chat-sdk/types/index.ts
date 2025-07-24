@@ -1,69 +1,41 @@
-import type React from "react"
 export interface User {
   id: string
   name: string
   avatar?: string
-  email?: string
-  isOnline?: boolean
+  status: "online" | "offline" | "away"
+  lastSeen?: Date
 }
 
+// Existing Message interface (used by context/hooks)
 export interface Message {
   id: string
-  content: string
+  conversationId: string
   senderId: string
+  content: string
+  type: "text" | "image" | "file" // Keep existing types for internal data model
   timestamp: Date
-  type: "text" | "image" | "file"
-  attachments?: MessageAttachment[]
-  isRead?: boolean
+  status: "sending" | "sent" | "delivered" | "read"
+  attachments?: Attachment[]
+  promoData?: PromotionalMessageData // Added promoData here for internal Message type
 }
 
-export interface MessageAttachment {
+export interface Attachment {
   id: string
-  type: "image" | "file"
-  url: string
   name: string
-  size?: number
+  url: string
+  type: string
+  size: number
 }
 
 export interface Conversation {
   id: string
-  title: string
   participants: User[]
   lastMessage?: Message
   unreadCount: number
-  createdAt: Date
   updatedAt: Date
-  type: "support" | "sales" | "general"
-}
-
-export interface ChatState {
-  conversations: Conversation[]
-  messages: { [conversationId: string]: Message[] }
-  currentConversationId: string | null
-  isLoading: boolean
-  error: string | null
-  currentUser: User
-}
-
-export interface ChatAction {
-  type:
-    | "SET_CONVERSATIONS"
-    | "ADD_CONVERSATION"
-    | "SET_CURRENT_CONVERSATION"
-    | "ADD_MESSAGE"
-    | "SET_MESSAGES"
-    | "SET_LOADING"
-    | "SET_ERROR"
-    | "MARK_AS_READ"
-  payload?: any
-}
-
-export interface ChatContextType {
-  state: ChatState
-  dispatch: React.Dispatch<ChatAction>
-  sendMessage: (conversationId: string, content: string) => void
-  createConversation: (title: string, type: Conversation["type"]) => void
-  setCurrentConversation: (conversationId: string) => void
+  type: "direct" | "group"
+  name?: string
+  avatar?: string
 }
 
 export interface TypingStatus {
@@ -73,55 +45,84 @@ export interface TypingStatus {
 }
 
 export interface ChatConfig {
+  userId: string
+  token: string
   apiUrl?: string
-  theme?: "light" | "dark"
-  position?: "bottom-right" | "bottom-left"
-  showUserAvatars?: boolean
-  enableFileUpload?: boolean
-  maxFileSize?: number
-}
-
-export interface Attachment {
-  id: string
-  name: string
-  size: number
-  type: string
-  url: string
+  wsUrl?: string
+  onTokenRefresh?: () => Promise<string>
 }
 
 export interface SocketMessage {
-  type: "message" | "typing" | "user_joined" | "user_left"
+  type: "message" | "typing" | "read" | "user_status"
   data: any
 }
 
-export interface ChatInputProps {
-  onSendMessage: (message: string) => void
-  placeholder?: string
-  disabled?: boolean
-  showAttachments?: boolean
+// New types for MessageItem component's props
+export type MessageAttachment = {
+  id: string // Added ID for image preview modal
+  type: "image" | "file"
+  url: string
+  name?: string
+  size?: number
 }
 
-export interface EmojiPickerProps {
-  onEmojiSelect: (emoji: string) => void
-  isOpen: boolean
-  onClose: () => void
-}
-
-export interface DisplayMessage extends Message {
-  sender: User
-  isOwn: boolean
-}
-
-export interface MessageItemProps {
-  message: DisplayMessage
-  showAvatar?: boolean
-  showTimestamp?: boolean
-}
-
-export interface PromotionalMessageData {
+export type PromotionalMessageData = {
+  imageUrl: string
   title: string
   description: string
   buttonText: string
   buttonUrl: string
-  imageUrl?: string
+}
+
+export type DisplayMessage = {
+  id: string
+  senderId: string
+  type: "text" | "media" | "promo" // Updated type for display
+  text?: string
+  attachments?: MessageAttachment[]
+  promoData?: PromotionalMessageData
+  createdAt: string // ISO string or similar for display
+  isMine: boolean
+}
+
+export type MessageItemProps = {
+  message: DisplayMessage
+  isGrouped?: boolean
+  onImageClick?: (imageId: string, images: { id: string; url: string; name?: string }[]) => void // New prop
+}
+
+// Chat input types
+export interface ChatInputProps {
+  conversationId?: string
+  onSendMessage?: (message: string) => void
+  onEmojiClick?: (emoji: string) => void
+  onStickerClick?: (sticker: string) => void
+  onFileUpload?: (file: File) => void
+  onImageUpload?: (file: File) => void
+  onContactShare?: () => void
+  onVoiceRecord?: () => void
+  onVoiceMessage?: () => void
+  onQuickReact?: () => void
+  placeholder?: string
+  disabled?: boolean
+  className?: string
+}
+
+export interface EmojiPickerProps {
+  onEmojiSelect?: (emoji: string) => void
+  onClose?: () => void
+  isOpen?: boolean
+}
+
+export interface StickerPickerProps {
+  onStickerSelect?: (sticker: string) => void
+  onClose?: () => void
+  isOpen?: boolean
+}
+
+export interface TextFormattingToolbarProps {
+  isOpen: boolean
+  onClose: () => void
+  onFormatSelect: (format: string) => void
+  selectedFormats?: string[]
 }

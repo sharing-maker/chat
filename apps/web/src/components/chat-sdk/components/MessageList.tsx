@@ -8,7 +8,7 @@ import type { DisplayMessage, Message } from "../types"
 import { ImagePreviewModal } from "./ImagePreviewModal"
 
 interface MessageListProps {
-  messages?: Message[] // Add default empty array
+  messages: Message[]
   isLoadingMore?: boolean
   onLoadMore?: () => void
   hasMore?: boolean
@@ -30,7 +30,6 @@ export function MessageList({
 }: MessageListProps) {
   const { state } = useChatContext()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const shouldScrollToBottomRef = useRef(true) // New ref to control auto-scrolling
   const lastMessageCountRef = useRef(messages?.length || 0) // Add null check
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false) // State for button visibility
@@ -216,24 +215,6 @@ export function MessageList({
     setIsImagePreviewModalOpen(true)
   }, [])
 
-  const currentMessages = state.currentConversationId ? state.messages[state.currentConversationId] || [] : []
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [currentMessages])
-
-  const conversation = state.conversations.find((c) => c.id === conversationId)
-  const conversationMessages = state.messages[conversationId] || []
-
-  const displayMessagesUpdated: DisplayMessage[] = conversationMessages.map((message) => {
-    const sender = conversation?.participants.find((p) => p.id === message.senderId) || state.currentUser
-    return {
-      ...message,
-      sender,
-      isOwn: message.senderId === state.currentUser.id,
-    }
-  })
-
   if (!messages || messages.length === 0) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
@@ -256,7 +237,7 @@ export function MessageList({
   }
 
   return (
-    <div className={`relative flex-1 overflow-y-auto p-4 space-y-4 ${className}`}>
+    <div className={`relative h-full ${className}`}>
       {/* Scroll to bottom button */}
       {showScrollToBottomButton && (
         <div className="absolute bottom-20 right-4 z-10">
@@ -318,9 +299,6 @@ export function MessageList({
                       message={message}
                       isGrouped={isGrouped}
                       onImageClick={handleImageClick} // Pass the handler down
-                      currentUserId={state.currentUser.id}
-                      showAvatar={!message.isOwn}
-                      showTimestamp={true}
                     />
                   )
                 })}
@@ -328,17 +306,6 @@ export function MessageList({
             </div>
           ))}
         </div>
-        {state.isTyping && (
-          <div className="flex items-center space-x-2 text-gray-500">
-            <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
-              <div className="w-2 h-2 bg-gray-400 rounded-full typing-dot"></div>
-            </div>
-            <span className="text-sm">Typing...</span>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Image Preview Modal */}

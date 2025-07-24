@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@chat-sdk"],
+  transpilePackages: ["@ui"],
   experimental: {
     typedRoutes: true,
   },

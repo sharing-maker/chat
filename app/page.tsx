@@ -1,4 +1,4 @@
-import ChatDemo from "@web/src/components/chat-sdk/components/ChatDemo";
+import { ChatDemo } from "../src/demo/ChatDemo"
 
 export default function Home() {
   return <ChatDemo />

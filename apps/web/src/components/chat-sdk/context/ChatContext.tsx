@@ -1,128 +1,61 @@
 "use client"
+import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react"
+import type React from "react"
 
-import { createContext, useContext, useReducer, useCallback, type ReactNode } from "react"
-import type { ChatState, ChatAction, ChatContextType, User, Conversation, Message } from "../types"
+import type { ChatConfig, Conversation, Message, User, TypingStatus } from "../types"
 
-const initialUser: User = {
-  id: "user-1",
-  name: "You",
-  avatar: "/placeholder-user.jpg",
-  email: "user@example.com",
-  isOnline: true,
+interface ChatState {
+  config: ChatConfig | null
+  conversations: Conversation[]
+  messages: Record<string, Message[]>
+  users: Record<string, User>
+  typingStatuses: TypingStatus[]
+  currentUser: User | null
+  isConnected: boolean
 }
 
-const initialConversations: Conversation[] = [
-  {
-    id: "conv-1",
-    title: "Support Chat",
-    participants: [
-      initialUser,
-      {
-        id: "support-1",
-        name: "Sarah (Support)",
-        avatar: "/placeholder-user.jpg",
-        isOnline: true,
-      },
-    ],
-    lastMessage: {
-      id: "msg-1",
-      content: "Hi! How can I help you today?",
-      senderId: "support-1",
-      timestamp: new Date(Date.now() - 1000 * 60 * 5),
-      type: "text",
-    },
-    unreadCount: 1,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 5),
-    type: "support",
-  },
-  {
-    id: "conv-2",
-    title: "Sales Inquiry",
-    participants: [
-      initialUser,
-      {
-        id: "sales-1",
-        name: "Mike (Sales)",
-        avatar: "/placeholder-user.jpg",
-        isOnline: true,
-      },
-    ],
-    lastMessage: {
-      id: "msg-2",
-      content: "Thanks for your interest in our product!",
-      senderId: "sales-1",
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-      type: "text",
-    },
-    unreadCount: 0,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 30),
-    type: "sales",
-  },
-]
-
-const initialMessages = {
-  "conv-1": [
-    {
-      id: "msg-1",
-      content: "Hi! How can I help you today?",
-      senderId: "support-1",
-      timestamp: new Date(Date.now() - 1000 * 60 * 5),
-      type: "text" as const,
-    },
-  ],
-  "conv-2": [
-    {
-      id: "msg-2",
-      content: "Thanks for your interest in our product!",
-      senderId: "sales-1",
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-      type: "text" as const,
-    },
-  ],
-}
+type ChatAction =
+  | { type: "SET_CONFIG"; payload: ChatConfig }
+  | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
+  | { type: "ADD_CONVERSATION"; payload: Conversation }
+  | { type: "UPDATE_CONVERSATION"; payload: Conversation }
+  | { type: "SET_MESSAGES"; payload: { conversationId: string; messages: Message[] } }
+  | { type: "ADD_MESSAGE"; payload: Message }
+  | { type: "UPDATE_MESSAGE"; payload: Message }
+  | { type: "SET_USERS"; payload: Record<string, User> }
+  | { type: "UPDATE_USER"; payload: User }
+  | { type: "SET_TYPING"; payload: TypingStatus }
+  | { type: "REMOVE_TYPING"; payload: { userId: string; conversationId: string } }
+  | { type: "SET_CONNECTION_STATUS"; payload: boolean }
 
 const initialState: ChatState = {
-  conversations: initialConversations,
-  messages: initialMessages,
-  currentConversationId: null,
-  isLoading: false,
-  error: null,
-  currentUser: initialUser,
+  config: null,
+  conversations: [],
+  messages: {},
+  users: {},
+  typingStatuses: [],
+  currentUser: null,
+  isConnected: false,
 }
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
+    case "SET_CONFIG":
+      return { ...state, config: action.payload }
+
     case "SET_CONVERSATIONS":
-      return {
-        ...state,
-        conversations: action.payload,
-      }
+      return { ...state, conversations: action.payload }
 
     case "ADD_CONVERSATION":
       return {
         ...state,
-        conversations: [...state.conversations, action.payload],
+        conversations: [action.payload, ...state.conversations],
       }
 
-    case "SET_CURRENT_CONVERSATION":
+    case "UPDATE_CONVERSATION":
       return {
         ...state,
-        currentConversationId: action.payload,
-      }
-
-    case "ADD_MESSAGE":
-      const { conversationId, message } = action.payload
-      return {
-        ...state,
-        messages: {
-          ...state.messages,
-          [conversationId]: [...(state.messages[conversationId] || []), message],
-        },
-        conversations: state.conversations.map((conv) =>
-          conv.id === conversationId ? { ...conv, lastMessage: message, updatedAt: new Date() } : conv,
-        ),
+        conversations: state.conversations.map((conv) => (conv.id === action.payload.id ? action.payload : conv)),
       }
 
     case "SET_MESSAGES":
@@ -134,134 +67,257 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
         },
       }
 
-    case "SET_LOADING":
+    case "ADD_MESSAGE":
+      const conversationId = action.payload.conversationId
       return {
         ...state,
-        isLoading: action.payload,
+        messages: {
+          ...state.messages,
+          [conversationId]: [...(state.messages[conversationId] || []), action.payload],
+        },
       }
 
-    case "SET_ERROR":
+    case "UPDATE_MESSAGE":
       return {
         ...state,
-        error: action.payload,
+        messages: {
+          ...state.messages,
+          [action.payload.conversationId]: (state.messages[action.payload.conversationId] || []).map((msg) =>
+            msg.id === action.payload.id ? action.payload : msg,
+          ),
+        },
       }
 
-    case "MARK_AS_READ":
+    case "SET_USERS":
+      return { ...state, users: action.payload }
+
+    case "UPDATE_USER":
       return {
         ...state,
-        conversations: state.conversations.map((conv) =>
-          conv.id === action.payload ? { ...conv, unreadCount: 0 } : conv,
+        users: { ...state.users, [action.payload.id]: action.payload },
+      }
+
+    case "SET_TYPING":
+      return {
+        ...state,
+        typingStatuses: [
+          ...state.typingStatuses.filter(
+            (t) => !(t.userId === action.payload.userId && t.conversationId === action.payload.conversationId),
+          ),
+          action.payload,
+        ],
+      }
+
+    case "REMOVE_TYPING":
+      return {
+        ...state,
+        typingStatuses: state.typingStatuses.filter(
+          (t) => !(t.userId === action.payload.userId && t.conversationId === action.payload.conversationId),
         ),
       }
+
+    case "SET_CONNECTION_STATUS":
+      return { ...state, isConnected: action.payload }
 
     default:
       return state
   }
 }
 
-const ChatContext = createContext<ChatContextType | undefined>(undefined)
+interface ChatContextType {
+  state: ChatState
+  dispatch: React.Dispatch<ChatAction>
+}
 
-export function ChatProvider({ children }: { children: ReactNode }) {
+const ChatContext = createContext<ChatContextType | null>(null)
+
+export function useChatContext() {
+  const context = useContext(ChatContext)
+  if (!context) {
+    throw new Error("useChatContext must be used within a ChatProvider")
+  }
+  return context
+}
+
+interface ChatProviderProps {
+  children: ReactNode
+  userId: string
+  token: string
+  onTokenRefresh?: () => Promise<string>
+  websocketUrl?: string
+  enableWebSocket?: boolean
+}
+
+export function ChatProvider({
+  children,
+  userId,
+  token,
+  onTokenRefresh,
+  websocketUrl = "demo", // Use "demo" as default to disable WebSocket
+  enableWebSocket = false, // Disabled by default for demo
+}: ChatProviderProps) {
   const [state, dispatch] = useReducer(chatReducer, initialState)
 
-  const sendMessage = useCallback(
-    (conversationId: string, content: string) => {
-      const newMessage: Message = {
-        id: `msg-${Date.now()}`,
-        content,
-        senderId: state.currentUser.id,
-        timestamp: new Date(),
-        type: "text",
-      }
+  // Initialize config
+  useEffect(() => {
+    const config: ChatConfig = {
+      userId,
+      token,
+      wsUrl: enableWebSocket ? websocketUrl : "demo",
+      onTokenRefresh,
+    }
+    dispatch({ type: "SET_CONFIG", payload: config })
 
-      dispatch({
-        type: "ADD_MESSAGE",
-        payload: { conversationId, message: newMessage },
-      })
+    // Initialize current user
+    const currentUser: User = {
+      id: userId,
+      name: "You",
+      status: "online",
+    }
+    dispatch({ type: "UPDATE_USER", payload: currentUser })
+  }, [userId, token, websocketUrl, onTokenRefresh, enableWebSocket])
 
-      // Simulate response after a delay
-      setTimeout(
-        () => {
-          const conversation = state.conversations.find((c) => c.id === conversationId)
-          if (conversation) {
-            const otherParticipant = conversation.participants.find((p) => p.id !== state.currentUser.id)
-            if (otherParticipant) {
-              const responses = [
-                "Thanks for your message! I'll get back to you shortly.",
-                "I understand your concern. Let me help you with that.",
-                "That's a great question! Here's what I can tell you...",
-                "I appreciate you reaching out. Let me assist you.",
-                "Thanks for the information. I'll look into this right away.",
-              ]
+  // Initialize with mock data for demo - MORE CONVERSATIONS
+  useEffect(() => {
+    if (!state.config) return
 
-              const responseMessage: Message = {
-                id: `msg-${Date.now()}-response`,
-                content: responses[Math.floor(Math.random() * responses.length)],
-                senderId: otherParticipant.id,
-                timestamp: new Date(),
-                type: "text",
-              }
+    const mockUsers: Record<string, User> = {
+      [userId]: {
+        id: userId,
+        name: "You",
+        status: "online",
+      },
+      "user-2": {
+        id: "user-2",
+        name: "Alice Johnson",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "user-3": {
+        id: "user-3",
+        name: "Bob Smith",
+        status: "offline",
+        avatar: "/placeholder.svg?height=40&width=40",
+        lastSeen: new Date(Date.now() - 7200000),
+      },
+      "user-4": {
+        id: "user-4",
+        name: "Carol Davis",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "user-5": {
+        id: "user-5",
+        name: "David Wilson",
+        status: "away",
+        avatar: "/placeholder.svg?height=40&width=40",
+        lastSeen: new Date(Date.now() - 1800000),
+      },
+      "user-6": {
+        id: "user-6",
+        name: "Emma Brown",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "user-7": {
+        id: "user-7",
+        name: "Frank Miller",
+        status: "offline",
+        avatar: "/placeholder.svg?height=40&width=40",
+        lastSeen: new Date(Date.now() - 86400000),
+      },
+      "user-8": {
+        id: "user-8",
+        name: "Grace Lee",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "user-9": {
+        id: "user-9",
+        name: "Henry Taylor",
+        status: "away",
+        avatar: "/placeholder.svg?height=40&width=40",
+        lastSeen: new Date(Date.now() - 3600000),
+      },
+      "user-10": {
+        id: "user-10",
+        name: "Ivy Chen",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "group-1": {
+        id: "group-1",
+        name: "Team Project",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+      "group-2": {
+        id: "group-2",
+        name: "Family Chat",
+        status: "online",
+        avatar: "/placeholder.svg?height=40&width=40",
+      },
+    }
 
-              dispatch({
-                type: "ADD_MESSAGE",
-                payload: { conversationId, message: responseMessage },
-              })
-            }
-          }
+    const mockConversations: Conversation[] = [
+      {
+        id: "conv-1",
+        participants: [mockUsers["user-2"], mockUsers[userId]],
+        unreadCount: 2,
+        updatedAt: new Date(Date.now() - 300000), // 5 minutes ago
+        type: "direct",
+        lastMessage: {
+          id: "msg-1",
+          conversationId: "conv-1",
+          senderId: "user-2",
+          content: "Hey there! How are you doing? 😊",
+          type: "text",
+          timestamp: new Date(Date.now() - 300000),
+          status: "delivered",
         },
-        1000 + Math.random() * 2000,
-      )
-    },
-    [state.currentUser.id, state.conversations],
-  )
-
-  const createConversation = useCallback(
-    (title: string, type: Conversation["type"]) => {
-      const newConversation: Conversation = {
-        id: `conv-${Date.now()}`,
-        title,
-        participants: [state.currentUser],
+      },
+      {
+        id: "conv-2",
+        participants: [mockUsers["user-3"], mockUsers[userId]],
         unreadCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        type,
-      }
+        updatedAt: new Date(Date.now() - 1800000), // 30 minutes ago
+        type: "direct",
+        lastMessage: {
+          id: "msg-2",
+          conversationId: "conv-2",
+          senderId: userId,
+          content: "Thanks for the help earlier!",
+          type: "text",
+          timestamp: new Date(Date.now() - 1800000),
+          status: "read",
+        },
+      },
+      {
+        id: "conv-3",
+        participants: [mockUsers["user-4"], mockUsers[userId]],
+        unreadCount: 1,
+        updatedAt: new Date(Date.now() - 3600000), // 1 hour ago
+        type: "direct",
+        lastMessage: {
+          id: "msg-3",
+          conversationId: "conv-3",
+          senderId: "user-4",
+          content: "Can you review this document?",
+          type: "file",
+          timestamp: new Date(Date.now() - 3600000),
+          status: "delivered",
+        },
+      },
+    ]
 
-      dispatch({
-        type: "ADD_CONVERSATION",
-        payload: newConversation,
-      })
-    },
-    [state.currentUser],
-  )
-
-  const setCurrentConversation = useCallback((conversationId: string) => {
-    dispatch({
-      type: "SET_CURRENT_CONVERSATION",
-      payload: conversationId,
-    })
-
-    dispatch({
-      type: "MARK_AS_READ",
-      payload: conversationId,
-    })
-  }, [])
+    dispatch({ type: "SET_USERS", payload: mockUsers })
+    dispatch({ type: "SET_CONVERSATIONS", payload: mockConversations })
+  }, [state.config, userId])
 
   const value: ChatContextType = {
     state,
     dispatch,
-    sendMessage,
-    createConversation,
-    setCurrentConversation,
   }
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
-}
-
-export function useChatContext() {
-  const context = useContext(ChatContext)
-  if (context === undefined) {
-    throw new Error("useChatContext must be used within a ChatProvider")
-  }
-  return context
 }
