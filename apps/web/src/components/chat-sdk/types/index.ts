@@ -8,36 +8,30 @@ export interface User {
 
 export interface Message {
   id: string
-  conversationId: string
-  senderId: string
   content: string
-  type: "text" | "image" | "file" | "audio" | "video"
+  senderId: string
   timestamp: Date
-  status: "sending" | "sent" | "delivered" | "read" | "failed"
-  metadata?: Record<string, any>
-  caption?: string
-  fileUrl?: string
-  fileName?: string
+  type: "text" | "image" | "file"
+  status?: "sent" | "delivered" | "read"
+  attachments?: Attachment[]
+}
+
+export interface Attachment {
+  id: string
+  name: string
+  url: string
+  type: string
+  size: number
 }
 
 export interface Conversation {
   id: string
-  participants: User[]
-  type: "direct" | "group"
   name: string
-  avatar?: string
-  lastMessage: string
+  participants: User[]
+  lastMessage?: string
   timestamp: Date
   unreadCount: number
-  updatedAt?: Date
-  metadata?: Record<string, any>
-}
-
-export interface TypingStatus {
-  userId: string
-  conversationId: string
-  isTyping: boolean
-  timestamp: Date
+  type?: "direct" | "group"
 }
 
 export interface ChatConfig {
@@ -47,10 +41,8 @@ export interface ChatConfig {
   onTokenRefresh?: () => Promise<string>
 }
 
-export interface ChatContextType {
-  conversations: Conversation[]
-  currentConversationId: string | null
-  messages: { [conversationId: string]: Message[] }
-  currentUser: User
+export interface TypingStatus {
+  userId: string
+  conversationId: string
   isTyping: boolean
 }

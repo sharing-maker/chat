@@ -27,7 +27,7 @@ const initialState: ChatState = {
       lastMessage: "How can we help you today?",
       timestamp: new Date(),
       unreadCount: 0,
-      participants: [{ id: "support", name: "Support Team", avatar: "/placeholder-user.jpg" }],
+      participants: [{ id: "support", name: "Support Team", avatar: "/placeholder.svg?height=40&width=40" }],
     },
     {
       id: "2",
@@ -35,7 +35,7 @@ const initialState: ChatState = {
       lastMessage: "Thanks for your interest!",
       timestamp: new Date(Date.now() - 3600000),
       unreadCount: 2,
-      participants: [{ id: "sales", name: "Sales Team", avatar: "/placeholder-user.jpg" }],
+      participants: [{ id: "sales", name: "Sales Team", avatar: "/placeholder.svg?height=40&width=40" }],
     },
   ],
   currentConversationId: "1",
@@ -83,7 +83,7 @@ const initialState: ChatState = {
   currentUser: {
     id: "user",
     name: "You",
-    avatar: "/placeholder-user.jpg",
+    avatar: "/placeholder.svg?height=40&width=40",
   },
   isTyping: false,
 }
@@ -121,12 +121,52 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 const ChatContext = createContext<{
   state: ChatState
   dispatch: React.Dispatch<ChatAction>
+  sendMessage: (content: string) => void
 } | null>(null)
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(chatReducer, initialState)
 
-  return <ChatContext.Provider value={{ state, dispatch }}>{children}</ChatContext.Provider>
+  const sendMessage = (content: string) => {
+    if (!state.currentConversationId) return
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content,
+      senderId: state.currentUser.id,
+      timestamp: new Date(),
+      type: "text",
+    }
+
+    dispatch({
+      type: "ADD_MESSAGE",
+      payload: {
+        conversationId: state.currentConversationId,
+        message: newMessage,
+      },
+    })
+
+    // Simulate response after 1 second
+    setTimeout(() => {
+      const responseMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `Thanks for your message: "${content}". How else can I help you?`,
+        senderId: state.currentConversationId === "1" ? "support" : "sales",
+        timestamp: new Date(),
+        type: "text",
+      }
+
+      dispatch({
+        type: "ADD_MESSAGE",
+        payload: {
+          conversationId: state.currentConversationId!,
+          message: responseMessage,
+        },
+      })
+    }, 1000)
+  }
+
+  return <ChatContext.Provider value={{ state, dispatch, sendMessage }}>{children}</ChatContext.Provider>
 }
 
 export function useChatContext() {

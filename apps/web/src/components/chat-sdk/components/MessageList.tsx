@@ -218,6 +218,10 @@ export function MessageList({
 
   const currentMessages = state.currentConversationId ? state.messages[state.currentConversationId] || [] : []
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [currentMessages])
+
   if (!messages || messages.length === 0) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
@@ -302,7 +306,7 @@ export function MessageList({
                       message={message}
                       isGrouped={isGrouped}
                       onImageClick={handleImageClick} // Pass the handler down
-                      isOwn={message.senderId === currentUserId}
+                      currentUserId={state.currentUser.id}
                     />
                   )
                 })}
@@ -310,9 +314,6 @@ export function MessageList({
             </div>
           ))}
         </div>
-        {currentMessages.map((message) => (
-          <MessageItem key={message.id} message={message} isOwn={message.senderId === state.currentUser.id} />
-        ))}
         {state.isTyping && (
           <div className="flex items-center space-x-2 text-gray-500">
             <div className="flex space-x-1">

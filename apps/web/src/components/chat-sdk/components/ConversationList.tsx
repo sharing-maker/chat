@@ -1,17 +1,18 @@
 "use client"
+
 import { useChatContext } from "../context/ChatContext"
 import ConversationItem from "./ConversationItem"
 
 interface ConversationListProps {
-  onConversationSelect: (conversationId: string) => void
+  onSelectConversation: () => void
 }
 
-export default function ConversationList({ onConversationSelect }: ConversationListProps) {
+export default function ConversationList({ onSelectConversation }: ConversationListProps) {
   const { state, dispatch } = useChatContext()
 
-  const handleConversationClick = (conversationId: string) => {
+  const handleSelectConversation = (conversationId: string) => {
     dispatch({ type: "SET_CURRENT_CONVERSATION", payload: conversationId })
-    onConversationSelect(conversationId)
+    onSelectConversation()
   }
 
   return (
@@ -20,8 +21,8 @@ export default function ConversationList({ onConversationSelect }: ConversationL
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
-          isActive={conversation.id === state.currentConversationId}
-          onClick={() => handleConversationClick(conversation.id)}
+          isSelected={conversation.id === state.currentConversationId}
+          onClick={() => handleSelectConversation(conversation.id)}
         />
       ))}
     </div>

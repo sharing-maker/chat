@@ -4,9 +4,8 @@ import type { MessageItemProps, DisplayMessage, Message } from "../types"
 import { FileText, Download, Check, CheckCheck } from "lucide-react"
 import Image from "next/image"
 
-export function MessageItem({ message, isGrouped, onImageClick }: MessageItemProps) {
+export default function MessageItem({ message, isOwn }: MessageItemProps) {
   const { state } = useChatContext()
-  const isOwnMessage = message.isMine
   const sender = state.users[message.senderId]
 
   const formatFileSize = (bytes: number) => {
@@ -43,8 +42,8 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
     return (
       <div
         className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl max-w-full break-words ${
-          isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
-        } ${isGrouped ? (isOwnMessage ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
+          isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+        }`}
       >
         <p className="text-sm sm:text-base whitespace-pre-wrap">
           {parts.map((part, index) =>
@@ -63,11 +62,9 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
             ),
           )}
         </p>
-        <div
-          className={`flex items-center justify-end mt-1 space-x-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}
-        >
+        <div className={`flex items-center justify-end mt-1 space-x-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}>
           <span className="text-xs">{formatTime(message.timestamp)}</span>
-          {isOwnMessage && getStatusIcon()}
+          {isOwn && getStatusIcon()}
         </div>
       </div>
     )
@@ -77,28 +74,25 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
     const imageAttachments = msg.attachments?.filter((att) => att.type === "image") || []
 
     return (
-      <div className={`flex flex-col gap-2 ${isOwnMessage ? "items-end" : "items-start"}`}>
+      <div className={`flex flex-col gap-2 ${isOwn ? "items-end" : "items-start"}`}>
         {msg.text && (
           <div
             className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl max-w-full break-words ${
-              isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
-            } ${isGrouped ? (isOwnMessage ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
+              isOwn ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+            }`}
           >
             <p className="text-sm sm:text-base whitespace-pre-wrap">{msg.text}</p>
             <div
-              className={`flex items-center justify-end mt-1 space-x-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}
+              className={`flex items-center justify-end mt-1 space-x-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}
             >
               <span className="text-xs">{formatTime(message.timestamp)}</span>
-              {isOwnMessage && getStatusIcon()}
+              {isOwn && getStatusIcon()}
             </div>
           </div>
         )}
         <div className={`grid gap-2 ${imageAttachments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
           {msg.attachments?.map((attachment, idx) => (
-            <div
-              key={idx}
-              className={`relative rounded-lg overflow-hidden ${isOwnMessage ? "bg-blue-100" : "bg-gray-100"}`}
-            >
+            <div key={idx} className={`relative rounded-lg overflow-hidden ${isOwn ? "bg-blue-100" : "bg-gray-100"}`}>
               {attachment.type === "image" ? (
                 <>
                   <Image
@@ -108,7 +102,7 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
                     height={150}
                     className="w-full h-auto object-cover cursor-pointer"
                     onClick={() =>
-                      onImageClick?.(
+                      message.onImageClick?.(
                         attachment.id,
                         imageAttachments.map((img) => ({ id: img.id, url: img.url, name: img.name })),
                       )
@@ -176,49 +170,29 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
     return (
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          isOwnMessage ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+          isOwn ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
         }`}
       >
         <div>
           <img src={msg.content || "/placeholder.svg"} alt="Shared image" className="rounded max-w-full h-auto" />
           {msg.caption && <p className="text-sm mt-2">{msg.caption}</p>}
         </div>
-        <p className={`text-xs mt-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}>
-          {formatTime(msg.timestamp)}
-        </p>
+        <p className={`text-xs mt-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}>{formatTime(msg.timestamp)}</p>
       </div>
     )
   }
 
   return (
-    <div
-      className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} ${isGrouped ? "mt-0.5 sm:mt-1" : "mt-3 sm:mt-4"}`}
-    >
+    <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
       <div
-        className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs lg:max-w-md ${isOwnMessage ? "flex-row-reverse space-x-reverse" : ""}`}
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+          isOwn ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+        }`}
       >
-        {message.type !== "promo" && !isOwnMessage && !isGrouped && (
-          <img
-            src={sender?.avatar || "/placeholder.svg?height=32&width=32&query=user"}
-            alt={sender?.name || "User"}
-            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
-          />
-        )}
-
-        {message.type !== "promo" && !isOwnMessage && isGrouped && (
-          <div className="w-6 sm:w-8 flex-shrink-0" /> // Spacer for grouped messages
-        )}
-
-        <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}>
-          {message.type !== "promo" && !isGrouped && !isOwnMessage && (
-            <span className="text-xs text-gray-500 mb-1 px-3">{sender?.name || "Unknown User"}</span>
-          )}
-
-          {message.type === "text" && renderTextMessage(message)}
-          {message.type === "media" && renderMediaMessage(message)}
-          {message.type === "promo" && renderPromoMessage(message)}
-          {message.type === "image" && renderImageMessage(message)}
-        </div>
+        {message.type === "text" && renderTextMessage(message)}
+        {message.type === "media" && renderMediaMessage(message)}
+        {message.type === "promo" && renderPromoMessage(message)}
+        {message.type === "image" && renderImageMessage(message)}
       </div>
     </div>
   )
