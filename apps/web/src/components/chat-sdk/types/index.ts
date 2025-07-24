@@ -12,7 +12,7 @@ export interface Message {
   conversationId: string
   senderId: string
   content: string
-  type: "text" | "image" | "file" // Keep existing types for internal data model
+  type: "text" | "image" | "file" | 'promo' // Keep existing types for internal data model
   timestamp: Date
   status: "sending" | "sent" | "delivered" | "read"
   attachments?: Attachment[]
