@@ -21,7 +21,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@chat-sdk/*": ["packages/chat-sdk/src/*"]
+      "@chat-sdk/*": ["packages/chat-sdk/src/*"],
+      "@web/*": ["apps/web/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

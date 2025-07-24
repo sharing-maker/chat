@@ -5,7 +5,7 @@ import { FileText, Download, Check, CheckCheck } from "lucide-react"
 import Image from "next/image"
 import { format } from "date-fns"
 
-export default function MessageItem({ message, isOwn, showAvatar = true, showTimestamp = true }: MessageItemProps) {
+export function MessageItem({ message, isOwn, showAvatar = true, showTimestamp = true }: MessageItemProps) {
   const { state } = useChatContext()
   const sender = state.users[message.senderId]
 
