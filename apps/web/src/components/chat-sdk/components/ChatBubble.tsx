@@ -1,47 +1,48 @@
 "use client"
 
-import React, { useState } from "react"
-import { MessageSquare, X } from "lucide-react"
+import { useState } from "react"
 import { ChatProvider } from "../context/ChatContext"
-import { ChatLayout } from "./ChatLayout"
+import ChatLayout from "./ChatLayout"
 
-export function ChatBubble() {
+export default function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false)
 
-  // Cast Lucide icons to React components to fix TypeScript error
-  const XIcon = X as React.ComponentType<{ className?: string }>
-  const MessageSquareIcon = MessageSquare as React.ComponentType<{ className?: string }>
-
-  const chatConfig = {
-    userId: "current-user-id",
-    token: "demo-token",
-    apiUrl: "https://api.example.com",
-    wsUrl: "demo", // Use demo mode
-    onTokenRefresh: async () => {
-      // In a real app, refresh the token here
-      return "new-token"
-    },
+  const toggleChat = () => {
+    setIsOpen(!isOpen)
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed inset-0 md:inset-auto md:bottom-20 md:right-4 w-full h-full md:w-[400px] md:h-[600px] bg-white rounded-lg shadow-xl flex flex-col overflow-hidden transition-all duration-300 ease-in-out transform origin-bottom-right md:scale-100">
-          <ChatProvider {...chatConfig}>
-            <ChatLayout />
-          </ChatProvider>
-        </div>
-      )}
+    <ChatProvider>
+      <div className="fixed bottom-6 right-6 z-50">
+        {/* Chat Window */}
+        {isOpen && (
+          <div className="mb-4 w-80 h-96 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden">
+            <ChatLayout onClose={() => setIsOpen(false)} />
+          </div>
+        )}
 
-      {/* Chat Bubble Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
-        aria-label={isOpen ? "Close chat" : "Open chat"}
-      >
-        {isOpen ? <XIcon className="w-6 h-6" /> : <MessageSquareIcon className="w-6 h-6" />}
-      </button>
-    </div>
+        {/* Chat Bubble Button */}
+        <button
+          onClick={toggleChat}
+          className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+          aria-label={isOpen ? "Close chat" : "Open chat"}
+        >
+          {isOpen ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
+    </ChatProvider>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 import { useChatContext } from "../context/ChatContext"
-import type { MessageItemProps, DisplayMessage } from "../types"
-import { FileText, Download } from "lucide-react"
+import type { MessageItemProps, DisplayMessage, Message } from "../types"
+import { FileText, Download, Check, CheckCheck } from "lucide-react"
 import Image from "next/image"
 
 export function MessageItem({ message, isGrouped, onImageClick }: MessageItemProps) {
@@ -15,6 +15,23 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
+
+  const getStatusIcon = () => {
+    switch (message.status) {
+      case "sent":
+        return <Check className="w-3 h-3" />
+      case "delivered":
+        return <CheckCheck className="w-3 h-3" />
+      case "read":
+        return <CheckCheck className="w-3 h-3 text-blue-500" />
+      default:
+        return null
+    }
   }
 
   const renderTextMessage = (msg: DisplayMessage) => {
@@ -46,6 +63,12 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
             ),
           )}
         </p>
+        <div
+          className={`flex items-center justify-end mt-1 space-x-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}
+        >
+          <span className="text-xs">{formatTime(message.timestamp)}</span>
+          {isOwnMessage && getStatusIcon()}
+        </div>
       </div>
     )
   }
@@ -62,6 +85,12 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
             } ${isGrouped ? (isOwnMessage ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
           >
             <p className="text-sm sm:text-base whitespace-pre-wrap">{msg.text}</p>
+            <div
+              className={`flex items-center justify-end mt-1 space-x-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}
+            >
+              <span className="text-xs">{formatTime(message.timestamp)}</span>
+              {isOwnMessage && getStatusIcon()}
+            </div>
           </div>
         )}
         <div className={`grid gap-2 ${imageAttachments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
@@ -143,13 +172,30 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
     )
   }
 
+  const renderImageMessage = (msg: Message) => {
+    return (
+      <div
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+          isOwnMessage ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+      >
+        <div>
+          <img src={msg.content || "/placeholder.svg"} alt="Shared image" className="rounded max-w-full h-auto" />
+          {msg.caption && <p className="text-sm mt-2">{msg.caption}</p>}
+        </div>
+        <p className={`text-xs mt-1 ${isOwnMessage ? "text-blue-100" : "text-gray-500"}`}>
+          {formatTime(msg.timestamp)}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div
       className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} ${isGrouped ? "mt-0.5 sm:mt-1" : "mt-3 sm:mt-4"}`}
     >
       <div
         className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs lg:max-w-md ${isOwnMessage ? "flex-row-reverse space-x-reverse" : ""}`}
-        style={message.type === "promo" ? { maxWidth: "none" } : {}} // Allow promo messages to take full width if needed
       >
         {message.type !== "promo" && !isOwnMessage && !isGrouped && (
           <img
@@ -171,19 +217,7 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
           {message.type === "text" && renderTextMessage(message)}
           {message.type === "media" && renderMediaMessage(message)}
           {message.type === "promo" && renderPromoMessage(message)}
-
-          {message.type !== "promo" && (
-            <div
-              className={`flex items-center space-x-1 mt-1 px-2 ${isOwnMessage ? "flex-row-reverse space-x-reverse" : ""}`}
-            >
-              {/* Status icon logic (from previous implementation) */}
-              {isOwnMessage && (
-                <svg className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                </svg>
-              )}
-            </div>
-          )}
+          {message.type === "image" && renderImageMessage(message)}
         </div>
       </div>
     </div>

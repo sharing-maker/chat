@@ -1,48 +1,27 @@
 "use client"
-import { ConversationItem } from "./ConversationItem"
 import { useChatContext } from "../context/ChatContext"
+import ConversationItem from "./ConversationItem"
 
 interface ConversationListProps {
-  onConversationSelect?: (conversationId: string) => void
-  selectedConversationId?: string
-  className?: string
+  onConversationSelect: (conversationId: string) => void
 }
 
-export function ConversationList({
-  onConversationSelect,
-  selectedConversationId,
-  className = "",
-}: ConversationListProps) {
-  const { state } = useChatContext()
-  const conversations = state.conversations || []
-  const isLoading = false
+export default function ConversationList({ onConversationSelect }: ConversationListProps) {
+  const { state, dispatch } = useChatContext()
 
-  if (isLoading) {
-    return (
-      <div className={`flex flex-col space-y-2 p-3 sm:p-4 ${className}`}>
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="flex items-center space-x-3 p-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 rounded-full"></div>
-              <div className="flex-1">
-                <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
+  const handleConversationClick = (conversationId: string) => {
+    dispatch({ type: "SET_CURRENT_CONVERSATION", payload: conversationId })
+    onConversationSelect(conversationId)
   }
 
   return (
-    <div className={`flex flex-col ${className}`}>
-      {conversations.map((conversation) => (
+    <div className="flex-1 overflow-y-auto">
+      {state.conversations.map((conversation) => (
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
-          isSelected={selectedConversationId === conversation.id}
-          onClick={() => onConversationSelect?.(conversation.id)}
+          isActive={conversation.id === state.currentConversationId}
+          onClick={() => handleConversationClick(conversation.id)}
         />
       ))}
     </div>
