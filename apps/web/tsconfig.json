@@ -1,17 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "@web/*": ["./*"],
-      "@chat-sdk/*": ["../../packages/chat-sdk/src/*"]
-    },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+      "@web/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src",
+    ".next/types/**/*.ts"
+  ]
 }

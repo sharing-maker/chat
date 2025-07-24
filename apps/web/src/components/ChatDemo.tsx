@@ -1,6 +1,8 @@
 "use client"
 
-import { ChatProvider, ChatLayout } from "./chat-sdk"
+import { ChatProvider } from "@chat-sdk/src/context/ChatContext"
+import { ChatLayout } from "@chat-sdk/src/components/ChatLayout"
+
 
 export function ChatDemo() {
   return (

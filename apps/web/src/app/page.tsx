@@ -1,4 +1,6 @@
-import { ChatBubble } from "../components/ChatBubble"
+"use client"
+
+import { ChatBubble } from "@chat-sdk/src/components/ChatBubble"
 
 export default function Home() {
   return (

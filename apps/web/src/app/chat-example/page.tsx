@@ -1,20 +1,23 @@
-import { ChatInput } from "@chat-sdk/components/ChatInput"
+"use client"
 
-export default function ChatExample() {
+import { ChatLayout } from "@chat-sdk/src/components/ChatLayout"
+import { ChatProvider } from "@chat-sdk/src/context/ChatContext"
+
+
+export default function ChatDemo() {
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Chat Input Example</h1>
-        <div className="bg-white rounded-lg shadow-sm border">
-          <ChatInput
-            conversationId="example-chat"
-            placeholder="Type your message here..."
-            onSendMessage={(message) => {
-              console.log("Message sent:", message)
-            }}
-          />
+    <div className="h-screen bg-gray-50">
+      <ChatProvider
+        userId="current-user"
+        token="demo-token"
+        websocketUrl="demo"
+        enableWebSocket={false}
+        currentUser={{ id: "current-user", name: "You", avatar: "/placeholder-user.jpg", isOnline: true }}
+      >
+        <div className="h-full">
+          <ChatLayout />
         </div>
-      </div>
+      </ChatProvider>
     </div>
   )
 }
