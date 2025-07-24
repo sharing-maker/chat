@@ -3,8 +3,9 @@ import { useChatContext } from "../context/ChatContext"
 import type { MessageItemProps, DisplayMessage, Message } from "../types"
 import { FileText, Download, Check, CheckCheck } from "lucide-react"
 import Image from "next/image"
+import { format } from "date-fns"
 
-export default function MessageItem({ message, isOwn }: MessageItemProps) {
+export default function MessageItem({ message, isOwn, showAvatar = true, showTimestamp = true }: MessageItemProps) {
   const { state } = useChatContext()
   const sender = state.users[message.senderId]
 
@@ -14,10 +15,6 @@ export default function MessageItem({ message, isOwn }: MessageItemProps) {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
   const getStatusIcon = () => {
@@ -62,10 +59,7 @@ export default function MessageItem({ message, isOwn }: MessageItemProps) {
             ),
           )}
         </p>
-        <div className={`flex items-center justify-end mt-1 space-x-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}>
-          <span className="text-xs">{formatTime(message.timestamp)}</span>
-          {isOwn && getStatusIcon()}
-        </div>
+        {isOwn && getStatusIcon()}
       </div>
     )
   }
@@ -82,12 +76,7 @@ export default function MessageItem({ message, isOwn }: MessageItemProps) {
             }`}
           >
             <p className="text-sm sm:text-base whitespace-pre-wrap">{msg.text}</p>
-            <div
-              className={`flex items-center justify-end mt-1 space-x-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}
-            >
-              <span className="text-xs">{formatTime(message.timestamp)}</span>
-              {isOwn && getStatusIcon()}
-            </div>
+            {isOwn && getStatusIcon()}
           </div>
         )}
         <div className={`grid gap-2 ${imageAttachments.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
@@ -177,22 +166,36 @@ export default function MessageItem({ message, isOwn }: MessageItemProps) {
           <img src={msg.content || "/placeholder.svg"} alt="Shared image" className="rounded max-w-full h-auto" />
           {msg.caption && <p className="text-sm mt-2">{msg.caption}</p>}
         </div>
-        <p className={`text-xs mt-1 ${isOwn ? "text-blue-100" : "text-gray-500"}`}>{formatTime(msg.timestamp)}</p>
+        {showTimestamp && <span className="text-xs text-gray-500 mt-1">{format(msg.timestamp, "HH:mm")}</span>}
       </div>
     )
   }
 
   return (
-    <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          isOwn ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
-        }`}
-      >
-        {message.type === "text" && renderTextMessage(message)}
-        {message.type === "media" && renderMediaMessage(message)}
-        {message.type === "promo" && renderPromoMessage(message)}
-        {message.type === "image" && renderImageMessage(message)}
+    <div className={`flex ${isOwn ? "justify-end" : "justify-start"} mb-4`}>
+      <div className={`flex max-w-xs lg:max-w-md ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
+        {showAvatar && !isOwn && (
+          <div className="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-2">
+            {sender.avatar ? (
+              <img
+                src={sender.avatar || "/placeholder.svg"}
+                alt={sender.name}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <span className="text-xs font-medium text-gray-600">{sender.name.charAt(0).toUpperCase()}</span>
+            )}
+          </div>
+        )}
+
+        <div className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
+          {!isOwn && <span className="text-xs text-gray-500 mb-1">{sender.name}</span>}
+
+          {message.type === "text" && renderTextMessage(message)}
+          {message.type === "media" && renderMediaMessage(message)}
+          {message.type === "promo" && renderPromoMessage(message)}
+          {message.type === "image" && renderImageMessage(message)}
+        </div>
       </div>
     </div>
   )

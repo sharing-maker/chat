@@ -1,42 +1,46 @@
 "use client"
-
-import { useState } from "react"
 import { useChatContext } from "../context/ChatContext"
-import ConversationList from "./ConversationList"
-import ChatHeader from "./ChatHeader"
-import MessageList from "./MessageList"
-import ChatInput from "./ChatInput"
+import { ConversationList } from "./ConversationList"
+import { ChatHeader } from "./ChatHeader"
+import { MessageList } from "./MessageList"
+import { ChatInput } from "./ChatInput"
 
 interface ChatLayoutProps {
   onClose: () => void
 }
 
-export default function ChatLayout({ onClose }: ChatLayoutProps) {
-  const { state } = useChatContext()
-  const [view, setView] = useState<"conversations" | "chat">("conversations")
+export function ChatLayout({ onClose }: ChatLayoutProps) {
+  const { state, setCurrentConversation } = useChatContext()
+  const { currentConversationId, conversations } = state
 
-  const currentConversation = state.conversations.find((conv) => conv.id === state.currentConversationId)
+  const currentConversation = conversations.find((c) => c.id === currentConversationId)
 
   return (
     <div className="flex flex-col h-full">
-      {view === "conversations" ? (
-        <>
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold">Messages</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700" aria-label="Close chat">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+      {!currentConversationId ? (
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b">
+            <h2 className="text-lg font-semibold">Conversations</h2>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700 transition-colors"
+              aria-label="Close chat"
+            >
+              ×
             </button>
           </div>
-          <ConversationList onSelectConversation={() => setView("chat")} />
-        </>
+          <div className="flex-1 overflow-hidden">
+            <ConversationList conversations={conversations} onSelectConversation={setCurrentConversation} />
+          </div>
+        </div>
       ) : (
-        <>
-          <ChatHeader conversation={currentConversation} onBack={() => setView("conversations")} onClose={onClose} />
-          <MessageList />
-          <ChatInput />
-        </>
+        <div className="flex flex-col h-full">
+          <ChatHeader conversation={currentConversation} onBack={() => setCurrentConversation("")} onClose={onClose} />
+          <div className="flex-1 overflow-hidden">
+            <MessageList conversationId={currentConversationId} />
+          </div>
+          <ChatInput conversationId={currentConversationId} />
+        </div>
       )}
     </div>
   )

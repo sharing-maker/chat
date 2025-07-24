@@ -1,99 +1,117 @@
 "use client"
 
-import type React from "react"
-import { createContext, useContext, useReducer, type ReactNode } from "react"
-import type { Message, Conversation, User } from "../types"
+import { createContext, useContext, useReducer, useCallback, type ReactNode } from "react"
+import type { ChatState, ChatAction, ChatContextType, User, Conversation, Message } from "../types"
 
-interface ChatState {
-  conversations: Conversation[]
-  currentConversationId: string | null
-  messages: { [conversationId: string]: Message[] }
-  currentUser: User
-  isTyping: boolean
+const initialUser: User = {
+  id: "user-1",
+  name: "You",
+  avatar: "/placeholder-user.jpg",
+  email: "user@example.com",
+  isOnline: true,
 }
 
-type ChatAction =
-  | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
-  | { type: "SET_CURRENT_CONVERSATION"; payload: string | null }
-  | { type: "ADD_MESSAGE"; payload: { conversationId: string; message: Message } }
-  | { type: "SET_MESSAGES"; payload: { conversationId: string; messages: Message[] } }
-  | { type: "SET_TYPING"; payload: boolean }
-
-const initialState: ChatState = {
-  conversations: [
-    {
-      id: "1",
-      name: "Support Team",
-      lastMessage: "How can we help you today?",
-      timestamp: new Date(),
-      unreadCount: 0,
-      participants: [{ id: "support", name: "Support Team", avatar: "/placeholder.svg?height=40&width=40" }],
+const initialConversations: Conversation[] = [
+  {
+    id: "conv-1",
+    title: "Support Chat",
+    participants: [
+      initialUser,
+      {
+        id: "support-1",
+        name: "Sarah (Support)",
+        avatar: "/placeholder-user.jpg",
+        isOnline: true,
+      },
+    ],
+    lastMessage: {
+      id: "msg-1",
+      content: "Hi! How can I help you today?",
+      senderId: "support-1",
+      timestamp: new Date(Date.now() - 1000 * 60 * 5),
+      type: "text",
     },
+    unreadCount: 1,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 5),
+    type: "support",
+  },
+  {
+    id: "conv-2",
+    title: "Sales Inquiry",
+    participants: [
+      initialUser,
+      {
+        id: "sales-1",
+        name: "Mike (Sales)",
+        avatar: "/placeholder-user.jpg",
+        isOnline: true,
+      },
+    ],
+    lastMessage: {
+      id: "msg-2",
+      content: "Thanks for your interest in our product!",
+      senderId: "sales-1",
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
+      type: "text",
+    },
+    unreadCount: 0,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
+    updatedAt: new Date(Date.now() - 1000 * 60 * 30),
+    type: "sales",
+  },
+]
+
+const initialMessages = {
+  "conv-1": [
     {
-      id: "2",
-      name: "Sales Team",
-      lastMessage: "Thanks for your interest!",
-      timestamp: new Date(Date.now() - 3600000),
-      unreadCount: 2,
-      participants: [{ id: "sales", name: "Sales Team", avatar: "/placeholder.svg?height=40&width=40" }],
+      id: "msg-1",
+      content: "Hi! How can I help you today?",
+      senderId: "support-1",
+      timestamp: new Date(Date.now() - 1000 * 60 * 5),
+      type: "text" as const,
     },
   ],
-  currentConversationId: "1",
-  messages: {
-    "1": [
-      {
-        id: "1",
-        content: "Hello! How can we help you today?",
-        senderId: "support",
-        timestamp: new Date(Date.now() - 1800000),
-        type: "text",
-      },
-      {
-        id: "2",
-        content: "I have a question about your pricing.",
-        senderId: "user",
-        timestamp: new Date(Date.now() - 1200000),
-        type: "text",
-      },
-      {
-        id: "3",
-        content: "I'd be happy to help with that! What specific information are you looking for?",
-        senderId: "support",
-        timestamp: new Date(Date.now() - 600000),
-        type: "text",
-      },
-    ],
-    "2": [
-      {
-        id: "4",
-        content: "Thanks for your interest in our product!",
-        senderId: "sales",
-        timestamp: new Date(Date.now() - 3600000),
-        type: "text",
-      },
-      {
-        id: "5",
-        content: "Would you like to schedule a demo?",
-        senderId: "sales",
-        timestamp: new Date(Date.now() - 3000000),
-        type: "text",
-      },
-    ],
-  },
-  currentUser: {
-    id: "user",
-    name: "You",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  isTyping: false,
+  "conv-2": [
+    {
+      id: "msg-2",
+      content: "Thanks for your interest in our product!",
+      senderId: "sales-1",
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
+      type: "text" as const,
+    },
+  ],
+}
+
+const initialState: ChatState = {
+  conversations: initialConversations,
+  messages: initialMessages,
+  currentConversationId: null,
+  isLoading: false,
+  error: null,
+  currentUser: initialUser,
 }
 
 function chatReducer(state: ChatState, action: ChatAction): ChatState {
   switch (action.type) {
     case "SET_CONVERSATIONS":
-      return { ...state, conversations: action.payload }
+      return {
+        ...state,
+        conversations: action.payload,
+      }
+
+    case "ADD_CONVERSATION":
+      return {
+        ...state,
+        conversations: [...state.conversations, action.payload],
+      }
+
     case "SET_CURRENT_CONVERSATION":
-      return { ...state, currentConversationId: action.payload }
+      return {
+        ...state,
+        currentConversationId: action.payload,
+      }
+
     case "ADD_MESSAGE":
       const { conversationId, message } = action.payload
       return {
@@ -102,7 +120,11 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           ...state.messages,
           [conversationId]: [...(state.messages[conversationId] || []), message],
         },
+        conversations: state.conversations.map((conv) =>
+          conv.id === conversationId ? { ...conv, lastMessage: message, updatedAt: new Date() } : conv,
+        ),
       }
+
     case "SET_MESSAGES":
       return {
         ...state,
@@ -111,67 +133,134 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
           [action.payload.conversationId]: action.payload.messages,
         },
       }
-    case "SET_TYPING":
-      return { ...state, isTyping: action.payload }
+
+    case "SET_LOADING":
+      return {
+        ...state,
+        isLoading: action.payload,
+      }
+
+    case "SET_ERROR":
+      return {
+        ...state,
+        error: action.payload,
+      }
+
+    case "MARK_AS_READ":
+      return {
+        ...state,
+        conversations: state.conversations.map((conv) =>
+          conv.id === action.payload ? { ...conv, unreadCount: 0 } : conv,
+        ),
+      }
+
     default:
       return state
   }
 }
 
-const ChatContext = createContext<{
-  state: ChatState
-  dispatch: React.Dispatch<ChatAction>
-  sendMessage: (content: string) => void
-} | null>(null)
+const ChatContext = createContext<ChatContextType | undefined>(undefined)
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(chatReducer, initialState)
 
-  const sendMessage = (content: string) => {
-    if (!state.currentConversationId) return
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content,
-      senderId: state.currentUser.id,
-      timestamp: new Date(),
-      type: "text",
-    }
-
-    dispatch({
-      type: "ADD_MESSAGE",
-      payload: {
-        conversationId: state.currentConversationId,
-        message: newMessage,
-      },
-    })
-
-    // Simulate response after 1 second
-    setTimeout(() => {
-      const responseMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `Thanks for your message: "${content}". How else can I help you?`,
-        senderId: state.currentConversationId === "1" ? "support" : "sales",
+  const sendMessage = useCallback(
+    (conversationId: string, content: string) => {
+      const newMessage: Message = {
+        id: `msg-${Date.now()}`,
+        content,
+        senderId: state.currentUser.id,
         timestamp: new Date(),
         type: "text",
       }
 
       dispatch({
         type: "ADD_MESSAGE",
-        payload: {
-          conversationId: state.currentConversationId!,
-          message: responseMessage,
-        },
+        payload: { conversationId, message: newMessage },
       })
-    }, 1000)
+
+      // Simulate response after a delay
+      setTimeout(
+        () => {
+          const conversation = state.conversations.find((c) => c.id === conversationId)
+          if (conversation) {
+            const otherParticipant = conversation.participants.find((p) => p.id !== state.currentUser.id)
+            if (otherParticipant) {
+              const responses = [
+                "Thanks for your message! I'll get back to you shortly.",
+                "I understand your concern. Let me help you with that.",
+                "That's a great question! Here's what I can tell you...",
+                "I appreciate you reaching out. Let me assist you.",
+                "Thanks for the information. I'll look into this right away.",
+              ]
+
+              const responseMessage: Message = {
+                id: `msg-${Date.now()}-response`,
+                content: responses[Math.floor(Math.random() * responses.length)],
+                senderId: otherParticipant.id,
+                timestamp: new Date(),
+                type: "text",
+              }
+
+              dispatch({
+                type: "ADD_MESSAGE",
+                payload: { conversationId, message: responseMessage },
+              })
+            }
+          }
+        },
+        1000 + Math.random() * 2000,
+      )
+    },
+    [state.currentUser.id, state.conversations],
+  )
+
+  const createConversation = useCallback(
+    (title: string, type: Conversation["type"]) => {
+      const newConversation: Conversation = {
+        id: `conv-${Date.now()}`,
+        title,
+        participants: [state.currentUser],
+        unreadCount: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        type,
+      }
+
+      dispatch({
+        type: "ADD_CONVERSATION",
+        payload: newConversation,
+      })
+    },
+    [state.currentUser],
+  )
+
+  const setCurrentConversation = useCallback((conversationId: string) => {
+    dispatch({
+      type: "SET_CURRENT_CONVERSATION",
+      payload: conversationId,
+    })
+
+    dispatch({
+      type: "MARK_AS_READ",
+      payload: conversationId,
+    })
+  }, [])
+
+  const value: ChatContextType = {
+    state,
+    dispatch,
+    sendMessage,
+    createConversation,
+    setCurrentConversation,
   }
 
-  return <ChatContext.Provider value={{ state, dispatch, sendMessage }}>{children}</ChatContext.Provider>
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
 }
 
 export function useChatContext() {
   const context = useContext(ChatContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useChatContext must be used within a ChatProvider")
   }
   return context

@@ -222,6 +222,18 @@ export function MessageList({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [currentMessages])
 
+  const conversation = state.conversations.find((c) => c.id === conversationId)
+  const conversationMessages = state.messages[conversationId] || []
+
+  const displayMessagesUpdated: DisplayMessage[] = conversationMessages.map((message) => {
+    const sender = conversation?.participants.find((p) => p.id === message.senderId) || state.currentUser
+    return {
+      ...message,
+      sender,
+      isOwn: message.senderId === state.currentUser.id,
+    }
+  })
+
   if (!messages || messages.length === 0) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
@@ -307,6 +319,8 @@ export function MessageList({
                       isGrouped={isGrouped}
                       onImageClick={handleImageClick} // Pass the handler down
                       currentUserId={state.currentUser.id}
+                      showAvatar={!message.isOwn}
+                      showTimestamp={true}
                     />
                   )
                 })}

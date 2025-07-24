@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
-    "types": ["node"],
-    "lib": [
-      "dom",
-      "ES5",
-      "ES6",
-      "es2017",
-      "dom.iterable"
-    ],
+    "target": "es2017",
+    "lib": ["dom", "dom.iterable", "es6"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -26,10 +21,10 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@web/*": ["./apps/web/*"],
-      "@ui/*": ["./packages/ui/*"]
+      "@chat-sdk/*": ["packages/chat-sdk/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [{ "path": "apps/web" }, { "path": "packages/chat-sdk" }]
 }

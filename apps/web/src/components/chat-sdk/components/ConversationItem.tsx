@@ -1,55 +1,67 @@
 "use client"
-
 import type { Conversation } from "../types"
+import { formatDistanceToNow } from "date-fns"
 
 interface ConversationItemProps {
   conversation: Conversation
-  isSelected: boolean
   onClick: () => void
 }
 
-export default function ConversationItem({ conversation, isSelected, onClick }: ConversationItemProps) {
-  const formatTime = (date: Date) => {
-    const now = new Date()
-    const diff = now.getTime() - date.getTime()
-    const minutes = Math.floor(diff / 60000)
-    const hours = Math.floor(diff / 3600000)
-    const days = Math.floor(diff / 86400000)
-
-    if (minutes < 1) return "now"
-    if (minutes < 60) return `${minutes}m`
-    if (hours < 24) return `${hours}h`
-    return `${days}d`
-  }
+export function ConversationItem({ conversation, onClick }: ConversationItemProps) {
+  const otherParticipants = conversation.participants.filter((p) => p.id !== "user-1")
+  const displayName = otherParticipants.length > 0 ? otherParticipants[0].name : conversation.title
 
   return (
     <div
-      className={`flex items-center p-4 cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${
-        isSelected ? "bg-blue-50" : ""
-      }`}
       onClick={onClick}
+      className="flex items-center p-3 hover:bg-gray-50 cursor-pointer rounded-lg transition-colors"
     >
-      <div className="flex-shrink-0 mr-3">
-        <img
-          src={conversation.participants[0]?.avatar || "/placeholder.svg?height=40&width=40"}
-          alt={conversation.name}
-          className="w-10 h-10 rounded-full"
-        />
+      <div className="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+        {otherParticipants[0]?.avatar ? (
+          <img
+            src={otherParticipants[0].avatar || "/placeholder.svg"}
+            alt={displayName}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <span className="text-sm font-medium text-gray-600">{displayName.charAt(0).toUpperCase()}</span>
+        )}
       </div>
-      <div className="flex-1 min-w-0">
+
+      <div className="ml-3 flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-900 truncate">{conversation.name}</h3>
-          <span className="text-xs text-gray-500">{formatTime(conversation.timestamp)}</span>
+          <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
+          {conversation.lastMessage && (
+            <p className="text-xs text-gray-500">
+              {formatDistanceToNow(conversation.lastMessage.timestamp, { addSuffix: true })}
+            </p>
+          )}
         </div>
-        <p className="text-sm text-gray-600 truncate mt-1">{conversation.lastMessage}</p>
-      </div>
-      {conversation.unreadCount > 0 && (
-        <div className="flex-shrink-0 ml-2">
-          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-blue-600 rounded-full">
-            {conversation.unreadCount}
+
+        {conversation.lastMessage && (
+          <p className="text-sm text-gray-500 truncate">{conversation.lastMessage.content}</p>
+        )}
+
+        <div className="flex items-center justify-between mt-1">
+          <span
+            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+              conversation.type === "support"
+                ? "bg-blue-100 text-blue-800"
+                : conversation.type === "sales"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+            }`}
+          >
+            {conversation.type}
           </span>
+
+          {conversation.unreadCount > 0 && (
+            <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+              {conversation.unreadCount}
+            </span>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
