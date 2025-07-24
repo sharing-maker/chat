@@ -1,43 +1,45 @@
 "use client"
 
 import { useState } from "react"
-import { MessageSquare, X } from "lucide-react"
-import { ChatProvider } from "./chat-sdk/context/ChatContext"
-import { ChatLayout } from "./chat-sdk/components/ChatLayout"
+import { MessageCircle, X } from "lucide-react"
+import { ChatLayout } from "@chat-sdk/components/ChatLayout"
 
 export function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false)
 
-  const chatConfig = {
-    userId: "current-user-id",
-    token: "demo-token",
-    apiUrl: "https://api.example.com",
-    wsUrl: "demo", // Use demo mode
-    onTokenRefresh: async () => {
-      // In a real app, refresh the token here
-      return "new-token"
-    },
-  }
-
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <>
+      {/* Chat Bubble Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className={`fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 flex items-center justify-center z-40 ${
+          isOpen ? "scale-0" : "scale-100"
+        }`}
+        aria-label="Open chat"
+      >
+        <MessageCircle className="w-6 h-6" />
+      </button>
+
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed inset-0 md:inset-auto md:bottom-20 md:right-4 w-full h-full md:w-[400px] md:h-[600px] bg-white rounded-lg shadow-xl flex flex-col overflow-hidden transition-all duration-300 ease-in-out transform origin-bottom-right md:scale-100">
-          <ChatProvider config={chatConfig}>
-            <ChatLayout />
-          </ChatProvider>
+        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-lg shadow-2xl border z-50 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b bg-blue-600 text-white">
+            <h3 className="font-semibold">Chat Support</h3>
+            <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-blue-700 rounded" aria-label="Close chat">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Chat Content */}
+          <div className="flex-1 overflow-hidden">
+            <ChatLayout conversationId="support-chat" />
+          </div>
         </div>
       )}
 
-      {/* Chat Bubble Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
-        aria-label={isOpen ? "Close chat" : "Open chat"}
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
-      </button>
-    </div>
+      {/* Backdrop */}
+      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-20 z-30" onClick={() => setIsOpen(false)} />}
+    </>
   )
 }

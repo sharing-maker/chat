@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "@web/*": ["./*"],
-      "@ui/*": ["../../packages/ui/*"]
+      "@chat-sdk/*": ["../../packages/chat-sdk/src/*"]
     },
     "plugins": [
       {

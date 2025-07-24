@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Chat SDK Demo",
-  description: "A modern React Chat SDK with Messenger-style UI",
+  description: "A modern React Chat SDK demonstration",
 }
 
 export default function RootLayout({
