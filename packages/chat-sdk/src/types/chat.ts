@@ -12,6 +12,8 @@ export interface ChatInputProps {
   placeholder?: string
   disabled?: boolean
   className?: string
+  onStickerClick?: (sticker: string) => void
+  conversationId?: string
 }
 
 export interface EmojiPickerProps {
@@ -19,6 +21,7 @@ export interface EmojiPickerProps {
   onClose?: () => void
   isOpen?: boolean
   ref?: React.Ref<HTMLDivElement> // Add ref prop
+  style?: React.CSSProperties
 }
 
 export interface StickerPickerProps {
@@ -26,6 +29,7 @@ export interface StickerPickerProps {
   onClose?: () => void
   isOpen?: boolean
   ref?: React.Ref<HTMLDivElement> // Add ref prop
+  style?: React.CSSProperties
 }
 
 export interface TextFormattingToolbarProps {
@@ -34,4 +38,5 @@ export interface TextFormattingToolbarProps {
   onFormatSelect: (format: string) => void
   selectedFormats?: string[]
   ref?: React.Ref<HTMLDivElement> // Add ref prop
+  style?: React.CSSProperties
 }

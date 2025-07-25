@@ -12,7 +12,6 @@ export default function ChatDemo() {
         token="demo-token"
         websocketUrl="demo"
         enableWebSocket={false}
-        currentUser={{ id: "current-user", name: "You", avatar: "/placeholder-user.jpg", isOnline: true }}
       >
         <div className="h-full">
           <ChatLayout />

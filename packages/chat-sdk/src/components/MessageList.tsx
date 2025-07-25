@@ -32,7 +32,7 @@ export function MessageList({
   onSwipeBack,
 }: MessageListProps) {
   const { state } = useChatContext()
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<any>(null)
   const shouldScrollToBottomRef = useRef(true) // New ref to control auto-scrolling
   const lastMessageCountRef = useRef(messages?.length || 0) // Add null check
   const [showSwipeHint, setShowSwipeHint] = useState(false)
@@ -108,7 +108,7 @@ export function MessageList({
     restraint: 120,
     allowedTime: 400,
     enabled: true,
-  })
+  }) as any
 
   // Auto-scroll to bottom logic
   const scrollToBottom = useCallback((force = false) => {

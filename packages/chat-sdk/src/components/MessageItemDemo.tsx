@@ -33,6 +33,7 @@ export function MessageItemDemo() {
       text: "Look at this beautiful sunset I captured! 📸",
       attachments: [
         {
+          id: "demo-3-1",
           type: "image",
           url: "/placeholder.svg?height=300&width=400",
           name: "sunset.jpg",
@@ -50,12 +51,14 @@ export function MessageItemDemo() {
       text: "My vacation photos! 🏖️",
       attachments: [
         {
+          id: "demo-4-1",
           type: "image",
           url: "/placeholder.svg?height=200&width=300",
           name: "beach1.jpg",
           size: 180000,
         },
         {
+          id: "demo-4-2",
           type: "image",
           url: "/placeholder.svg?height=200&width=300",
           name: "beach2.jpg",
@@ -73,6 +76,7 @@ export function MessageItemDemo() {
       text: "Here's the document you requested",
       attachments: [
         {
+          id: "demo-5-1",
           type: "file",
           url: "/placeholder.svg?height=200&width=200",
           name: "project-proposal.pdf",
@@ -90,12 +94,14 @@ export function MessageItemDemo() {
       text: "Screenshot and the related document",
       attachments: [
         {
+          id: "demo-6-1",
           type: "image",
           url: "/placeholder.svg?height=400&width=300",
           name: "screenshot.png",
           size: 156000,
         },
         {
+          id: "demo-6-2",
           type: "file",
           url: "/placeholder.svg?height=200&width=200",
           name: "instructions.docx",
