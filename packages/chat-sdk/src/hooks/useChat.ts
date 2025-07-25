@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 import { useChatContext } from "../context/ChatContext"
 import { useSocket } from "./useSocket"
-import type { Message } from "../types"
+import type { Message, MessageStatus } from "../types"
 
 export function useChat(conversationId: string) {
   const { state, dispatch } = useChatContext()
@@ -36,7 +36,7 @@ export function useChat(conversationId: string) {
         // Update message status
         const updatedMessage = {
           ...message,
-          status: socketSent && isConnected ? "sent" : ("delivered" as const),
+          status: (socketSent && isConnected ? "sent" : "delivered") as MessageStatus,
         }
 
         // Simulate a small delay for better UX

@@ -1,3 +1,5 @@
+export type MessageStatus = "sending" | "sent" | "delivered" | "read"
+
 export interface User {
   id: string
   name: string
@@ -14,7 +16,7 @@ export interface Message {
   content: string
   type: "text" | "image" | "file" | "promo"// Keep existing types for internal data model
   timestamp: Date
-  status: "sending" | "sent" | "delivered" | "read"
+  status: MessageStatus
   attachments?: Attachment[]
   promoData?: PromotionalMessageData // Added promoData here for internal Message type
 }
