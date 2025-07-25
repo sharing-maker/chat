@@ -2,27 +2,29 @@ export interface User {
   id: string
   name: string
   avatar?: string
-  isOnline?: boolean
+  status: "online" | "offline" | "away"
+  lastSeen?: Date
 }
 
+// Existing Message interface (used by context/hooks)
 export interface Message {
   id: string
-  content: string
+  conversationId: string
   senderId: string
+  content: string
+  type: "text" | "image" | "file" // Keep existing types for internal data model
   timestamp: Date
-  type?: "text" | "image" | "file" | "sticker"
-  attachments?: MessageAttachment[]
-  isRead?: boolean
-  isDelivered?: boolean
+  status: "sending" | "sent" | "delivered" | "read"
+  attachments?: Attachment[]
+  promoData?: PromotionalMessageData // Added promoData here for internal Message type
 }
 
-export interface MessageAttachment {
+export interface Attachment {
   id: string
-  type: "image" | "file" | "audio" | "video"
-  url: string
   name: string
-  size?: number
-  mimeType?: string
+  url: string
+  type: string
+  size: number
 }
 
 export interface Conversation {
@@ -31,8 +33,9 @@ export interface Conversation {
   lastMessage?: Message
   unreadCount: number
   updatedAt: Date
-  title?: string
   type: "direct" | "group"
+  name?: string
+  avatar?: string
 }
 
 export interface TypingStatus {
@@ -42,43 +45,48 @@ export interface TypingStatus {
 }
 
 export interface ChatConfig {
+  userId: string
+  token: string
   apiUrl?: string
-  socketUrl?: string
-  theme?: "light" | "dark"
-  features?: {
-    typing?: boolean
-    readReceipts?: boolean
-    fileUpload?: boolean
-    emoji?: boolean
-    stickers?: boolean
-  }
+  wsUrl?: string
+  onTokenRefresh?: () => Promise<string>
 }
 
-export interface ChatInputProps {
-  conversationId?: string
-  onSendMessage?: (message: string) => void
-  onEmojiClick?: (emoji: string) => void
-  onStickerClick?: (sticker: string) => void
-  onFileUpload?: (file: File) => void
-  onImageUpload?: (file: File) => void
-  onContactShare?: () => void
-  onVoiceRecord?: () => void
-  onVoiceMessage?: (audioBlob: Blob) => void
-  onQuickReact?: (reaction: string) => void
-  placeholder?: string
-  disabled?: boolean
-  className?: string
+export interface SocketMessage {
+  type: "message" | "typing" | "read" | "user_status"
+  data: any
 }
 
-export interface MessageItemProps {
-  message: Message
-  user?: User
-  isOwn?: boolean
-  showAvatar?: boolean
-  showTimestamp?: boolean
-  onReact?: (messageId: string, reaction: string) => void
-  onReply?: (message: Message) => void
-  onEdit?: (messageId: string, newContent: string) => void
-  onDelete?: (messageId: string) => void
-  className?: string
+// New types for MessageItem component's props
+export type MessageAttachment = {
+  id: string // Added ID for image preview modal
+  type: "image" | "file"
+  url: string
+  name?: string
+  size?: number
+}
+
+export type PromotionalMessageData = {
+  imageUrl: string
+  title: string
+  description: string
+  buttonText: string
+  buttonUrl: string
+}
+
+export type DisplayMessage = {
+  id: string
+  senderId: string
+  type: "text" | "media" | "promo" // Updated type for display
+  text?: string
+  attachments?: MessageAttachment[]
+  promoData?: PromotionalMessageData
+  createdAt: string // ISO string or similar for display
+  isMine: boolean
+}
+
+export type MessageItemProps = {
+  message: DisplayMessage
+  isGrouped?: boolean
+  onImageClick?: (imageId: string, images: { id: string; url: string; name?: string }[]) => void // New prop
 }

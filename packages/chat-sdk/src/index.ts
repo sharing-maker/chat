@@ -5,6 +5,9 @@ export { ChatProvider, useChatContext } from "./context/ChatContext"
 export { useChat } from "./hooks/useChat"
 export { useMessages } from "./hooks/useMessages"
 export { useTyping } from "./hooks/useTyping"
+export { useSocket } from "./hooks/useSocket"
+export { useTextSelection } from "./hooks/useTextSelection"
+export { useSwipeGesture } from "./hooks/useSwipeGesture"
 
 // Components
 export { ChatLayout } from "./components/ChatLayout"
@@ -15,6 +18,17 @@ export { ChatInput } from "./components/ChatInput"
 export { ConversationList } from "./components/ConversationList"
 export { ConversationItem } from "./components/ConversationItem"
 export { DateDivider } from "./components/DateDivider"
+export { MessageItemDemo } from "./components/MessageItemDemo"
+export { ChatBubble } from "./components/ChatBubble"
+export { TypingIndicator } from "./components/TypingIndicator"
+export { VoiceWaveIcon } from "./components/VoiceWaveIcon"
+export { TextFormattingToolbar } from "./components/TextFormattingToolbar"
+export { SwipeIndicator } from "./components/SwipeIndicator"
+export { ImagePreviewModal } from "./components/ImagePreviewModal"
+export { ChatInputWithCustomIcon } from "./components/ChatInputWithCustomIcon"
+export { EmojiPicker } from "./components/EmojiPicker"
+export { ChatInputDemo } from "./components/ChatInputDemo"
+export { ImageLightbox } from "./components/ImageLightbox"
 
 // Types
 export type {
@@ -23,6 +37,5 @@ export type {
   Conversation,
   TypingStatus,
   ChatConfig,
-  ChatInputProps,
   MessageItemProps,
 } from "./types"
