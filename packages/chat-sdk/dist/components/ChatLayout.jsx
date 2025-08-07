@@ -9,7 +9,7 @@ import { useSwipeGesture } from "../hooks/useSwipeGesture";
 import { useMessages } from "../hooks/useMessages";
 export function ChatLayout({ className = "" }) {
     var _a;
-    const [selectedConversationId, setSelectedConversationId] = useState(null);
+    const [selectedConversationId, setSelectedConversationId] = useState('conv-1');
     const [showSidebar, setShowSidebar] = useState(false);
     const { state } = useChatContext();
     const messagesHook = useMessages(selectedConversationId || "");
