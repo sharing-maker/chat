@@ -7,9 +7,13 @@
     "paths": {
       "@web/*": [
         "./src/*"
-      ]
+      ],
+      "@droppii-org/chat-sdk": ["../../packages/chat-sdk/src"]
     }
   },
+  "references": [
+    { "path": "../../packages/chat-sdk" }
+  ],
   "include": [
     "src",
     ".next/types/**/*.ts"

@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { ChatProvider } from "@droppii-org/chat-sdk"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -17,7 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <ChatProvider userId="current-user" token="demo-token" websocketUrl="demo" enableWebSocket={false}>
+        <body className={inter.className}>{children}</body>
+      </ChatProvider>
     </html>
   )
 }

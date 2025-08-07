@@ -1,9 +1,23 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
     "composite": true,
-    "noEmit": false,
-    "baseUrl": "."
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@chat-sdk/*": ["src/*"]
+    }
   },
   "include": ["src"]
 }

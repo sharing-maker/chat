@@ -1,7 +1,7 @@
 "use client"
 
-import { ChatLayout } from "@chat-sdk/src/components/ChatLayout"
-import { ChatProvider } from "@chat-sdk/src/context/ChatContext"
+import { ChatLayout, ChatProvider } from "@droppii-org/chat-sdk"
+
 
 
 export default function ChatDemo() {

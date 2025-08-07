@@ -14,7 +14,7 @@ interface ChatLayoutProps {
 }
 
 export function ChatLayout({ className = "" }: ChatLayoutProps) {
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>('conv-1')
   const [showSidebar, setShowSidebar] = useState(false)
   const { state } = useChatContext()
   const messagesHook = useMessages(selectedConversationId || "")

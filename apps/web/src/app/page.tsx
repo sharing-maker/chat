@@ -1,6 +1,8 @@
 "use client"
 
-import { ChatBubble } from "@chat-sdk/src/components/ChatBubble"
+import dynamic from "next/dynamic"
+
+const ChatBubble = dynamic(() => import("@droppii-org/chat-sdk").then((mod) => mod.ChatBubble))
 
 export default function Home() {
   return (

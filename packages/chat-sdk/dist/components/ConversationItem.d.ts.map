@@ -1,0 +1,1 @@
+{"version":3,"file":"ConversationItem.d.ts","sourceRoot":"","sources":["../../src/components/ConversationItem.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,UAAU,CAAA;AAG5C,UAAU,qBAAqB;IAC7B,YAAY,EAAE,YAAY,CAAA;IAC1B,UAAU,CAAC,EAAE,OAAO,CAAA;IACpB,OAAO,CAAC,EAAE,MAAM,IAAI,CAAA;CACrB;AAED,wBAAgB,gBAAgB,CAAC,EAAE,YAAY,EAAE,UAAU,EAAE,OAAO,EAAE,EAAE,qBAAqB,+BAiE5F"}
