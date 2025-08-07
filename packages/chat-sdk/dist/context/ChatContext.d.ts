@@ -67,6 +67,6 @@ interface ChatProviderProps {
     enableWebSocket?: boolean;
 }
 export declare function ChatProvider({ children, userId, token, onTokenRefresh, websocketUrl, // Use "demo" as default to disable WebSocket
-enableWebSocket, }: ChatProviderProps): React.JSX.Element;
+enableWebSocket, }: ChatProviderProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=ChatContext.d.ts.map

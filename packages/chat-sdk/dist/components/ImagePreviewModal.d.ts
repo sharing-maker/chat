@@ -7,6 +7,6 @@ interface ImagePreviewModalProps {
     initialImageId: string;
     onClose: () => void;
 }
-export declare function ImagePreviewModal({ images, initialImageId, onClose }: ImagePreviewModalProps): import("react").JSX.Element | null;
+export declare function ImagePreviewModal({ images, initialImageId, onClose }: ImagePreviewModalProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
 //# sourceMappingURL=ImagePreviewModal.d.ts.map

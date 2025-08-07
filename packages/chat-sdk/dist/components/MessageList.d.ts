@@ -10,6 +10,6 @@ interface MessageListProps {
     onSwipeBack?: () => void;
 }
 export declare function MessageList({ messages, // Add default empty array
-isLoadingMore, onLoadMore, hasMore, currentUserId, conversationId, className, onSwipeBack, }: MessageListProps): import("react").JSX.Element;
+isLoadingMore, onLoadMore, hasMore, currentUserId, conversationId, className, onSwipeBack, }: MessageListProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=MessageList.d.ts.map

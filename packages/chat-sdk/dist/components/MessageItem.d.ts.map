@@ -1,1 +1,1 @@
-{"version":3,"file":"MessageItem.d.ts","sourceRoot":"","sources":["../../src/components/MessageItem.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,gBAAgB,EAAkB,MAAM,UAAU,CAAA;AAIhE,wBAAgB,WAAW,CAAC,EAAE,OAAO,EAAE,SAAS,EAAE,YAAY,EAAE,EAAE,gBAAgB,+BAwLjF"}
+{"version":3,"file":"MessageItem.d.ts","sourceRoot":"","sources":["../../src/components/MessageItem.tsx"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,gBAAgB,EAAkB,MAAM,UAAU,CAAA;AAIhE,wBAAgB,WAAW,CAAC,EAAE,OAAO,EAAE,SAAS,EAAE,YAAY,EAAE,EAAE,gBAAgB,2CAwLjF"}

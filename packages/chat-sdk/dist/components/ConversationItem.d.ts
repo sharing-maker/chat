@@ -4,6 +4,6 @@ interface ConversationItemProps {
     isSelected?: boolean;
     onClick?: () => void;
 }
-export declare function ConversationItem({ conversation, isSelected, onClick }: ConversationItemProps): import("react").JSX.Element;
+export declare function ConversationItem({ conversation, isSelected, onClick }: ConversationItemProps): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=ConversationItem.d.ts.map

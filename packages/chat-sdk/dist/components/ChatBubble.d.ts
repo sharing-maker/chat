@@ -1,2 +1,2 @@
-export declare function ChatBubble(): import("react").JSX.Element;
+export declare function ChatBubble(): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=ChatBubble.d.ts.map
