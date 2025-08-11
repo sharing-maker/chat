@@ -1,15 +1,16 @@
 "use client"
-
-import { ChatBubble, ChatLayout, ChatProvider } from "@droppii-org/chat-sdk"
+import { ChatProvider } from "@droppii-org/chat-sdk"
+import { useChatSdkSetup } from "@web/hook/chat"
 
 
 export function ChatDemo() {
+  const { chatConfigProps } = useChatSdkSetup()
   return (
     <div className="h-screen bg-gray-50">
-      <ChatProvider userId="current-user" token="demo-token" websocketUrl="demo" enableWebSocket={false}>
+      <ChatProvider config={chatConfigProps}>
         <div className="h-full">
-          <ChatLayout />
-          <ChatBubble />
+          {/* <ChatLayout />
+          <ChatBubble /> */}
         </div>
       </ChatProvider>
     </div>

@@ -1,4 +1,5 @@
 import type React from "react" // Import React for React.Ref
+import { DChatConfigProps } from "./sdk"
 
 export interface ChatInputProps {
   onSendMessage?: (message: string) => void
@@ -39,4 +40,13 @@ export interface TextFormattingToolbarProps {
   selectedFormats?: string[]
   ref?: React.Ref<HTMLDivElement> // Add ref prop
   style?: React.CSSProperties
+}
+
+export interface ChatContextType {
+
+}
+
+export interface ChatProviderProps {
+  children: React.ReactNode;
+  config: DChatConfigProps;
 }

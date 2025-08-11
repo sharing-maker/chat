@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback } from "react"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import { useSocket } from "./useSocket"
 import type { Message, MessageStatus } from "../types"
 

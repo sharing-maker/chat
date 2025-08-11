@@ -5,7 +5,7 @@ import { ConversationList } from "./ConversationList"
 import { ChatHeader } from "./ChatHeader"
 import { MessageList } from "./MessageList"
 import { ChatInput } from "./ChatInput"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import { useSwipeGesture } from "../hooks/useSwipeGesture"
 import { useMessages } from "../hooks/useMessages"
 

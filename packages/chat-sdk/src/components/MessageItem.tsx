@@ -1,5 +1,5 @@
 "use client"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import type { MessageItemProps, DisplayMessage } from "../types"
 import { FileText, Download } from "lucide-react"
 import Image from "next/image"

@@ -92,3 +92,5 @@ export type MessageItemProps = {
   isGrouped?: boolean
   onImageClick?: (imageId: string, images: { id: string; url: string; name?: string }[]) => void // New prop
 }
+
+export * from "./sdk"

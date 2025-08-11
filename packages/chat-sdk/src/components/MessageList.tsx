@@ -6,7 +6,7 @@ import { DateDivider } from "./DateDivider"
 import { TypingIndicator } from "./TypingIndicator"
 // import { AutoScrollAnchor } from "./AutoScrollAnchor" // Removed
 import { useSwipeGesture } from "../hooks/useSwipeGesture"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import type { DisplayMessage, Message } from "../types"
 import { ImagePreviewModal } from "./ImagePreviewModal" // Import the new modal
 

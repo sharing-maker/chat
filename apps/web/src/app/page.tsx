@@ -1,8 +1,5 @@
 "use client"
 
-import dynamic from "next/dynamic"
-
-const ChatBubble = dynamic(() => import("@droppii-org/chat-sdk").then((mod) => mod.ChatBubble))
 
 export default function Home() {
   return (
@@ -39,7 +36,6 @@ export default function Home() {
         </div>
       </div>
 
-      <ChatBubble />
     </main>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useCallback } from "react"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import type { SocketMessage } from "../types"
 
 export function useSocket() {

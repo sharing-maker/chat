@@ -39,3 +39,5 @@ export type {
   ChatConfig,
   MessageItemProps,
 } from "./types"
+
+export * from "./types/sdk"

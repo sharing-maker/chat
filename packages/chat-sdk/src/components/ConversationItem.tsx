@@ -1,6 +1,6 @@
 "use client"
 import type { Conversation } from "../types"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 
 interface ConversationItemProps {
   conversation: Conversation

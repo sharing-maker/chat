@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
-import { useChatContext } from "../context/ChatContext"
+import { useChatContext } from "../context/ChatContextOld"
 import { useSocket } from "./useSocket"
 
 export function useTyping(conversationId: string) {

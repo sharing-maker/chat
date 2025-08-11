@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import Script from "next/script"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -20,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* This line adds the <script> tag to the final HTML */}
-        <Script src="/wasm_exec.js" strategy="beforeInteractive" />
+        <script src="/wasm_exec.js" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>

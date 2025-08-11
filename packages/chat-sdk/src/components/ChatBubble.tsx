@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import { MessageCircle, X } from "lucide-react"
-import { MessageListDemo } from "./MessageListDemo"
-import { ChatProvider } from "../context/ChatContext"
 import { ChatHeader } from "./ChatHeader"
 import { MessageList } from "./MessageList"
 import { ChatInput } from "./ChatInput"
