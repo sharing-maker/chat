@@ -3,18 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "description": "A modern React Chat SDK monorepo with Next.js demo app",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "changeset": "changeset",
     "clean": "turbo run clean",
     "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "postinstall": "node ./scripts/postinstall-copy-wasm.mjs",
     "lint": "turbo run lint",
     "release": "turbo run build --filter=!@chat-sdk/web && changeset publish",
     "type-check": "turbo run type-check",
     "version-packages": "changeset version"
   },
   "dependencies": {
+    "@droppii-org/chat-sdk": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
@@ -52,6 +58,7 @@
     "lucide-react": "^0.454.0",
     "next": "14.2.16",
     "next-themes": "latest",
+    "path": "latest",
     "react": "^18",
     "react-day-picker": "latest",
     "react-dom": "^18",
@@ -62,6 +69,7 @@
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "url": "latest",
     "vaul": "latest"
   },
   "devDependencies": {
@@ -71,6 +79,8 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8.48.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.1",
     "postcss": "^8.5",
     "prettier": "^3.0.0",
     "turbo": "^1.10.12",
@@ -79,9 +89,5 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
-  },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  }
 }
