@@ -19,5 +19,5 @@
       "@chat-sdk/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/assets/droppiiFontSelection.json"]
 }
