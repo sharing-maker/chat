@@ -31,8 +31,7 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc --noEmit --watch",
     "lint": "eslint src/",
-    "type-check": "tsc --noEmit",
-    "prepare": "pnpm build"
+    "type-check": "tsc --noEmit"
   },
   "keywords": ["chat", "sdk", "react", "messenger-style"],
   "author": "Garru",
