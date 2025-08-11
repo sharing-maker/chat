@@ -26,9 +26,7 @@
       "types": "./dist/types/*.d.ts"
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc --noEmit --watch",
@@ -36,12 +34,7 @@
     "type-check": "tsc --noEmit",
     "prepare": "pnpm build"
   },
-  "keywords": [
-    "chat",
-    "sdk",
-    "react",
-    "messenger-style"
-  ],
+  "keywords": ["chat", "sdk", "react", "messenger-style"],
   "author": "Garru",
   "license": "MIT",
   "publishConfig": {
