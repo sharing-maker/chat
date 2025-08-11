@@ -15,6 +15,7 @@ export default function ChatDemo() {
       >
         <div className="h-full">
           <ChatLayout />
+          <p>Version: 0.0.1</p>
         </div>
       </ChatProvider>
     </div>
