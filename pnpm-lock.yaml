@@ -186,6 +186,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@droppii-org/chat-sdk':
+        specifier: '*'
+        version: 0.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.1.1(@types/react@18.3.23)(react@18.3.1)
@@ -495,6 +498,12 @@ packages:
 
   '@date-fns/tz@1.2.0':
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@droppii-org/chat-sdk@0.0.4':
+    resolution: {integrity: sha512-/LI7Fbv/UHlyDNwHPvKOtV+Vrf4CdZlpKAYqyKjf2miaJoIaTutzylbG573q/jymzpG6LbTdIlunmvSW5ukcQg==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -5053,6 +5062,14 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.9
 
   '@date-fns/tz@1.2.0': {}
+
+  '@droppii-org/chat-sdk@0.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      clsx: 2.1.1
+      lucide-react: 0.263.1(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tailwind-merge: 2.5.5
 
   '@emnapi/core@1.4.5':
     dependencies:
