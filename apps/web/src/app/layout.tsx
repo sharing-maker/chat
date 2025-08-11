@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* The Script component tells Next.js to add a <script> tag here in the final HTML */}
+        {/* This line adds the <script> tag to the final HTML */}
         <Script src="/wasm_exec.js" strategy="beforeInteractive" />
       </head>
       <body className={inter.className}>{children}</body>
