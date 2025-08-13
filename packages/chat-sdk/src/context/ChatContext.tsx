@@ -3,22 +3,18 @@ import { getSDK, InitAndLoginConfig, SelfUserInfo } from '@openim/wasm-client-sd
 import { ChatContextType, ChatProviderProps } from "@chat-sdk/types/chat";
 const DChatSDK = getSDK();
 
-export const ChatContext = createContext<ChatContextType | undefined>({
-  user: undefined,
+export const ChatContext = createContext<ChatContextType>({
+  user: null,
 });
 
-export const useChatContext = () => {
-  const context = useContext(ChatContext)
-
-  return context
-}
+export const useChatContext = () => useContext(ChatContext)
 
 export const ChatProvider = ({
   children,
   config,
 }: ChatProviderProps) => {
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<SelfUserInfo | undefined>(undefined)
+  const [user, setUser] = useState<SelfUserInfo | null>(null)
 
   const getUserInfo = () => {
     DChatSDK.getSelfUserInfo().then(({ data }) => {

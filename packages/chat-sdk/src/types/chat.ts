@@ -44,7 +44,7 @@ export interface TextFormattingToolbarProps {
 }
 
 export interface ChatContextType {
-  user?: SelfUserInfo
+  user: SelfUserInfo | null
 }
 
 export interface ChatProviderProps {
