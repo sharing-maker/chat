@@ -35,5 +35,11 @@ export { Icon } from "./components/Icon"
 //Screens
 export { DChatDeskMessage }
 
+export {
+  DChatPlatform,
+  DChatLogLevel,
+  SessionType,
+  type DChatConfigProps,
+} from "./types/sdk"
 
 export * from "./types/sdk"
