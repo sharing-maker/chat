@@ -24,6 +24,7 @@ export const ChatProvider = ({
     })
   }
 
+export const ChatProvider = ({ children, config }: ChatProviderProps) => {
   const handleLogin = () => {
     DChatSDK.login(config as InitAndLoginConfig).then((res) => {
       getUserInfo()
