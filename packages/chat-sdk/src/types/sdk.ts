@@ -1,35 +1,12 @@
-export enum DChatPlatform {
-  iOS = 1,
-  Android,
-  Windows,
-  OSX,
-  Web,
-  MiniProgram,
-  Linux,
-}
-
-export enum DChatLogLevel {
-  Panic = 0,
-  Fatal,
-  Error,
-  Warn,
-  Info,
-  Debug,
-}
-
-export enum SessionType {
-  Single = 1,
-  Group = 3,
-  Notification = 4,
-}
+import { LogLevel, Platform } from "@openim/wasm-client-sdk";
 
 export interface DChatConfigProps {
-  platformID: DChatPlatform;
+  platformID: Platform;
   apiAddr: string;
   wsAddr: string;
   userID: string;
   token: string;
-  logLevel?: DChatLogLevel;
+  logLevel?: LogLevel;
   isLogStandardOutput?: boolean;
   tryParse?: boolean;
 }

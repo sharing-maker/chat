@@ -17,12 +17,10 @@
     "lint": "turbo run lint",
     "release": "turbo run build --filter=!@chat-sdk/web && changeset publish",
     "type-check": "turbo run type-check",
-    "version-packages": "changeset version"
+    "version-packages": "changeset version",
+    "dev:crm": "turbo run dev --scope=@droppii/web... --no-cache"
   },
   "dependencies": {
-    "@chat-sdk/types": "latest",
-    "@droppii-org/chat-sdk": "latest",
-    "@openim/wasm-client-sdk": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",

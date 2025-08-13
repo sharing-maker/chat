@@ -1,45 +1,14 @@
 import DChatDeskMessage from "./screens/desk-message"
+import { Platform, LogLevel } from "@openim/wasm-client-sdk"
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext"
-
-// Hooks
-export { useChat } from "./hooks/useChat"
-export { useMessages } from "./hooks/useMessages"
-export { useTyping } from "./hooks/useTyping"
-export { useSocket } from "./hooks/useSocket"
-export { useTextSelection } from "./hooks/useTextSelection"
-export { useSwipeGesture } from "./hooks/useSwipeGesture"
-
-// Components
-export { ChatLayout } from "./components/ChatLayout"
-export { ChatHeader } from "./components/ChatHeader"
-export { MessageList } from "./components/MessageList"
-export { MessageItem } from "./components/MessageItem"
-export { ChatInput } from "./components/ChatInput"
-export { ConversationList } from "./components/ConversationList"
-export { ConversationItem } from "./components/ConversationItem"
-export { DateDivider } from "./components/DateDivider"
-export { MessageItemDemo } from "./components/MessageItemDemo"
-export { ChatBubble } from "./components/ChatBubble"
-export { TypingIndicator } from "./components/TypingIndicator"
-export { VoiceWaveIcon } from "./components/VoiceWaveIcon"
-export { TextFormattingToolbar } from "./components/TextFormattingToolbar"
-export { SwipeIndicator } from "./components/SwipeIndicator"
-export { ImagePreviewModal } from "./components/ImagePreviewModal"
-export { ChatInputWithCustomIcon } from "./components/ChatInputWithCustomIcon"
-export { EmojiPicker } from "./components/EmojiPicker"
-export { ChatInputDemo } from "./components/ChatInputDemo"
-export { ImageLightbox } from "./components/ImageLightbox"
-export { Icon } from "./components/Icon"
 
 //Screens
 export { DChatDeskMessage }
 
-export {
-  DChatPlatform,
-  DChatLogLevel,
-  SessionType,
-  type DChatConfigProps,
-} from "./types/sdk"
-
 export * from "./types/sdk"
+
+export {
+  Platform as DChatPlatform,
+  LogLevel as DChatLogLevel,
+}

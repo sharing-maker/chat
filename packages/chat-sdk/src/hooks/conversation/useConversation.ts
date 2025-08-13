@@ -1,4 +1,4 @@
-import { getSDK, ConversationItem } from '@openim/wasm-client-sdk';
+import { getSDK, ConversationItem, SessionType } from '@openim/wasm-client-sdk';
 import { useCallback, useEffect, useState } from 'react';
 const DChatSDK = getSDK();
 
@@ -31,5 +31,28 @@ export const useConversationList = () => {
 
   return {
     conversationList,
+  }
+}
+
+export const useConversationDetail = ({sourceID, sessionType}: {sourceID: string, sessionType: SessionType}) => {
+  const [conversationDetail, setConversationDetail] = useState<ConversationItem | null>(null)
+  const getConversationDetail = useCallback(async () => {
+    DChatSDK.getOneConversation({
+      sourceID,
+      sessionType
+    }).then(({ data }) => {
+      console.log('getOneConversation', data)
+      setConversationDetail(data)
+    }).catch((err) => {
+      console.log('getOneConversation', err)
+    })
+  }, [sourceID, sessionType])
+
+  useEffect(() => {
+    getConversationDetail()
+  }, [getConversationDetail])
+
+  return {
+    conversationDetail,
   }
 }

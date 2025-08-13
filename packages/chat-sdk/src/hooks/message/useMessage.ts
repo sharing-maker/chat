@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getSDK, ViewType, AdvancedGetMessageResult } from '@openim/wasm-client-sdk';
 const DChatSDK = getSDK();
 
-const useMessage = (conversationId: string) => {
+export const useMessage = (conversationId?: string) => {
   const [dataMessages, setDataMessages] = useState<AdvancedGetMessageResult | null>(null);
 
   const getAdvancedHistoryMessageList = useCallback(() => {
@@ -36,4 +36,3 @@ const useMessage = (conversationId: string) => {
   }
 }
 
-export default useMessage

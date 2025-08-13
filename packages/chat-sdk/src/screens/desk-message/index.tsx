@@ -2,24 +2,19 @@
 
 import MessageList from "../../components/message/MessageList"
 import DeskConversationList from "../../components/conversation/DeskConversationList"
+import { useConversationDetail } from "@chat-sdk/hooks/conversation/useConversation"
+import { SessionType } from "@openim/wasm-client-sdk"
 
 const DChatDeskMessage = () => {
+  const { conversationDetail } = useConversationDetail({
+    sourceID: '3408237279',
+    sessionType: SessionType.Group
+  })
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar for conversations */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
-          <p className="text-sm text-gray-500 mt-1">Droppii Chat Support</p>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <DeskConversationList />
-        </div>
-      </div>
-
-      {/* Main chat area */}
+    <div className="flex flex-row h-screen bg-gray-50">
+      <DeskConversationList />
       <div className="flex-1 flex flex-col">
-        <MessageList conversationId="sg_3408237279" />
+        <MessageList conversationId="sg_3408237279" conversationData={conversationDetail} />
       </div>
     </div>
   )

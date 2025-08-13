@@ -1,7 +1,6 @@
 "use client"
 
-import { ChatProvider } from "@web/components/chat/ChatProvider"
-import DChatDeskMessage from "@web/components/chat/DChatDeskMessage"
+import { ChatProvider, DChatDeskMessage } from "@droppii-org/chat-sdk"
 import { useChatSdkSetup } from "@web/hook/chat"
 
 export default function ChatDemo() {

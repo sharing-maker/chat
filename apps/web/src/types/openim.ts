@@ -159,10 +159,3 @@ export enum MessageStatus {
   SendSuccess = 2,
   SendFailure = 3,
 }
-
-// Session Types
-export enum SessionType {
-  Single = 1,
-  Group = 2,
-  SuperGroup = 3,
-}

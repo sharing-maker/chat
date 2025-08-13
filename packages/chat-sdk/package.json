@@ -26,7 +26,9 @@
       "types": "./dist/types/*.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc --noEmit --watch",
@@ -48,6 +50,7 @@
     "@openim/wasm-client-sdk": "3.8.3-patch.10",
     "clsx": "^2.0.0",
     "lucide-react": "^0.263.1",
+    "radix-ui": "^1.4.2",
     "react-icomoon": "^2.6.1",
     "tailwind-merge": "^2.0.0"
   },
