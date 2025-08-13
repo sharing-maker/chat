@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
 import { Button } from "@web/components/common/Button";
 import Input from "@web/components/common/Input";
@@ -8,9 +9,32 @@ import Input from "@web/components/common/Input";
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({ username: "", password: "" });
+  const router = useRouter();
+
+  const validateField = (name: string, value: string) => {
+    if (!value.trim()) {
+      return `${name === "username" ? "Tài khoản" : "Mật khẩu"} là bắt buộc`;
+    }
+    return "";
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate both fields
+    const usernameError = validateField("username", username);
+    const passwordError = validateField("password", password);
+
+    setErrors({
+      username: usernameError,
+      password: passwordError,
+    });
+
+    // Only navigate if validation passes
+    if (!usernameError && !passwordError) {
+      router.push("/");
+    }
   };
 
   return (
@@ -27,6 +51,7 @@ export default function LoginPage() {
         placeholder="Nhập tài khoản"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
+        error={errors.username}
       />
       <Input
         leftIcon={<Icon icon="lock-b" className="text-blue-600" />}
@@ -35,6 +60,7 @@ export default function LoginPage() {
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        error={errors.password}
       />
       <Button type="submit" className="w-full mt-6">
         Đăng nhập
