@@ -9,6 +9,7 @@ import { ImagePreviewModal } from "../ImagePreviewModal"
 import useMessage from "../../hooks/message/useMessage"
 import { useChatContext } from "../../context/ChatContext"
 import type { MessageItem as MessageItemType } from "@openim/wasm-client-sdk"
+import { ChevronDown, MessageCircle, Sparkles } from "lucide-react"
 
 interface MessageListProps {
   conversationId: string
@@ -23,6 +24,8 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
   const lastMessageCountRef = useRef(messages?.length || 0)
   const [showSwipeHint, setShowSwipeHint] = useState(false)
   const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [newMessageAnimation, setNewMessageAnimation] = useState<string | null>(null)
 
   // State for ImagePreviewModal
   const [isImagePreviewModalOpen, setIsImagePreviewModalOpen] = useState(false)
@@ -46,7 +49,10 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
   // Auto-scroll to bottom logic
   const scrollToBottom = useCallback((force = false) => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: force ? "auto" : "smooth",
+      })
       if (force) {
         shouldScrollToBottomRef.current = true
       }
@@ -72,7 +78,7 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
     setShowScrollToBottomButton(distanceFromBottom > SCROLL_DOWN_THRESHOLD && !shouldScrollToBottomRef.current)
   }, [])
 
-  // Handle new messages
+  // Handle new messages with animation
   useEffect(() => {
     const currentMessageCount = messages?.length || 0
     const previousMessageCount = lastMessageCountRef.current
@@ -80,6 +86,12 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
     if (currentMessageCount > previousMessageCount) {
       const newMessages = messages?.slice(previousMessageCount)
       const hasNewMessageFromCurrentUser = newMessages?.some((msg) => msg.sendID === user?.userID)
+
+      // Trigger new message animation
+      if (newMessages && newMessages.length > 0) {
+        setNewMessageAnimation(newMessages[newMessages.length - 1].clientMsgID)
+        setTimeout(() => setNewMessageAnimation(null), 1000)
+      }
 
       if (hasNewMessageFromCurrentUser) {
         setTimeout(() => scrollToBottom(true), 50)
@@ -180,50 +192,68 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
   if (!messages || messages.length === 0) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
-        <div className="text-center text-gray-500">
-          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
+        <div className="text-center max-w-sm mx-auto px-6">
+          <div className="relative mb-8">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center shadow-lg">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <div className="absolute -top-2 -right-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+            </div>
           </div>
-          <p className="text-sm">Chưa có tin nhắn nào</p>
-          <p className="text-xs text-gray-400 mt-1">Hãy bắt đầu cuộc trò chuyện!</p>
+
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Chưa có tin nhắn nào</h3>
+          <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+            Hãy bắt đầu cuộc trò chuyện! Gửi tin nhắn đầu tiên để kết nối với mọi người.
+          </p>
+
+          <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-pulse"></div>
+            <span>Sẵn sàng để trò chuyện</span>
+            <div className="w-2 h-2 bg-gray-300 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`relative h-full ${className}`}>
-      {/* Swipe hint overlay */}
+    <div className={`relative h-full bg-gradient-to-b from-gray-50/30 to-white ${className}`}>
       {showSwipeHint && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden">
-          <div className="bg-black bg-opacity-80 text-white text-sm px-4 py-2 rounded-full flex items-center space-x-2 animate-pulse">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            <span>Vuốt phải để quay lại</span>
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-sm px-6 py-3 rounded-full flex items-center space-x-3 shadow-lg animate-bounce">
+            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </div>
+            <span className="font-medium">Vuốt phải để quay lại</span>
           </div>
         </div>
       )}
 
-      {/* Scroll to bottom button */}
       {showScrollToBottomButton && (
         <div className="absolute bottom-20 right-4 z-10">
           <button
             onClick={() => scrollToBottom(true)}
-            className="bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors"
+            className="group bg-white text-gray-700 p-3 rounded-full shadow-lg border border-gray-200 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all duration-200 transform hover:scale-105"
             aria-label="Scroll to bottom"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+            <ChevronDown className="w-5 h-5 group-hover:animate-bounce" />
           </button>
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="bg-white/90 backdrop-blur-sm text-gray-600 text-sm px-4 py-2 rounded-full shadow-md flex items-center space-x-2">
+            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span>Đang tải tin nhắn...</span>
+          </div>
         </div>
       )}
 
@@ -235,18 +265,18 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
             messageSwipeRef.current = el as HTMLElement
           }
         }}
-        className="h-full overflow-y-auto p-3 sm:p-4"
+        className="h-full overflow-y-auto p-4 sm:p-6"
         style={{
           WebkitOverflowScrolling: "touch",
+          scrollBehavior: "smooth",
         }}
         onScroll={handleScroll}
       >
-        {/* Message groups */}
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-6">
           {messageGroups.map((group, groupIndex) => (
-            <div key={group.date}>
+            <div key={group.date} className="animate-fade-in">
               <DateDivider date={new Date(group.date)} customLabel={formatDateLabel(new Date(group.date))} />
-              <div className="space-y-1 sm:space-y-2">
+              <div className="space-y-2 mt-4">
                 {group.messages.map((message, messageIndex) => {
                   const prevMessage = messageIndex > 0 ? group.messages[messageIndex - 1] : null
                   const isGrouped =
@@ -254,12 +284,14 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
                     new Date(message.sendTime).getTime() - new Date(prevMessage.sendTime).getTime() < 300000 // 5 minutes
 
                   return (
-                    <MessageItem
+                    <div
                       key={message.clientMsgID}
-                      message={message}
-                      isGrouped={isGrouped}
-                      onImageClick={handleImageClick}
-                    />
+                      className={`transform transition-all duration-300 ${
+                        newMessageAnimation === message.clientMsgID ? "animate-slide-up scale-105" : "animate-fade-in"
+                      }`}
+                    >
+                      <MessageItem message={message} isGrouped={isGrouped} onImageClick={handleImageClick} />
+                    </div>
                   )
                 })}
               </div>
@@ -267,8 +299,14 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
           ))}
         </div>
 
-        {/* Typing indicator */}
-        {conversationId && <TypingIndicator conversationId={conversationId} />}
+        {conversationId && (
+          <div className="mt-4">
+            <TypingIndicator conversationId={conversationId} />
+          </div>
+        )}
+
+        {/* Bottom padding for better scroll experience */}
+        <div className="h-4"></div>
       </div>
 
       {/* Image Preview Modal */}
