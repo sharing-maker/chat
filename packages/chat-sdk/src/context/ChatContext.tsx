@@ -24,7 +24,6 @@ export const ChatProvider = ({
     })
   }
 
-export const ChatProvider = ({ children, config }: ChatProviderProps) => {
   const handleLogin = () => {
     DChatSDK.login(config as InitAndLoginConfig).then((res) => {
       getUserInfo()
@@ -33,11 +32,11 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
       console.log('login', errCode, errMsg)
     })
   }
-  
+
   useEffect(() => {
     handleLogin()
   }, [config])
-  
+
   return (
     <ChatContext.Provider value={{ user }}>
       {!loading ? children : null}

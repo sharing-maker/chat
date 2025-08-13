@@ -3,12 +3,15 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Sidebar from "../common/Sidebar";
+import { ChatProvider } from "@droppii-org/chat-sdk";
+import { useChatSdkSetup } from "@web/hook/chat";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
+  const { chatConfigProps } = useChatSdkSetup()
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
@@ -38,9 +41,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }
 
   return (
-    <div>
+    <ChatProvider config={chatConfigProps}>
       {shouldShowSidebar && <Sidebar />}
       <div>{children}</div>
-    </div>
+    </ChatProvider>
   );
 }

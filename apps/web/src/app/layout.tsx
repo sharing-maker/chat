@@ -1,7 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ChatProvider } from "@droppii-org/chat-sdk";
 import MainLayout from "@web/components/layouts/MainLayout";
 import "./globals.css";
 
@@ -24,17 +23,7 @@ export default function RootLayout({
         <script src="/wasm_exec.js" />
       </head>
       <body className={inter.className}>
-        <ChatProvider
-          config={{
-            userID: "user-123",
-            platformID: 1, // Use number for platform ID
-            apiAddr: "http://localhost:3000",
-            wsAddr: "ws://localhost:3000",
-            token: "demo-token",
-          }}
-        >
-          <MainLayout>{children}</MainLayout>
-        </ChatProvider>
+        <MainLayout>{children}</MainLayout>
       </body>
     </html>
   );
