@@ -512,33 +512,115 @@ export default function MessageList({ conversationId, currentUserId = "user123" 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-gray-200 bg-white">
-        <div className="flex items-end space-x-3">
-          <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-all">
-            <Paperclip size={20} />
-          </button>
-          <div className="flex-1 relative">
-            <textarea
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              rows={1}
-              style={{ minHeight: "44px", maxHeight: "120px" }}
-            />
+      {/* Enhanced Input */}
+      <div className="p-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-end space-x-3 bg-white rounded-2xl shadow-lg border border-gray-200 p-2">
+            {/* Attachment Button */}
+            <div className="relative">
+              <button
+                className="p-2.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
+                title="Attach file"
+              >
+                <Paperclip size={20} className="group-hover:rotate-12 transition-transform" />
+              </button>
+              {/* Hidden file input */}
+              <input
+                type="file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                multiple
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+                onChange={(e) => {
+                  // Handle file upload
+                  console.log("Files selected:", e.target.files)
+                }}
+              />
+            </div>
+
+            {/* Input Container */}
+            <div className="flex-1 relative">
+              <textarea
+                value={newMessage}
+                onChange={(e) => {
+                  setNewMessage(e.target.value)
+                  // Auto-resize textarea
+                  e.target.style.height = "auto"
+                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"
+                }}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="w-full px-4 py-3 bg-transparent border-none resize-none focus:outline-none placeholder-gray-400 text-gray-900 leading-relaxed"
+                rows={1}
+                style={{
+                  minHeight: "44px",
+                  maxHeight: "120px",
+                  scrollbarWidth: "thin",
+                }}
+              />
+
+              {/* Character count for long messages */}
+              {newMessage.length > 100 && (
+                <div className="absolute bottom-1 right-2 text-xs text-gray-400">{newMessage.length}/1000</div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-1">
+              {/* Emoji Button */}
+              <button
+                className="p-2.5 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-xl transition-all duration-200 group"
+                title="Add emoji"
+              >
+                <Smile size={20} className="group-hover:scale-110 transition-transform" />
+              </button>
+
+              {/* Voice Message Button */}
+              <button
+                className="p-2.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200 group"
+                title="Voice message"
+              >
+                <Volume2 size={20} className="group-hover:scale-110 transition-transform" />
+              </button>
+
+              {/* Send Button */}
+              <button
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim()}
+                className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:hover:scale-100"
+                title="Send message"
+              >
+                <Send size={18} className="transform rotate-0 hover:rotate-12 transition-transform" />
+              </button>
+            </div>
           </div>
-          <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-all">
-            <Smile size={20} />
-          </button>
-          <button
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
-            className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-          >
-            <Send size={18} />
-          </button>
+
+          <div className="flex items-center justify-between mt-3 px-2">
+            <div className="flex items-center space-x-4">
+              {/* Quick Actions */}
+              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                <ImageIcon size={16} />
+                <span>Photo</span>
+              </button>
+              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all">
+                <FileText size={16} />
+                <span>File</span>
+              </button>
+              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                <MapPin size={16} />
+                <span>Location</span>
+              </button>
+            </div>
+
+            {/* Typing Status */}
+            <div className="text-xs text-gray-400">
+              {newMessage.length > 0 && (
+                <span className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>Typing...</span>
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
