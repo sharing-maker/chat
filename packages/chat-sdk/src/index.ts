@@ -35,14 +35,5 @@ export { Icon } from "./components/Icon"
 //Screens
 export { DChatDeskMessage }
 
-// Types
-export {
-  User,
-  Message,
-  Conversation,
-  TypingStatus,
-  ChatConfig,
-  MessageItemProps,
-} from "./types"
 
 export * from "./types/sdk"
