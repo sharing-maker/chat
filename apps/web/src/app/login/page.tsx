@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
-import Button from "../../components/common/Button";
-import Input from "../../components/common/Input";
+import { Button } from "@web/components/common/Button";
+import { Input } from "@web/components/common/Input";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");

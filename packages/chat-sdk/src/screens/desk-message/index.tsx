@@ -1,23 +1,26 @@
-"use client"
+"use client";
 
-import MessageList from "../../components/message/MessageList"
-import DeskConversationList from "../../components/conversation/DeskConversationList"
-import { useConversationDetail } from "@chat-sdk/hooks/conversation/useConversation"
-import { SessionType } from "@openim/wasm-client-sdk"
+import MessageList from "../../components/message/MessageList";
+import DeskConversationList from "../../components/conversation/DeskConversationList";
+import { useConversationDetail } from "../../hooks/conversation/useConversation";
+import { SessionType } from "@openim/wasm-client-sdk";
 
 const DChatDeskMessage = () => {
   const { conversationDetail } = useConversationDetail({
-    sourceID: '3408237279',
-    sessionType: SessionType.Group
-  })
+    sourceID: "3408237279",
+    sessionType: SessionType.Group,
+  });
   return (
     <div className="flex flex-row h-screen bg-gray-50">
       <DeskConversationList />
       <div className="flex-1 flex flex-col">
-        <MessageList conversationId="sg_3408237279" conversationData={conversationDetail} />
+        <MessageList
+          conversationId="sg_3408237279"
+          conversationData={conversationDetail}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DChatDeskMessage
+export default DChatDeskMessage;

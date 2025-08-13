@@ -11,7 +11,7 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { chatConfigProps } = useChatSdkSetup()
+  const { chatConfigProps } = useChatSdkSetup();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
