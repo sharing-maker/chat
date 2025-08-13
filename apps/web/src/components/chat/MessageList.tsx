@@ -513,114 +513,76 @@ export default function MessageList({ conversationId, currentUserId = "user123" 
       </div>
 
       {/* Enhanced Input */}
-      <div className="p-4 border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-end space-x-3 bg-white rounded-2xl shadow-lg border border-gray-200 p-2">
-            {/* Attachment Button */}
-            <div className="relative">
-              <button
-                className="p-2.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
-                title="Attach file"
-              >
-                <Paperclip size={20} className="group-hover:rotate-12 transition-transform" />
-              </button>
-              {/* Hidden file input */}
-              <input
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                multiple
-                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
-                onChange={(e) => {
-                  // Handle file upload
-                  console.log("Files selected:", e.target.files)
-                }}
-              />
-            </div>
-
-            {/* Input Container */}
-            <div className="flex-1 relative">
-              <textarea
-                value={newMessage}
-                onChange={(e) => {
-                  setNewMessage(e.target.value)
-                  // Auto-resize textarea
-                  e.target.style.height = "auto"
-                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"
-                }}
-                onKeyPress={handleKeyPress}
-                placeholder="Type your message..."
-                className="w-full px-4 py-3 bg-transparent border-none resize-none focus:outline-none placeholder-gray-400 text-gray-900 leading-relaxed"
-                rows={1}
-                style={{
-                  minHeight: "44px",
-                  maxHeight: "120px",
-                  scrollbarWidth: "thin",
-                }}
-              />
-
-              {/* Character count for long messages */}
-              {newMessage.length > 100 && (
-                <div className="absolute bottom-1 right-2 text-xs text-gray-400">{newMessage.length}/1000</div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-1">
-              {/* Emoji Button */}
-              <button
-                className="p-2.5 text-gray-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-xl transition-all duration-200 group"
-                title="Add emoji"
-              >
-                <Smile size={20} className="group-hover:scale-110 transition-transform" />
+      <div className="p-4 border-t border-gray-200 bg-white">
+        <div className="flex items-center space-x-3">
+          {/* Input Container with action buttons inside */}
+          <div className="flex-1 flex items-center bg-gray-50 rounded-full border border-gray-200 px-4 py-2">
+            {/* Action Buttons Row */}
+            <div className="flex items-center space-x-3 mr-3">
+              {/* Text Formatting */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Text formatting">
+                <span className="text-sm font-bold">T</span>
               </button>
 
-              {/* Voice Message Button */}
-              <button
-                className="p-2.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200 group"
-                title="Voice message"
-              >
-                <Volume2 size={20} className="group-hover:scale-110 transition-transform" />
+              {/* Emoji */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Emoji">
+                <Smile size={16} />
               </button>
 
-              {/* Send Button */}
-              <button
-                onClick={handleSendMessage}
-                disabled={!newMessage.trim()}
-                className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 disabled:hover:scale-100"
-                title="Send message"
-              >
-                <Send size={18} className="transform rotate-0 hover:rotate-12 transition-transform" />
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between mt-3 px-2">
-            <div className="flex items-center space-x-4">
-              {/* Quick Actions */}
-              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+              {/* Image */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Image">
                 <ImageIcon size={16} />
-                <span>Photo</span>
               </button>
-              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all">
-                <FileText size={16} />
-                <span>File</span>
+
+              {/* Attachment */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Attachment">
+                <Paperclip size={16} />
               </button>
-              <button className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                <MapPin size={16} />
-                <span>Location</span>
+
+              {/* Link */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              </button>
+
+              {/* Contact */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Contact">
+                <User size={16} />
+              </button>
+
+              {/* Microphone */}
+              <button className="p-1 text-gray-500 hover:text-gray-700 transition-colors" title="Voice message">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" />
+                </svg>
               </button>
             </div>
 
-            {/* Typing Status */}
-            <div className="text-xs text-gray-400">
-              {newMessage.length > 0 && (
-                <span className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>Typing...</span>
-                </span>
-              )}
-            </div>
+            {/* Input Field */}
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Nhập tin nhắn"
+              className="flex-1 bg-transparent border-none focus:outline-none placeholder-gray-400 text-gray-900 text-sm"
+            />
           </div>
+
+          {/* Send Button */}
+          <button
+            onClick={handleSendMessage}
+            disabled={!newMessage.trim()}
+            className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+            title="Send message"
+          >
+            <Send size={18} />
+          </button>
         </div>
       </div>
     </div>
