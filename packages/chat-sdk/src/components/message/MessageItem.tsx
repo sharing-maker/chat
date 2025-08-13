@@ -55,7 +55,6 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
     }
   }
 
-  // Render text message
   const renderTextMessage = () => {
     const content = message.textElem?.content || ""
     const linkRegex = /(https?:\/\/[^\s]+)/g
@@ -63,11 +62,11 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
 
     return (
       <div
-        className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl max-w-full break-words ${
-          isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+        className={`px-4 py-3 rounded-2xl max-w-full break-words shadow-sm ${
+          isOwnMessage ? "bg-blue-500 text-white rounded-br-md" : "bg-gray-100 text-gray-900 rounded-bl-md"
         } ${isGrouped ? (isOwnMessage ? "rounded-tr-md" : "rounded-tl-md") : ""}`}
       >
-        <p className="text-sm sm:text-base whitespace-pre-wrap">
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">
           {parts.map((part, index) =>
             linkRegex.test(part) ? (
               <a
@@ -88,7 +87,6 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
     )
   }
 
-  // Render image message
   const renderImageMessage = () => {
     const imageElem = message.pictureElem
     if (!imageElem) return null
@@ -97,7 +95,7 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
     if (!imageUrl) return null
 
     return (
-      <div className="relative rounded-lg overflow-hidden max-w-xs">
+      <div className="relative rounded-2xl overflow-hidden max-w-xs shadow-sm">
         <Image
           src={imageUrl || "/placeholder.svg"}
           alt="Image message"
@@ -108,8 +106,8 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
             onImageClick?.(message.clientMsgID, [{ id: message.clientMsgID, url: imageUrl, name: "Image" }])
           }
         />
-        <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-          <span className="text-white text-xs font-medium p-1 rounded bg-black/50">Xem ảnh</span>
+        <div className="absolute inset-0 bg-black/0 hover:bg-black/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-all">
+          <span className="text-white text-xs font-medium px-2 py-1 rounded bg-black/50">Xem ảnh</span>
         </div>
       </div>
     )
@@ -127,6 +125,30 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
           <Video className="w-3 h-3 inline mr-1" />
           {Math.floor(videoElem.duration / 60)}:{(videoElem.duration % 60).toString().padStart(2, "0")}
         </div>
+      </div>
+    )
+  }
+
+  const renderFileMessage = () => {
+    const fileElem = message.fileElem
+    if (!fileElem) return null
+
+    return (
+      <div
+        className={`flex items-center space-x-3 px-4 py-3 rounded-2xl max-w-xs shadow-sm ${
+          isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
+        }`}
+      >
+        <div className={`p-2 rounded-lg ${isOwnMessage ? "bg-blue-400" : "bg-white"}`}>
+          <FileText className={`w-5 h-5 ${isOwnMessage ? "text-white" : "text-gray-600"}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium truncate">{fileElem.fileName}</p>
+          <p className="text-xs opacity-75">{formatFileSize(fileElem.fileSize)}</p>
+        </div>
+        <a href={fileElem.sourceUrl} download={fileElem.fileName} className="flex-shrink-0 hover:opacity-75">
+          <Download className="w-4 h-4" />
+        </a>
       </div>
     )
   }
@@ -152,29 +174,6 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
           <audio src={soundElem.sourceUrl} controls className="w-full" />
         </div>
         <div className="text-xs opacity-75">{soundElem.duration}s</div>
-      </div>
-    )
-  }
-
-  // Render file message
-  const renderFileMessage = () => {
-    const fileElem = message.fileElem
-    if (!fileElem) return null
-
-    return (
-      <div
-        className={`flex items-center space-x-3 px-4 py-3 rounded-2xl max-w-xs ${
-          isOwnMessage ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-900"
-        }`}
-      >
-        <FileText className="w-6 h-6 flex-shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{fileElem.fileName}</p>
-          <p className="text-xs opacity-75">{formatFileSize(fileElem.fileSize)}</p>
-        </div>
-        <a href={fileElem.sourceUrl} download={fileElem.fileName} className="flex-shrink-0 hover:opacity-75">
-          <Download className="w-4 h-4" />
-        </a>
       </div>
     )
   }
@@ -284,31 +283,23 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
   }
 
   return (
-    <div
-      className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} ${
-        isGrouped ? "mt-0.5 sm:mt-1" : "mt-3 sm:mt-4"
-      }`}
-    >
-      <div
-        className={`flex items-end space-x-2 max-w-[85%] sm:max-w-xs lg:max-w-md ${
-          isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
-        }`}
-      >
+    <div className={`flex ${isOwnMessage ? "justify-end" : "justify-start"} ${isGrouped ? "mt-1" : "mt-4"}`}>
+      <div className={`flex items-end space-x-2 max-w-[75%] ${isOwnMessage ? "flex-row-reverse space-x-reverse" : ""}`}>
         {!isOwnMessage && !isGrouped && (
           <img
             src={message.senderFaceUrl || "/placeholder.svg?height=32&width=32&query=user"}
             alt={message.senderNickname || "User"}
-            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
+            className="w-8 h-8 rounded-full object-cover flex-shrink-0 border border-gray-200"
           />
         )}
 
-        {!isOwnMessage && isGrouped && (
-          <div className="w-6 sm:w-8 flex-shrink-0" /> // Spacer for grouped messages
-        )}
+        {!isOwnMessage && isGrouped && <div className="w-8 flex-shrink-0" />}
 
         <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}>
           {!isGrouped && !isOwnMessage && (
-            <span className="text-xs text-gray-500 mb-1 px-3">{message.senderNickname || "Unknown User"}</span>
+            <span className="text-xs text-gray-500 mb-1 px-2 font-medium">
+              {message.senderNickname || "Unknown User"}
+            </span>
           )}
 
           {renderMessageContent()}
@@ -318,8 +309,8 @@ export function MessageItem({ message, isGrouped = false, onImageClick }: Messag
               isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
             }`}
           >
-            <span className="text-xs text-gray-500">{formatTime(message.sendTime)}</span>
-            {isOwnMessage && getMessageStatus()}
+            <span className="text-xs text-gray-400">{formatTime(message.sendTime)}</span>
+            {isOwnMessage && <div className="flex-shrink-0">{getMessageStatus()}</div>}
           </div>
         </div>
       </div>
