@@ -1,11 +1,13 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { ConversationList } from "./ConversationList"
 import { ChatHeader } from "./ChatHeader"
 import { MessageList } from "./MessageList"
 import { ChatInput } from "./ChatInput"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 import { useSwipeGesture } from "../hooks/useSwipeGesture"
 import { useMessages } from "../hooks/useMessages"
 
@@ -14,9 +16,9 @@ interface ChatLayoutProps {
 }
 
 export function ChatLayout({ className = "" }: ChatLayoutProps) {
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>('conv-1')
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>("conv-1")
   const [showSidebar, setShowSidebar] = useState(false)
-  const { state } = useChatContext()
+  const context = useChatContext()
   const messagesHook = useMessages(selectedConversationId || "")
 
   const handleConversationSelect = (conversationId: string) => {
@@ -65,12 +67,10 @@ export function ChatLayout({ className = "" }: ChatLayoutProps) {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
             <div className="flex items-center space-x-2">
-              {!state.isConnected && (
-                <div className="flex items-center text-xs text-gray-500">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
-                  <span className="hidden sm:inline">Demo Mode</span>
-                </div>
-              )}
+              <div className="flex items-center text-xs text-gray-500">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                <span className="hidden sm:inline">Connected</span>
+              </div>
               {/* Mobile close button */}
               <button
                 onClick={() => setShowSidebar(false)}
@@ -121,11 +121,9 @@ export function ChatLayout({ className = "" }: ChatLayoutProps) {
 
             {/* Message List - Scrollable */}
             <div className="flex-1 min-h-0">
-              {" "}
-              {/* Added min-h-0 here */}
               <MessageList
                 messages={messagesHook.messages}
-                currentUserId={state.config?.userId || ""}
+                currentUserId={context?.user?.userID || ""}
                 conversationId={selectedConversationId}
                 className="h-full"
               />
@@ -153,9 +151,7 @@ export function ChatLayout({ className = "" }: ChatLayoutProps) {
               <p className="text-gray-500 text-sm sm:text-base">
                 Choose a conversation from the sidebar to start messaging
               </p>
-              {!state.isConnected && (
-                <p className="text-xs text-gray-400 mt-2">Running in demo mode - WebSocket disabled</p>
-              )}
+              <p className="text-xs text-gray-400 mt-2">Connected to OpenIM SDK</p>
               <button
                 onClick={() => setShowSidebar(true)}
                 className="mt-4 md:hidden px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"

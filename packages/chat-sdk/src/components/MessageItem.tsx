@@ -1,13 +1,13 @@
 "use client"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 import type { MessageItemProps, DisplayMessage } from "../types"
 import { FileText, Download } from "lucide-react"
 import Image from "next/image"
 
 export function MessageItem({ message, isGrouped, onImageClick }: MessageItemProps) {
-  const { state } = useChatContext()
+  const context = useChatContext()
+  const user = context?.user
   const isOwnMessage = message.isMine
-  const sender = state.users[message.senderId]
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes"
@@ -153,8 +153,8 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
       >
         {message.type !== "promo" && !isOwnMessage && !isGrouped && (
           <img
-            src={sender?.avatar || "/placeholder.svg?height=32&width=32&query=user"}
-            alt={sender?.name || "User"}
+            src={user?.faceURL || "/placeholder.svg?height=32&width=32&query=user"}
+            alt={user?.nickname || "User"}
             className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover flex-shrink-0"
           />
         )}
@@ -165,7 +165,7 @@ export function MessageItem({ message, isGrouped, onImageClick }: MessageItemPro
 
         <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}>
           {message.type !== "promo" && !isGrouped && !isOwnMessage && (
-            <span className="text-xs text-gray-500 mb-1 px-3">{sender?.name || "Unknown User"}</span>
+            <span className="text-xs text-gray-500 mb-1 px-3">{user?.nickname || "Unknown User"}</span>
           )}
 
           {message.type === "text" && renderTextMessage(message)}

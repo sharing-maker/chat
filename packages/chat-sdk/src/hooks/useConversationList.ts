@@ -1,11 +1,11 @@
 "use client"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 
 export function useConversationList() {
-  const { state } = useChatContext()
+  const context = useChatContext()
 
   return {
-    conversations: state.conversations || [],
+    conversations: [], // Empty for now, will be populated with real OpenIM SDK data
     isLoading: false,
   }
 }

@@ -1,21 +1,22 @@
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 import { useSocket } from "./useSocket"
 
 export function useTyping(conversationId: string) {
-  const { state } = useChatContext()
+  const context = useChatContext()
+  const user = context?.user
   const { sendMessage } = useSocket()
   const typingTimeoutRef = useRef<NodeJS.Timeout>()
 
   const startTyping = useCallback(() => {
-    if (!state.config?.userId || !conversationId) return
+    if (!user?.userID || !conversationId) return
 
     sendMessage({
       type: "typing",
       data: {
-        userId: state.config.userId,
+        userId: user.userID,
         conversationId,
         isTyping: true,
       },
@@ -30,15 +31,15 @@ export function useTyping(conversationId: string) {
     typingTimeoutRef.current = setTimeout(() => {
       stopTyping()
     }, 3000)
-  }, [state.config?.userId, conversationId, sendMessage])
+  }, [user?.userID, conversationId, sendMessage])
 
   const stopTyping = useCallback(() => {
-    if (!state.config?.userId || !conversationId) return
+    if (!user?.userID || !conversationId) return
 
     sendMessage({
       type: "typing",
       data: {
-        userId: state.config.userId,
+        userId: user.userID,
         conversationId,
         isTyping: false,
       },
@@ -47,12 +48,10 @@ export function useTyping(conversationId: string) {
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
-  }, [state.config?.userId, conversationId, sendMessage])
+  }, [user?.userID, conversationId, sendMessage])
 
-  const typingUsers = state.typingStatuses
-    .filter((t) => t.conversationId === conversationId && t.userId !== state.config?.userId && t.isTyping)
-    .map((t) => state.users[t.userId])
-    .filter(Boolean)
+  // For now, return empty typing users - will be integrated with OpenIM SDK
+  const typingUsers: any[] = []
 
   useEffect(() => {
     return () => {

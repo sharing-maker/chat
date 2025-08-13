@@ -1,6 +1,6 @@
 "use client"
 import type { Conversation } from "../types"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 
 interface ConversationItemProps {
   conversation: Conversation
@@ -9,10 +9,11 @@ interface ConversationItemProps {
 }
 
 export function ConversationItem({ conversation, isSelected, onClick }: ConversationItemProps) {
-  const { state } = useChatContext()
+  const context = useChatContext()
+  const user = context?.user
 
   // Get the other participant (not the current user)
-  const otherParticipant = conversation.participants.find((p) => p.id !== state.config?.userId)
+  const otherParticipant = conversation.participants.find((p) => p.id !== user?.userID)
 
   const formatTime = (date: Date) => {
     const now = new Date()

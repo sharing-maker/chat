@@ -1,5 +1,5 @@
 "use client"
-import { useChatContext } from "../context/ChatContextOld"
+import { useChatContext } from "../context/ChatContext"
 
 interface ChatHeaderProps {
   conversationId: string
@@ -8,33 +8,10 @@ interface ChatHeaderProps {
 }
 
 export function ChatHeader({ conversationId, onBackClick, onMenuClick }: ChatHeaderProps) {
-  const { state } = useChatContext()
+  const context = useChatContext()
+  const user = context?.user
 
-  const conversation = state.conversations.find((c) => c.id === conversationId)
-  const otherParticipant = conversation?.participants.find((p) => p.id !== state.config?.userId)
-
-  if (!conversation || !otherParticipant) {
-    return null
-  }
-
-  const getStatusText = () => {
-    if (otherParticipant.status === "online") {
-      return "Online"
-    } else if (otherParticipant.lastSeen) {
-      const now = new Date()
-      const diff = now.getTime() - otherParticipant.lastSeen.getTime()
-      const minutes = Math.floor(diff / (1000 * 60))
-      const hours = Math.floor(minutes / 60)
-      const days = Math.floor(hours / 24)
-
-      if (minutes < 1) return "Last seen just now"
-      if (minutes < 60) return `Last seen ${minutes}m ago`
-      if (hours < 24) return `Last seen ${hours}h ago`
-      return `Last seen ${days}d ago`
-    }
-    return "Offline"
-  }
-
+  // This component now shows basic user info instead of conversation details
   return (
     <div className="flex items-center p-3 sm:p-4 border-b border-gray-200 bg-white relative">
       {/* Mobile back button with enhanced touch area */}
@@ -50,23 +27,16 @@ export function ChatHeader({ conversationId, onBackClick, onMenuClick }: ChatHea
 
       <div className="relative">
         <img
-          src={otherParticipant.avatar || "/placeholder.svg?height=40&width=40&query=user"}
-          alt={otherParticipant.name}
+          src={user?.faceURL || "/placeholder.svg?height=40&width=40&query=user"}
+          alt={user?.nickname || "User"}
           className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
         />
-        {otherParticipant.status === "online" && (
-          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white"></div>
-        )}
+        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white"></div>
       </div>
 
       <div className="ml-3 flex-1 min-w-0">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{otherParticipant.name}</h2>
-        <p className="text-xs sm:text-sm text-gray-500 truncate">{getStatusText()}</p>
-      </div>
-
-      {/* Swipe hint for first-time users */}
-      <div className="md:hidden absolute top-full left-0 right-0 bg-blue-50 border-b border-blue-100 px-4 py-2 text-xs text-blue-600 text-center animate-pulse swipe-tutorial">
-        💡 Tip: Swipe right anywhere to go back
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{user?.nickname || "Chat"}</h2>
+        <p className="text-xs sm:text-sm text-gray-500 truncate">Online</p>
       </div>
 
       <div className="flex items-center space-x-1 sm:space-x-2">
