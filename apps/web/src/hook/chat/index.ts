@@ -1,11 +1,11 @@
-import { DChatConfigProps, DChatPlatform } from "@droppii-org/chat-sdk";
+import { DChatConfigProps } from "@droppii-org/chat-sdk";
 import { useMemo } from "react";
 
 export const useChatSdkSetup = () => {
 
   const chatConfigProps: DChatConfigProps = useMemo(() => {
     return {
-      platformID: DChatPlatform.Web,
+      platformID: 5,
       apiAddr: "https://apistg.droppii.com/chat-service",
       wsAddr: "wss://apistg.droppii.com/chat-service/ws",
       userID: "3526966997",
