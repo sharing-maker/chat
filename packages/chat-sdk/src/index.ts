@@ -43,8 +43,6 @@ export type {
   TypingStatus,
   ChatConfig,
   MessageItemProps,
-  DChatConfigProps,
-  DChatPlatform,
-  DChatLogLevel,
-  SessionType,
 } from "./types"
+
+export * from "./types/sdk";
