@@ -20,9 +20,6 @@
     "version-packages": "changeset version"
   },
   "dependencies": {
-    "@chat-sdk/types": "latest",
-    "@droppii-org/chat-sdk": "latest",
-    "@openim/wasm-client-sdk": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
