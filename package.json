@@ -20,7 +20,9 @@
     "version-packages": "changeset version"
   },
   "dependencies": {
+    "@chat-sdk/types": "latest",
     "@droppii-org/chat-sdk": "latest",
+    "@openim/wasm-client-sdk": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
@@ -63,6 +65,7 @@
     "react-day-picker": "latest",
     "react-dom": "^18",
     "react-hook-form": "latest",
+    "react-icomoon": "latest",
     "react-resizable-panels": "latest",
     "recharts": "latest",
     "shadcn": "latest",
@@ -86,7 +89,7 @@
     "turbo": "^1.10.12",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@9.15.5",
+  "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
   }
