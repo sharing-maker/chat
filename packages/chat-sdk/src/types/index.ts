@@ -1,4 +1,5 @@
-export type MessageStatus = "sending" | "sent" | "delivered" | "read"
+export const MessageStatus = ["sending", "sent", "delivered", "read"] as const
+export type MessageStatusType = (typeof MessageStatus)[number]
 
 export interface User {
   id: string
@@ -14,9 +15,9 @@ export interface Message {
   conversationId: string
   senderId: string
   content: string
-  type: "text" | "image" | "file" | "promo"// Keep existing types for internal data model
+  type: "text" | "image" | "file" | "promo" // Keep existing types for internal data model
   timestamp: Date
-  status: MessageStatus
+  status: MessageStatusType
   attachments?: Attachment[]
   promoData?: PromotionalMessageData // Added promoData here for internal Message type
 }
@@ -60,7 +61,7 @@ export interface SocketMessage {
 }
 
 // New types for MessageItem component's props
-export type MessageAttachment = {
+export interface MessageAttachment {
   id: string // Added ID for image preview modal
   type: "image" | "file"
   url: string
@@ -68,7 +69,7 @@ export type MessageAttachment = {
   size?: number
 }
 
-export type PromotionalMessageData = {
+export interface PromotionalMessageData {
   imageUrl: string
   title: string
   description: string
@@ -76,7 +77,7 @@ export type PromotionalMessageData = {
   buttonUrl: string
 }
 
-export type DisplayMessage = {
+export interface DisplayMessage {
   id: string
   senderId: string
   type: "text" | "media" | "promo" // Updated type for display
@@ -87,7 +88,7 @@ export type DisplayMessage = {
   isMine: boolean
 }
 
-export type MessageItemProps = {
+export interface MessageItemProps {
   message: DisplayMessage
   isGrouped?: boolean
   onImageClick?: (imageId: string, images: { id: string; url: string; name?: string }[]) => void // New prop

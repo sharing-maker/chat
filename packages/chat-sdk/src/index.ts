@@ -36,7 +36,7 @@ export { Icon } from "./components/Icon"
 export { DChatDeskMessage }
 
 // Types
-export type {
+export {
   User,
   Message,
   Conversation,
@@ -45,4 +45,4 @@ export type {
   MessageItemProps,
 } from "./types"
 
-export * from "./types/sdk";
+export * from "./types/sdk"
