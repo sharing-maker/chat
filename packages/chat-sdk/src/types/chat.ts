@@ -1,5 +1,6 @@
 import type React from "react" // Import React for React.Ref
 import { DChatConfigProps } from "./sdk"
+import { SelfUserInfo } from "@openim/wasm-client-sdk"
 
 export interface ChatInputProps {
   onSendMessage?: (message: string) => void
@@ -43,7 +44,7 @@ export interface TextFormattingToolbarProps {
 }
 
 export interface ChatContextType {
-
+  user?: SelfUserInfo
 }
 
 export interface ChatProviderProps {

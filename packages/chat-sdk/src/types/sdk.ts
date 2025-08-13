@@ -17,6 +17,12 @@ export enum DChatLogLevel {
   Debug,
 }
 
+export enum SessionType {
+  Single = 1,
+  Group = 3,
+  Notification = 4,
+}
+
 export interface DChatConfigProps {
   platformID: DChatPlatform;
   apiAddr: string;

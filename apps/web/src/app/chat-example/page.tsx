@@ -1,6 +1,6 @@
 "use client"
 
-import { ChatProvider } from "@droppii-org/chat-sdk"
+import { ChatProvider, DChatDeskMessage } from "@droppii-org/chat-sdk"
 import { useChatSdkSetup } from "@web/hook/chat"
 
 
@@ -13,7 +13,7 @@ export default function ChatDemo() {
         config={chatConfigProps}
       >
         <div className="h-full">
-          <p>Version: 0.0.2</p>
+          <DChatDeskMessage />
         </div>
       </ChatProvider>
     </div>

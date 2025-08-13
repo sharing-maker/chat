@@ -1,17 +1,15 @@
-import { createContext, useContext, useEffect } from "react"
-import { getSDK, InitAndLoginConfig } from '@openim/wasm-client-sdk';
+import { createContext, useContext, useEffect, useState } from "react"
+import { getSDK, InitAndLoginConfig, SelfUserInfo } from '@openim/wasm-client-sdk';
 import { ChatContextType, ChatProviderProps } from "@chat-sdk/types/chat";
 const DChatSDK = getSDK();
 
-export const ChatContext = createContext<ChatContextType | undefined>(
-  undefined
-);
+export const ChatContext = createContext<ChatContextType | undefined>({
+  user: undefined,
+});
 
 export const useChatContext = () => {
   const context = useContext(ChatContext)
-  // if (!context) {
-  //   throw new Error("useChatContext must be used within a ChatProvider")
-  // }
+
   return context
 }
 
@@ -19,9 +17,24 @@ export const ChatProvider = ({
   children,
   config,
 }: ChatProviderProps) => {
+  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<SelfUserInfo | undefined>(undefined)
+
+  const getUserInfo = () => {
+    DChatSDK.getSelfUserInfo().then(({ data }) => {
+      setUser(data)
+    }).catch(({ errCode, errMsg }) => {
+      console.log('getSelfUserInfo', errCode, errMsg)
+    })
+  }
 
   const handleLogin = () => {
-    DChatSDK.login(config as InitAndLoginConfig)
+    DChatSDK.login(config as InitAndLoginConfig).then((res) => {
+      getUserInfo()
+      setLoading(false)
+    }).catch(({ errCode, errMsg }) => {
+      console.log('login', errCode, errMsg)
+    })
   }
   
   useEffect(() => {
@@ -29,8 +42,8 @@ export const ChatProvider = ({
   }, [config])
   
   return (
-    <ChatContext.Provider value={{}}>
-      {children}
+    <ChatContext.Provider value={{ user }}>
+      {!loading ? children : null}
     </ChatContext.Provider>
   )
 }

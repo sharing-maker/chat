@@ -1,3 +1,4 @@
+import DChatDeskMessage from "./screens/desk-message"
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
 
@@ -30,6 +31,11 @@ export { EmojiPicker } from "./components/EmojiPicker";
 export { ChatInputDemo } from "./components/ChatInputDemo";
 export { ImageLightbox } from "./components/ImageLightbox";
 export { Icon } from "./components/Icon";
+
+//Screens
+export {
+  DChatDeskMessage
+} 
 
 // Types
 export type {
