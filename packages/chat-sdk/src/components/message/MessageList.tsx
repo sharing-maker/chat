@@ -1,45 +1,40 @@
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
-// import { MessageItem } from "../MessageItem"
-// import { DateDivider } from "../DateDivider"
+import { MessageItem } from "./MessageItem"
+import { DateDivider } from "../DateDivider"
 import { TypingIndicator } from "../TypingIndicator"
-// import { AutoScrollAnchor } from "./AutoScrollAnchor" // Removed
 import { useSwipeGesture } from "../../hooks/useSwipeGesture"
-import { ImagePreviewModal } from "../ImagePreviewModal" // Import the new modal
+import { ImagePreviewModal } from "../ImagePreviewModal"
 import useMessage from "../../hooks/message/useMessage"
 import { useChatContext } from "../../context/ChatContext"
-import { MessageItem as MessageItemType } from "@openim/wasm-client-sdk"
+import type { MessageItem as MessageItemType } from "@openim/wasm-client-sdk"
 
 interface MessageListProps {
-  conversationId: string;
-  className?: string;
+  conversationId: string
+  className?: string
 }
 
-const MessageList = ({
-  conversationId,
-  className
-}: MessageListProps) => {
+const MessageList = ({ conversationId, className }: MessageListProps) => {
   const scrollRef = useRef<any>(null)
-  const shouldScrollToBottomRef = useRef(true) // New ref to control auto-scrolling
+  const shouldScrollToBottomRef = useRef(true)
   const { user } = useChatContext() || {}
   const { messageList: messages } = useMessage(conversationId)
-  const lastMessageCountRef = useRef(messages?.length || 0) // Add null check
+  const lastMessageCountRef = useRef(messages?.length || 0)
   const [showSwipeHint, setShowSwipeHint] = useState(false)
-  const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false) // State for button visibility
+  const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false)
 
   // State for ImagePreviewModal
   const [isImagePreviewModalOpen, setIsImagePreviewModalOpen] = useState(false)
   const [previewImages, setPreviewImages] = useState<{ id: string; url: string; name?: string }[]>([])
   const [initialPreviewImageId, setInitialPreviewImageId] = useState("")
-  
+
   // Swipe gesture for going back (secondary swipe area)
   const messageSwipeRef = useSwipeGesture({
     onSwipeRight: () => {
       if (window.innerWidth < 768) {
         setShowSwipeHint(true)
         setTimeout(() => setShowSwipeHint(false), 1500)
-        // onSwipeBack?.()
       }
     },
     threshold: 80,
@@ -53,7 +48,7 @@ const MessageList = ({
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
       if (force) {
-        shouldScrollToBottomRef.current = true // If forced, ensure auto-scroll is re-enabled
+        shouldScrollToBottomRef.current = true
       }
     }
   }, [])
@@ -65,8 +60,8 @@ const MessageList = ({
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
-    const SCROLL_UP_THRESHOLD = 200 // If user scrolls up more than 200px from bottom, disable auto-scroll
-    const SCROLL_DOWN_THRESHOLD = 5 // If user scrolls within 5px of bottom, re-enable auto-scroll
+    const SCROLL_UP_THRESHOLD = 200
+    const SCROLL_DOWN_THRESHOLD = 5
 
     if (distanceFromBottom > SCROLL_UP_THRESHOLD) {
       shouldScrollToBottomRef.current = false
@@ -74,7 +69,6 @@ const MessageList = ({
       shouldScrollToBottomRef.current = true
     }
 
-    // Show button if not at bottom AND auto-scroll is disabled
     setShowScrollToBottomButton(distanceFromBottom > SCROLL_DOWN_THRESHOLD && !shouldScrollToBottomRef.current)
   }, [])
 
@@ -87,24 +81,21 @@ const MessageList = ({
       const newMessages = messages?.slice(previousMessageCount)
       const hasNewMessageFromCurrentUser = newMessages?.some((msg) => msg.sendID === user?.userID)
 
-      // If current user sent a message, always scroll to bottom
-      // If another user sent a message, only scroll if shouldScrollToBottomRef is true (user is already at bottom)
       if (hasNewMessageFromCurrentUser) {
-        setTimeout(() => scrollToBottom(true), 50) // Force scroll for own messages
+        setTimeout(() => scrollToBottom(true), 50)
       } else if (shouldScrollToBottomRef.current) {
-        setTimeout(() => scrollToBottom(), 50) // Scroll if auto-scroll is enabled for others' messages
+        setTimeout(() => scrollToBottom(), 50)
       }
     }
 
     lastMessageCountRef.current = currentMessageCount
-  }, [messages, user?.userID, scrollToBottom]) // scrollToBottom is a dependency because it's called here
+  }, [messages, user?.userID, scrollToBottom])
 
   // Attach and detach scroll listener
   useEffect(() => {
     const currentScrollRef = scrollRef.current
     if (currentScrollRef) {
       currentScrollRef.addEventListener("scroll", handleScroll)
-      // Initial check for button visibility
       handleScroll()
     }
 
@@ -113,32 +104,7 @@ const MessageList = ({
         currentScrollRef.removeEventListener("scroll", handleScroll)
       }
     }
-  }, [handleScroll]) // Re-attach if handleScroll changes (due to useCallback dependencies)
-
-  // Preserve scroll position when loading more messages
-  // useEffect(() => {
-  //   if (isLoadingMore) return
-
-  //   const scrollContainer = scrollRef.current
-  //   if (!scrollContainer) return
-
-  //   // Save current scroll position
-  //   const previousScrollHeight = scrollContainer.scrollHeight
-  //   const previousScrollTop = scrollContainer.scrollTop
-
-  //   // After new messages are loaded, adjust scroll position
-  //   const adjustScrollPosition = () => {
-  //     const newScrollHeight = scrollContainer.scrollHeight
-  //     const heightDifference = newScrollHeight - previousScrollHeight
-
-  //     if (heightDifference > 0) {
-  //       scrollContainer.scrollTop = previousScrollTop + heightDifference
-  //     }
-  //   }
-
-  //   // Use setTimeout to ensure DOM has updated
-  //   setTimeout(adjustScrollPosition, 0)
-  // }, [isLoadingMore])
+  }, [handleScroll])
 
   // Show swipe hint on first load for mobile users
   useEffect(() => {
@@ -271,31 +237,12 @@ const MessageList = ({
         }}
         className="h-full overflow-y-auto p-3 sm:p-4"
         style={{
-          WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS
+          WebkitOverflowScrolling: "touch",
         }}
         onScroll={handleScroll}
       >
-        {/* Loading more indicator */}
-        {/* {isLoadingMore && (
-          <div className="flex justify-center py-4">
-            <div className="flex items-center space-x-2 text-gray-500">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-              <span className="text-sm">Đang tải thêm tin nhắn...</span>
-            </div>
-          </div>
-        )} */}
-
-        {/* Load more button */}
-        {/* {hasMore && !isLoadingMore && (
-          <div className="flex justify-center py-4">
-            <button onClick={onLoadMore} className="text-blue-500 hover:text-blue-600 text-sm font-medium">
-              Tải thêm tin nhắn
-            </button>
-          </div>
-        )} */}
-
         {/* Message groups */}
-        {/* <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {messageGroups.map((group, groupIndex) => (
             <div key={group.date}>
               <DateDivider date={new Date(group.date)} customLabel={formatDateLabel(new Date(group.date))} />
@@ -308,20 +255,20 @@ const MessageList = ({
 
                   return (
                     <MessageItem
-                      key={message.id}
+                      key={message.clientMsgID}
                       message={message}
                       isGrouped={isGrouped}
-                      onImageClick={handleImageClick} // Pass the handler down
+                      onImageClick={handleImageClick}
                     />
                   )
                 })}
               </div>
             </div>
           ))}
-        </div> */}
+        </div>
 
         {/* Typing indicator */}
-        {/* {conversationId && <TypingIndicator conversationId={conversationId} />} */}
+        {conversationId && <TypingIndicator conversationId={conversationId} />}
       </div>
 
       {/* Image Preview Modal */}
