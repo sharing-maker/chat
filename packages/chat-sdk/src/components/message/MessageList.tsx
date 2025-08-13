@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { MessageItem } from "./MessageItem"
 import { DateDivider } from "../DateDivider"
 import { TypingIndicator } from "../TypingIndicator"
+import { ChatInput } from "../ChatInput" // Import ChatInput component
 import { useSwipeGesture } from "../../hooks/useSwipeGesture"
 import { ImagePreviewModal } from "../ImagePreviewModal"
 import useMessage from "../../hooks/message/useMessage"
@@ -191,20 +192,28 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
 
   if (!messages || messages.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-full bg-white ${className}`}>
-        <div className="text-center max-w-sm mx-auto px-6">
-          <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <MessageCircle className="w-8 h-8 text-gray-400" />
+      <div className={`flex flex-col h-screen bg-white ${className}`}>
+        {/* Empty state */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-sm mx-auto px-6">
+            <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <MessageCircle className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có tin nhắn nào</h3>
+            <p className="text-sm text-gray-500">Hãy bắt đầu cuộc trò chuyện bằng cách gửi tin nhắn đầu tiên.</p>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có tin nhắn nào</h3>
-          <p className="text-sm text-gray-500">Hãy bắt đầu cuộc trò chuyện bằng cách gửi tin nhắn đầu tiên.</p>
+        </div>
+
+        {/* Chat Input */}
+        <div className="flex-shrink-0">
+          <ChatInput conversationId={conversationId} placeholder="Nhập tin nhắn" />
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`relative h-full bg-white ${className}`}>
+    <div className={`flex flex-col h-screen bg-white ${className}`}>
       {showSwipeHint && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden">
           <div className="bg-gray-900 text-white text-sm px-4 py-2 rounded-full shadow-lg animate-fade-in">
@@ -214,7 +223,7 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
       )}
 
       {showScrollToBottomButton && (
-        <div className="absolute bottom-6 right-4 z-10">
+        <div className="absolute bottom-24 right-4 z-10">
           <button
             onClick={() => scrollToBottom(true)}
             className="bg-white text-gray-600 p-2 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
@@ -234,54 +243,61 @@ const MessageList = ({ conversationId, className }: MessageListProps) => {
         </div>
       )}
 
-      {/* Scrollable message container */}
-      <div
-        ref={(el) => {
-          scrollRef.current = el
-          if (messageSwipeRef.current !== el) {
-            messageSwipeRef.current = el as HTMLElement
-          }
-        }}
-        className="h-full overflow-y-auto px-4 py-6"
-        style={{
-          WebkitOverflowScrolling: "touch",
-          scrollBehavior: "smooth",
-        }}
-        onScroll={handleScroll}
-      >
-        <div className="space-y-6">
-          {messageGroups.map((group, groupIndex) => (
-            <div key={group.date}>
-              <DateDivider date={new Date(group.date)} customLabel={formatDateLabel(new Date(group.date))} />
-              <div className="space-y-1 mt-4">
-                {group.messages.map((message, messageIndex) => {
-                  const prevMessage = messageIndex > 0 ? group.messages[messageIndex - 1] : null
-                  const isGrouped =
-                    prevMessage?.sendID === message.sendID &&
-                    new Date(message.sendTime).getTime() - new Date(prevMessage.sendTime).getTime() < 300000 // 5 minutes
+      {/* Scrollable message container - takes remaining space */}
+      <div className="flex-1 relative">
+        <div
+          ref={(el) => {
+            scrollRef.current = el
+            if (messageSwipeRef.current !== el) {
+              messageSwipeRef.current = el as HTMLElement
+            }
+          }}
+          className="h-full overflow-y-auto px-4 py-6"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            scrollBehavior: "smooth",
+          }}
+          onScroll={handleScroll}
+        >
+          <div className="space-y-6">
+            {messageGroups.map((group, groupIndex) => (
+              <div key={group.date}>
+                <DateDivider date={new Date(group.date)} customLabel={formatDateLabel(new Date(group.date))} />
+                <div className="space-y-1 mt-4">
+                  {group.messages.map((message, messageIndex) => {
+                    const prevMessage = messageIndex > 0 ? group.messages[messageIndex - 1] : null
+                    const isGrouped =
+                      prevMessage?.sendID === message.sendID &&
+                      new Date(message.sendTime).getTime() - new Date(prevMessage.sendTime).getTime() < 300000 // 5 minutes
 
-                  return (
-                    <MessageItem
-                      key={message.clientMsgID}
-                      message={message}
-                      isGrouped={isGrouped}
-                      onImageClick={handleImageClick}
-                    />
-                  )
-                })}
+                    return (
+                      <MessageItem
+                        key={message.clientMsgID}
+                        message={message}
+                        isGrouped={isGrouped}
+                        onImageClick={handleImageClick}
+                      />
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {conversationId && (
-          <div className="mt-4">
-            <TypingIndicator conversationId={conversationId} />
+            ))}
           </div>
-        )}
 
-        {/* Bottom padding for better scroll experience */}
-        <div className="h-4"></div>
+          {conversationId && (
+            <div className="mt-4">
+              <TypingIndicator conversationId={conversationId} />
+            </div>
+          )}
+
+          {/* Bottom padding for better scroll experience */}
+          <div className="h-4"></div>
+        </div>
+      </div>
+
+      {/* Chat Input - fixed at bottom */}
+      <div className="flex-shrink-0">
+        <ChatInput conversationId={conversationId} placeholder="Nhập tin nhắn" />
       </div>
 
       {/* Image Preview Modal */}
