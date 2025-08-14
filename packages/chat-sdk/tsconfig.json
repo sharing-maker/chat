@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@chat-sdk/*": ["./src/*"]
+      "src/*": ["src/*"]
     }
   },
   "include": ["src", "src/assets/droppiiFontSelection.json"]

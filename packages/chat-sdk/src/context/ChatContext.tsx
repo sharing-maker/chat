@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { getSDK, InitAndLoginConfig, SelfUserInfo } from '@openim/wasm-client-sdk';
-import { ChatContextType, ChatProviderProps } from "@chat-sdk/types/chat";
+import { ChatContextType, ChatProviderProps } from "src/types/chat";
 const DChatSDK = getSDK();
 
 export const ChatContext = createContext<ChatContextType>({

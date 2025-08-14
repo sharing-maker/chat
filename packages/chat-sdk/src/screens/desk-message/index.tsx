@@ -1,9 +1,9 @@
 "use client";
 
-import MessageList from "../../components/message/MessageList";
-import DeskConversationList from "../../components/conversation/DeskConversationList";
-import { useConversationDetail } from "../../hooks/conversation/useConversation";
 import { SessionType } from "@openim/wasm-client-sdk";
+import MessageList from "../../components/message/MessageList"
+import DeskConversationList from "../../components/conversation/DeskConversationList"
+import { useConversationDetail } from "src/hooks/conversation/useConversation"
 
 const DChatDeskMessage = () => {
   const { conversationDetail } = useConversationDetail({
