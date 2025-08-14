@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
 import { useState, useEffect } from "react";
+import { SidebarSkeleton } from "./LoadingSkeleton";
 
 interface MenuItem {
   label: string;
@@ -48,42 +49,7 @@ export default function Sidebar() {
   }
 
   if (!mounted) {
-    return (
-      <div className="w-64 bg-gray-900 text-white min-h-screen relative left-0 top-0 z-40 flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gray-700 rounded animate-pulse"></div>
-            <div className="h-5 w-24 bg-gray-700 rounded animate-pulse"></div>
-          </div>
-          <div className="w-6 h-6 bg-gray-700 rounded animate-pulse"></div>
-        </div>
-        <nav className="flex-1 mt-6">
-          <ul className="space-y-2 px-3">
-            {menuItems?.map((i) => (
-              <li key={i?.href}>
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <div className="w-5 h-5 bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-16 bg-gray-700 rounded animate-pulse"></div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="border-t border-gray-700 p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-gray-700 rounded-full animate-pulse"></div>
-            <div className="flex-1">
-              <div className="h-3 w-20 bg-gray-700 rounded animate-pulse mb-1"></div>
-              <div className="h-3 w-24 bg-gray-700 rounded animate-pulse"></div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 px-3 py-2">
-            <div className="w-5 h-5 bg-gray-700 rounded animate-pulse"></div>
-            <div className="h-3 w-16 bg-gray-700 rounded animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-    );
+    return <SidebarSkeleton />;
   }
 
   return (
