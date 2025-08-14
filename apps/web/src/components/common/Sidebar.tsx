@@ -50,7 +50,7 @@ export default function Sidebar() {
 
   if (!mounted) {
     return (
-      <div className="w-64 bg-gray-900 text-white min-h-screen fixed left-0 top-0 z-40 flex flex-col">
+      <div className="w-64 bg-gray-900 text-white min-h-screen relative left-0 top-0 z-40 flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gray-700 rounded animate-pulse"></div>

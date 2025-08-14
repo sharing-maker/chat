@@ -42,8 +42,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <ChatProvider config={chatConfigProps}>
-      {shouldShowSidebar && <Sidebar />}
-      <div>{children}</div>
+      <div className="flex flex-row min-h-screen">
+        {shouldShowSidebar && <Sidebar />}
+        <div className="flex-1">{children}</div>
+      </div>
     </ChatProvider>
   );
 }
