@@ -1,9 +1,10 @@
 "use client";
 
 import { SessionType } from "@openim/wasm-client-sdk";
-import MessageList from "../../components/message/MessageList"
-import DeskConversationList from "../../components/conversation/DeskConversationList"
-import { useConversationDetail } from "src/hooks/conversation/useConversation"
+import MessageList from "../../components/message/MessageList";
+import DeskConversationList from "../../components/conversation/DeskConversationList";
+import { useConversationDetail } from "src/hooks/conversation/useConversation";
+import AssignedSessionFilter from "../../components/session/AssignedSessionFilter";
 
 const DChatDeskMessage = () => {
   const { conversationDetail } = useConversationDetail({
@@ -11,14 +12,13 @@ const DChatDeskMessage = () => {
     sessionType: SessionType.Group,
   });
   return (
-    <div className="flex flex-row h-screen bg-gray-50">
+    <div className="flex flex-row h-screen bg-white">
+      <AssignedSessionFilter />
       <DeskConversationList />
-      <div className="flex-1 flex flex-col">
-        <MessageList
-          conversationId="sg_3408237279"
-          conversationData={conversationDetail}
-        />
-      </div>
+      <MessageList
+        conversationId="sg_3408237279"
+        conversationData={conversationDetail}
+      />
     </div>
   );
 };

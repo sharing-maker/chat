@@ -39,7 +39,6 @@ export default function Sidebar() {
   const handleLogout = () => {
     // Có thể thêm logic xóa token/session ở đây
     // localStorage.removeItem('authToken');
-    console.log("Đăng xuất...");
     router.push("/login");
   };
 
@@ -91,7 +90,7 @@ export default function Sidebar() {
     <div
       className={`${
         isCollapsed ? "w-16" : "w-64"
-      } bg-gray-900 text-white min-h-screen fixed left-0 top-0 z-40 transition-all duration-300 ease-in-out flex flex-col`}
+      } bg-gray-900 text-white min-h-screen transition-all duration-300 ease-in-out flex flex-col`}
     >
       {/* Header with Logo */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">

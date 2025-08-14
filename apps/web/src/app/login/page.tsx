@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
 import { Button } from "@web/components/common/Button";
 import { Input } from "@web/components/common/Input";
@@ -10,7 +9,6 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ username: "", password: "" });
-  const router = useRouter();
 
   const validateField = (name: string, value: string) => {
     if (!value.trim()) {
@@ -33,7 +31,7 @@ export default function LoginPage() {
 
     // Only navigate if validation passes
     if (!usernameError && !passwordError) {
-      router.push("/");
+      window.location.href = "/";
     }
   };
 

@@ -29,20 +29,27 @@ export default function MainLayout({ children }: MainLayoutProps) {
     return (
       <div className="flex min-h-screen">
         {shouldShowSidebar && (
-          <div className="w-64 bg-gray-900 text-white min-h-screen fixed left-0 top-0 z-40">
+          <div className="w-64 bg-gray-900 text-white min-h-screen">
             {/* Loading skeleton for sidebar */}
             <div className="p-4 border-b border-gray-700">
               <div className="h-6 bg-gray-700 rounded animate-pulse"></div>
             </div>
           </div>
         )}
+        <div className="flex-1">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <ChatProvider config={chatConfigProps}>
-      <div className="flex flex-row min-h-screen">
+      <div className="flex min-h-screen">
         {shouldShowSidebar && <Sidebar />}
         <div className="flex-1">{children}</div>
       </div>
