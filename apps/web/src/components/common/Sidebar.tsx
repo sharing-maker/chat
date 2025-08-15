@@ -32,7 +32,6 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Đảm bảo component đã mount để tránh hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -43,7 +42,6 @@ export default function Sidebar() {
     router.push("/login");
   };
 
-  // Don't show sidebar on login page
   if (pathname === "/login") {
     return null;
   }

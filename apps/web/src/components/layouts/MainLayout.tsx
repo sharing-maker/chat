@@ -18,17 +18,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   useEffect(() => {
     setMounted(true);
-    // Add hydrated class to enable smooth transitions after mount
     document.documentElement.classList.add("hydrated");
   }, []);
 
-  // Pages that should not show the sidebar
   const pagesWithoutSidebar = ["/login"];
 
   const shouldShowSidebar = !pagesWithoutSidebar.includes(pathname);
 
   if (!mounted) {
-    // Return loading skeleton that matches the expected layout
     return <MainLayoutSkeleton showSidebar={shouldShowSidebar} />;
   }
 

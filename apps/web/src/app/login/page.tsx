@@ -20,7 +20,6 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate both fields
     const usernameError = validateField("username", username);
     const passwordError = validateField("password", password);
 
@@ -29,7 +28,7 @@ export default function LoginPage() {
       password: passwordError,
     });
 
-    // Only navigate if validation passes
+    // Sẽ check thêm điều kiện khi integrate với backend
     if (!usernameError && !passwordError) {
       window.location.href = "/";
     }

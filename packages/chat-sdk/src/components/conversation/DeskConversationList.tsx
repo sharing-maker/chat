@@ -25,7 +25,6 @@ interface DeskConversationItem {
   source: string;
 }
 
-// Mock data based on the image
 const mockConversations: DeskConversationItem[] = [
   {
     id: "1",
@@ -181,21 +180,17 @@ const DeskConversationList = ({
 
   console.log(conversationList);
 
-  // Get current thread ID from URL
   const currentThreadId = searchParams.get("threadId");
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(
     currentThreadId
   );
 
-  // Update selected thread when URL changes
   useEffect(() => {
     setSelectedThreadId(currentThreadId);
   }, [currentThreadId]);
 
-  // Use mock data for now
   const conversations = mockConversations;
 
-  // Filter conversations based on search query
   const filteredConversations = conversations.filter(
     (conv) =>
       conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -203,17 +198,13 @@ const DeskConversationList = ({
   );
 
   const handleConversationClick = (conversation: DeskConversationItem) => {
-    // Update URL with threadId
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("threadId", conversation.threadId);
 
-    // Navigate with new query params
     router.push(`${pathname}?${newSearchParams.toString()}`);
 
-    // Update local state
     setSelectedThreadId(conversation.threadId);
 
-    // Call callback if provided
     onConversationSelect?.(conversation.id, conversation.threadId);
   };
 
@@ -221,7 +212,6 @@ const DeskConversationList = ({
     <div
       className={`flex flex-col h-full bg-white border-r border-gray-200 ${className}`}
     >
-      {/* Search Header */}
       <div className="p-3 border-b border-gray-200">
         <div className="relative">
           <Icon
@@ -239,7 +229,6 @@ const DeskConversationList = ({
         </div>
       </div>
 
-      {/* Conversations List */}
       <div className="flex-1 overflow-y-auto">
         {filteredConversations.map((conversation) => (
           <div
