@@ -12,8 +12,7 @@ const DChatDeskMessage = () => {
     sessionType: SessionType.Group,
   });
   return (
-    <div className="flex flex-row h-screen bg-white">
-      <AssignedSessionFilter />
+    <div className="flex flex-1 flex-row h-screen bg-gray-50">
       <DeskConversationList />
       <MessageList
         conversationId="sg_3408237279"

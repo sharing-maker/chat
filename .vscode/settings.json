@@ -1,0 +1,9 @@
+{
+  "[env][markdown][toml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html][xml][javascript][javascriptreact][json][jsonc][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true
+}

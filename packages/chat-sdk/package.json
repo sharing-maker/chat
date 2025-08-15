@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@openim/wasm-client-sdk": "3.8.3-patch.10",
+    "antd": "^5.27.0",
     "clsx": "^2.0.0",
     "lucide-react": "^0.263.1",
     "react-icomoon": "^2.6.1",
