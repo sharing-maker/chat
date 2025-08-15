@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@ant-design/icons':
+        specifier: latest
+        version: 6.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@droppii-org/chat-sdk':
+        specifier: latest
+        version: 0.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@openim/wasm-client-sdk':
+        specifier: latest
+        version: 3.8.3-patch.10
       '@radix-ui/react-accordion':
         specifier: latest
         version: 1.2.12(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -89,6 +98,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: latest
         version: 1.2.8(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      antd:
+        specifier: latest
+        version: 5.27.0(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -149,12 +161,15 @@ importers:
       sonner:
         specifier: latest
         version: 2.0.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      src:
+        specifier: latest
+        version: 1.1.2
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.6.0
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.10)(typescript@5.9.2)))
+        version: 1.0.7
       url:
         specifier: latest
         version: 0.11.4
@@ -329,6 +344,9 @@ packages:
   '@ant-design/colors@7.2.1':
     resolution: {integrity: sha512-lCHDcEzieu4GA3n8ELeZ5VQ8pKQAWcGGLRTQ50aQM2iqPpq2evTxER84jfdPvsPAtEcZ7m44NI45edFMo8oOYQ==}
 
+  '@ant-design/colors@8.0.0':
+    resolution: {integrity: sha512-6YzkKCw30EI/E9kHOIXsQDHmMvTllT8STzjMb4K2qzit33RW2pqCJP0sk+hidBntXxE+Vz4n1+RvCTfBw6OErw==}
+
   '@ant-design/cssinjs-utils@1.1.3':
     resolution: {integrity: sha512-nOoQMLW1l+xR1Co8NFVYiP8pZp3VjIIzqV6D6ShYF2ljtdwWJn5WSsH+7kvCktXL/yhEtWURKOfH5Xz/gzlwsg==}
     peerDependencies:
@@ -345,11 +363,22 @@ packages:
     resolution: {integrity: sha512-y2217gk4NqL35giHl72o6Zzqji9O7vHh9YmhUVkPtAOpoTCH4uWxo/pr4VE8t0+ChEPs0qo4eJRC5Q1eXWo3vA==}
     engines: {node: '>=8.x'}
 
+  '@ant-design/fast-color@3.0.0':
+    resolution: {integrity: sha512-eqvpP7xEDm2S7dUzl5srEQCBTXZMmY3ekf97zI+M2DHOYyKdJGH0qua0JACHTqbkRnD/KHFQP9J1uMJ/XWVzzA==}
+    engines: {node: '>=8.x'}
+
   '@ant-design/icons-svg@4.4.2':
     resolution: {integrity: sha512-vHbT+zJEVzllwP+CM+ul7reTEfBR0vgxFe7+lREAsAA7YGsYpboiq2sQNeQeRvh09GfQgs/GyFEvZpJ9cLXpXA==}
 
   '@ant-design/icons@5.6.1':
     resolution: {integrity: sha512-0/xS39c91WjPAZOWsvi1//zjx6kAp4kxWwctR6kuU6p133w8RU0D2dSCvZC19uQyharg/sAvYxGYWl01BbZZfg==}
+    engines: {node: '>=8'}
+    peerDependencies:
+      react: '>=16.0.0'
+      react-dom: '>=16.0.0'
+
+  '@ant-design/icons@6.0.0':
+    resolution: {integrity: sha512-o0aCCAlHc1o4CQcapAwWzHeaW2x9F49g7P3IDtvtNXgHowtRWYb7kiubt8sQPFvfVIVU/jLw2hzeSlNt0FU+Uw==}
     engines: {node: '>=8'}
     peerDependencies:
       react: '>=16.0.0'
@@ -553,6 +582,12 @@ packages:
 
   '@date-fns/tz@1.3.1':
     resolution: {integrity: sha512-LnBOyuj+piItX/D5BWBSckBsuZyOt7Jg2obGNiObq7qjl1A2/8F+i4RS8/MmkSdnw6hOe6afrJLCWrUWZw5Mlw==}
+
+  '@droppii-org/chat-sdk@0.0.4':
+    resolution: {integrity: sha512-/LI7Fbv/UHlyDNwHPvKOtV+Vrf4CdZlpKAYqyKjf2miaJoIaTutzylbG573q/jymzpG6LbTdIlunmvSW5ukcQg==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@emnapi/core@1.4.5':
     resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
@@ -1519,6 +1554,40 @@ packages:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
 
+  '@rc-component/util@1.2.2':
+    resolution: {integrity: sha512-p3zQr9Wu8BKncqmuW23olzBoAFsN8PYMS9FaI4JwJLwknH7DvfHAr1fwbfl9aAWw4Jva64ucpenbgG4fznLUSw==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  '@redis/bloom@5.8.1':
+    resolution: {integrity: sha512-hJOJr/yX6BttnyZ+nxD3Ddiu2lPig4XJjyAK1v7OSHOJNUTfn3RHBryB9wgnBMBdkg9glVh2AjItxIXmr600MA==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.1
+
+  '@redis/client@5.8.1':
+    resolution: {integrity: sha512-hD5Tvv7G0t8b3w8ao3kQ4jEPUmUUC6pqA18c8ciYF5xZGfUGBg0olQHW46v6qSt4O5bxOuB3uV7pM6H5wEjBwA==}
+    engines: {node: '>= 18'}
+
+  '@redis/json@5.8.1':
+    resolution: {integrity: sha512-kyvM8Vn+WjJI++nRsIoI9TbdfCs1/TgD0Hp7Z7GiG6W4IEBzkXGQakli+R5BoJzUfgh7gED2fkncYy1NLprMNg==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.1
+
+  '@redis/search@5.8.1':
+    resolution: {integrity: sha512-CzuKNTInTNQkxqehSn7QiYcM+th+fhjQn5ilTvksP1wPjpxqK0qWt92oYg3XZc3tO2WuXkqDvTujc4D7kb6r/A==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.1
+
+  '@redis/time-series@5.8.1':
+    resolution: {integrity: sha512-klvdR96U9oSOyqvcectoAGhYlMOnMS3I5UWUOgdBn1buMODiwM/E4Eds7gxldKmtowe4rLJSF1CyIqyZTjy8Ow==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@redis/client': ^5.8.1
+
   '@reduxjs/toolkit@2.8.2':
     resolution: {integrity: sha512-MYlOhQ0sLdw4ud48FoC5w0dH9VfWQjtCjreKwYTT3l+r427qYC5Y8PihNutepr8XrNaBUDQo9khWUwQxZaqt5A==}
     peerDependencies:
@@ -2107,6 +2176,10 @@ packages:
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
+
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
 
   cmdk@1.1.1:
     resolution: {integrity: sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==}
@@ -3053,6 +3126,9 @@ packages:
   is-map@2.0.3:
     resolution: {integrity: sha512-1Qed0/Hr2m+YqxnM09CjA2d/i6YZNfF6R2oRAOj36eUdS6qIV/huPJNSEpKbupewFs+ZsJlxsjjPbc0/afW6Lw==}
     engines: {node: '>= 0.4'}
+
+  is-mobile@5.0.0:
+    resolution: {integrity: sha512-Tz/yndySvLAEXh+Uk8liFCxOwVH6YutuR74utvOcu7I9Di+DwM0mtdPVZNaVvvBUM2OXxne/NhOs1zAO7riusQ==}
 
   is-negative-zero@2.0.3:
     resolution: {integrity: sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==}
@@ -4182,6 +4258,13 @@ packages:
       react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-is: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  redis-url@0.2.0:
+    resolution: {integrity: sha512-4HyF3QI0vbmXAMRudLIxnaz/sUGzTEmHBV5swe2keie1ynCrJbCnraDmwrEncI6F0BQz8t2ivYrEZ0Wrq77Yjg==}
+
+  redis@5.8.1:
+    resolution: {integrity: sha512-RZjBKYX/qFF809x6vDcE5VA6L3MmiuT+BkbXbIyyyeU0lPD47V4z8qTzN+Z/kKFwpojwCItOfaItYuAjNs8pTQ==}
+    engines: {node: '>= 18'}
+
   redux-thunk@3.1.0:
     resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
     peerDependencies:
@@ -4408,6 +4491,9 @@ packages:
 
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
+
+  src@1.1.2:
+    resolution: {integrity: sha512-xOKk/hC+DMAWZVEu0zf/1y2vegH1dQD2W2jldxpFCAnavfrK8IPwECKw5ZDcxhd3+kmzaVyPECMAYVy2WDV9YQ==}
 
   stable-hash@0.0.5:
     resolution: {integrity: sha512-+L3ccpzibovGXFK+Ap/f8LOS0ahMrHTf3xu7mMLSpEGU0EO9ucaysSylKo9eRDFNhWve/y275iPmIZ4z39a9iA==}
@@ -4732,6 +4818,9 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
+  underscore@1.6.0:
+    resolution: {integrity: sha512-z4o1fvKUojIWh9XuaVLUDdf86RQiq13AC1dmHbTpoyuu+bquHms76v16CjycCbec87J7z0k//SiQVk0sMdFmpQ==}
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -4809,6 +4898,10 @@ packages:
 
   util@0.10.4:
     resolution: {integrity: sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==}
+
+  uuid@1.4.2:
+    resolution: {integrity: sha512-woV5Ei+GBJyrqMXt0mJ9p8/I+47LYKp/4urH76FNTMjl22EhLPz1tNrQufTsrFf/PYV/7ctSZYAK7fKPWQKg+Q==}
+    deprecated: Please upgrade to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
 
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
@@ -4937,6 +5030,10 @@ snapshots:
     dependencies:
       '@ant-design/fast-color': 2.0.6
 
+  '@ant-design/colors@8.0.0':
+    dependencies:
+      '@ant-design/fast-color': 3.0.0
+
   '@ant-design/cssinjs-utils@1.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@ant-design/cssinjs': 1.24.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4961,6 +5058,8 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.2
 
+  '@ant-design/fast-color@3.0.0': {}
+
   '@ant-design/icons-svg@4.4.2': {}
 
   '@ant-design/icons@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
@@ -4970,6 +5069,15 @@ snapshots:
       '@babel/runtime': 7.28.2
       classnames: 2.5.1
       rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@ant-design/icons@6.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@ant-design/colors': 8.0.0
+      '@ant-design/icons-svg': 4.4.2
+      '@rc-component/util': 1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames: 2.5.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -5312,6 +5420,14 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.9
 
   '@date-fns/tz@1.3.1': {}
+
+  '@droppii-org/chat-sdk@0.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      clsx: 2.1.1
+      lucide-react: 0.263.1(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tailwind-merge: 2.6.0
 
   '@emnapi/core@1.4.5':
     dependencies:
@@ -6326,6 +6442,33 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
+  '@rc-component/util@1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      is-mobile: 5.0.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-is: 18.3.1
+
+  '@redis/bloom@5.8.1(@redis/client@5.8.1)':
+    dependencies:
+      '@redis/client': 5.8.1
+
+  '@redis/client@5.8.1':
+    dependencies:
+      cluster-key-slot: 1.1.2
+
+  '@redis/json@5.8.1(@redis/client@5.8.1)':
+    dependencies:
+      '@redis/client': 5.8.1
+
+  '@redis/search@5.8.1(@redis/client@5.8.1)':
+    dependencies:
+      '@redis/client': 5.8.1
+
+  '@redis/time-series@5.8.1(@redis/client@5.8.1)':
+    dependencies:
+      '@redis/client': 5.8.1
+
   '@reduxjs/toolkit@2.8.2(react-redux@9.2.0(@types/react@18.3.23)(react@18.3.1)(redux@5.0.1))(react@18.3.1)':
     dependencies:
       '@standard-schema/spec': 1.0.0
@@ -7013,6 +7156,8 @@ snapshots:
   clone@1.0.4: {}
 
   clsx@2.1.1: {}
+
+  cluster-key-slot@1.1.2: {}
 
   cmdk@1.1.1(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -8175,6 +8320,8 @@ snapshots:
       lower-case: 1.1.4
 
   is-map@2.0.3: {}
+
+  is-mobile@5.0.0: {}
 
   is-negative-zero@2.0.3: {}
 
@@ -9398,6 +9545,18 @@ snapshots:
       - '@types/react'
       - redux
 
+  redis-url@0.2.0:
+    dependencies:
+      redis: 5.8.1
+
+  redis@5.8.1:
+    dependencies:
+      '@redis/bloom': 5.8.1(@redis/client@5.8.1)
+      '@redis/client': 5.8.1
+      '@redis/json': 5.8.1(@redis/client@5.8.1)
+      '@redis/search': 5.8.1(@redis/client@5.8.1)
+      '@redis/time-series': 5.8.1(@redis/client@5.8.1)
+
   redux-thunk@3.1.0(redux@5.0.1):
     dependencies:
       redux: 5.0.1
@@ -9697,6 +9856,12 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
+  src@1.1.2:
+    dependencies:
+      redis-url: 0.2.0
+      underscore: 1.6.0
+      uuid: 1.4.2
+
   stable-hash@0.0.5: {}
 
   statuses@2.0.1: {}
@@ -9843,6 +10008,8 @@ snapshots:
       upper-case: 1.1.3
 
   tailwind-merge@2.6.0: {}
+
+  tailwindcss-animate@1.0.7: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.10)(typescript@5.9.2))):
     dependencies:
@@ -10082,6 +10249,8 @@ snapshots:
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
 
+  underscore@1.6.0: {}
+
   undici-types@6.21.0: {}
 
   universalify@0.1.2: {}
@@ -10171,6 +10340,8 @@ snapshots:
   util@0.10.4:
     dependencies:
       inherits: 2.0.3
+
+  uuid@1.4.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
