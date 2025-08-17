@@ -1,5 +1,5 @@
 import { getSDK } from "@openim/wasm-client-sdk";
-import { useChatContext } from "src/context/ChatContext";
+import { useChatContext } from "../../context/ChatContext";
 const DChatSDK = getSDK();
 
 interface SendMessageProps {

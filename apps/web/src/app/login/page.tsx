@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     // Sẽ check thêm điều kiện khi integrate với backend
     if (!usernameError && !passwordError) {
-      window.location.href = "/";
+      window.location.href = "/chat";
     }
   };
 

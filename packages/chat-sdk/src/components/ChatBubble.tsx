@@ -1,22 +1,34 @@
-"use client"
-import { useState } from "react"
-import { FloatButton, Drawer } from "antd"
-import { MessageOutlined, CloseOutlined } from "@ant-design/icons"
-import MessageList from "./message/MessageList"
-import type { ConversationItem } from "@openim/wasm-client-sdk"
+"use client";
+import { useState } from "react";
+import { FloatButton, Drawer } from "antd";
+import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
+import MessageList from "./message/MessageList";
+import { SessionType } from "@openim/wasm-client-sdk";
+import { useConversationDetail } from "../hooks/conversation/useConversation";
 
 interface ChatBubbleProps {
-  conversationId: string
-  conversationData: ConversationItem | null
-  className?: string
+  conversationId: string;
+  sourceID: string;
+  sessionType: SessionType;
+  className?: string;
 }
 
-const ChatBubble = ({ conversationId, conversationData, className }: ChatBubbleProps) => {
-  const [isOpen, setIsOpen] = useState(false)
+const ChatBubble = ({
+  conversationId,
+  sourceID,
+  sessionType,
+  className,
+}: ChatBubbleProps) => {
+  const { conversationDetail } = useConversationDetail({
+    sourceID,
+    sessionType,
+  });
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleChat = () => {
-    setIsOpen(!isOpen)
-  }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <>
@@ -36,31 +48,27 @@ const ChatBubble = ({ conversationId, conversationData, className }: ChatBubbleP
 
       {/* Chat Panel Drawer */}
       <Drawer
-        title="Chat"
         placement="right"
         onClose={() => setIsOpen(false)}
         open={isOpen}
-        width={400}
-        height={600}
-        style={{
-          position: "fixed",
-          right: 24,
-          bottom: 100,
-          borderRadius: "12px",
-        }}
+        mask={true}
+        closable={false}
         styles={{
-          body: { padding: 0, height: "100%" },
-          header: { padding: "12px 16px", borderBottom: "1px solid #f0f0f0" },
+          body: { padding: 0 },
         }}
-        mask={false}
-        destroyOnClose={false}
+        classNames={{
+          wrapper: "!z-[9999]",
+        }}
       >
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <MessageList conversationId={conversationId} conversationData={conversationData} className="flex-1" />
-        </div>
+        <MessageList
+          conversationId={conversationId}
+          conversationData={conversationDetail}
+          className="flex-1"
+          onClose={() => setIsOpen(false)}
+        />
       </Drawer>
     </>
-  )
-}
+  );
+};
 
-export default ChatBubble
+export default ChatBubble;

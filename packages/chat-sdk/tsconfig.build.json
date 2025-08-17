@@ -13,10 +13,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@chat-sdk/*": ["src/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src", "src/assets/droppiiFontSelection.json"]
 }

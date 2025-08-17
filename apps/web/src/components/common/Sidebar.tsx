@@ -26,7 +26,7 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -36,9 +36,10 @@ export default function Sidebar() {
     setMounted(true);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Có thể thêm logic xóa token/session ở đây
     // localStorage.removeItem('authToken');
+    await onLogout?.();
     router.push("/login");
   };
 

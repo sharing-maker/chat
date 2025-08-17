@@ -1,17 +1,28 @@
-import DChatDeskMessage from "./screens/desk-message"
-import { Platform, LogLevel } from "@openim/wasm-client-sdk"
-import { Icon } from "./components/icon"
-import ChatBubble from "./components/ChatBubble"
+import DChatDeskMessage from "./screens/desk-message";
+import {
+  Platform,
+  LogLevel,
+  SessionType,
+  InitAndLoginConfig,
+} from "@openim/wasm-client-sdk";
+import { Icon } from "./components/icon";
+import ChatBubble from "./components/ChatBubble";
 
 // Main exports for the SDK
-export { ChatProvider, useChatContext } from "./context/ChatContext"
+export { ChatProvider, useChatContext } from "./context/ChatContext";
 
-//Screens
-export { DChatDeskMessage }
+//Components
+export { DChatDeskMessage, ChatBubble, Icon };
 
-export { Icon }
-export { ChatBubble }
+//Hooks
+export { useDChatAuth } from "./hooks/user/useAuth";
 
-export * from "./types/sdk"
+// export * from "./types/sdk";
 
-export { Platform as DChatPlatform, LogLevel as DChatLogLevel }
+export {
+  Platform as DChatPlatform,
+  LogLevel as DChatLogLevel,
+  SessionType as DChatSessionType,
+};
+
+export type { InitAndLoginConfig as DChatInitAndLoginConfig };

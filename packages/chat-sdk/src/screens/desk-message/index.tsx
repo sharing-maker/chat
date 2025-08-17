@@ -3,7 +3,7 @@
 import { SessionType } from "@openim/wasm-client-sdk";
 import MessageList from "../../components/message/MessageList";
 import DeskConversationList from "../../components/conversation/DeskConversationList";
-import { useConversationDetail } from "src/hooks/conversation/useConversation";
+import { useConversationDetail } from "../../hooks/conversation/useConversation";
 import AssignedSessionFilter from "../../components/session/AssignedSessionFilter";
 
 const DChatDeskMessage = () => {
