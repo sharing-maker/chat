@@ -1,6 +1,4 @@
-import { getSDK } from "@openim/wasm-client-sdk";
-import { useChatContext } from "../../context/ChatContext";
-const DChatSDK = getSDK();
+import { DChatSDK } from "../../constants/sdk";
 
 interface SendMessageProps {
   recvID: string;
@@ -20,7 +18,6 @@ export const createTextMessage = async (text: string) => {
 };
 
 export const useSendMessage = (props: SendMessageProps) => {
-  const { user } = useChatContext();
   const { recvID, groupID } = props;
 
   const sendTextMessage = async (text: string) => {
@@ -30,11 +27,14 @@ export const useSendMessage = (props: SendMessageProps) => {
     console.log("textMessage", textMessage);
     if (!textMessage) return false;
     try {
-      await DChatSDK.sendMessage({
-        recvID,
-        groupID,
-        message: textMessage,
-      });
+      await DChatSDK.sendMessage(
+        {
+          recvID,
+          groupID,
+          message: textMessage,
+        },
+        new Date().getTime().toString()
+      );
       result = true;
     } catch (error) {
       console.log("sendMessage", error);

@@ -8,7 +8,7 @@ import AssignedSessionFilter from "../../components/session/AssignedSessionFilte
 
 const DChatDeskMessage = () => {
   const { conversationDetail } = useConversationDetail({
-    sourceID: "3408237279",
+    sourceID: "123-123",
     sessionType: SessionType.Group,
   });
   return (
@@ -16,7 +16,7 @@ const DChatDeskMessage = () => {
       <AssignedSessionFilter />
       <DeskConversationList />
       <MessageList
-        conversationId="sg_3408237279"
+        conversationId="sg_123-123"
         conversationData={conversationDetail}
       />
     </div>

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  getSDK,
   ViewType,
   AdvancedGetMessageResult,
   CbEvents,
   MessageItem,
 } from "@openim/wasm-client-sdk";
-const DChatSDK = getSDK();
+import { DChatSDK } from "../../constants/sdk";
 
 export const useMessage = (conversationId?: string) => {
   const [dataMessages, setDataMessages] =

@@ -1,5 +1,4 @@
-import { getSDK } from "@openim/wasm-client-sdk";
-const DChatSDK = getSDK();
+import { DChatSDK } from "../../constants/sdk";
 
 export const useDChatAuth = () => {
   const logout = async () => {

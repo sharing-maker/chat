@@ -1,14 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import {
-  getSDK,
-  InitAndLoginConfig,
-  SelfUserInfo,
-} from "@openim/wasm-client-sdk";
+import { InitAndLoginConfig, SelfUserInfo } from "@openim/wasm-client-sdk";
 import { ChatContextType, ChatProviderProps } from "../types/chat";
-import { Modal, Spin } from "antd";
-const DChatSDK = getSDK();
+import { Spin } from "antd";
+import { DChatSDK } from "../constants/sdk";
 
 export const ChatContext = createContext<ChatContextType>({
   user: null,
@@ -24,6 +20,7 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
     DChatSDK.getSelfUserInfo()
       .then(({ data }) => {
         setUser(data);
+        setLoading(false);
       })
       .catch(({ errCode, errMsg }) => {
         console.log("getSelfUserInfo", errCode, errMsg);
@@ -34,7 +31,6 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
     DChatSDK.login(config as InitAndLoginConfig)
       .then((res) => {
         getUserInfo();
-        setLoading(false);
       })
       .catch(({ errCode, errMsg }) => {
         console.log("handleLogin", errCode, errMsg);

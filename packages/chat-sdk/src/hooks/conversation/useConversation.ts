@@ -1,11 +1,10 @@
 import {
-  getSDK,
   ConversationItem,
   SessionType,
   CbEvents,
 } from "@openim/wasm-client-sdk";
 import { useCallback, useEffect, useState } from "react";
-const DChatSDK = getSDK();
+import { DChatSDK } from "../../constants/sdk";
 
 export const useConversationList = () => {
   const [conversationList, setConversationList] = useState<ConversationItem[]>(
@@ -15,6 +14,7 @@ export const useConversationList = () => {
   const getAllConversationList = useCallback(async () => {
     DChatSDK.getAllConversationList()
       .then(({ data }) => {
+        console.log("getAllConversationList", data);
         setConversationList(data);
       })
       .catch((err) => {
@@ -22,22 +22,8 @@ export const useConversationList = () => {
       });
   }, []);
 
-  const getOneConversation = useCallback(async () => {
-    DChatSDK.getOneConversation({
-      sourceID: "3408237279",
-      sessionType: 3,
-    })
-      .then(({ data }) => {
-        console.log("getOneConversation", data);
-      })
-      .catch((err) => {
-        console.log("getOneConversation", err);
-      });
-  }, []);
-
   useEffect(() => {
     getAllConversationList();
-    getOneConversation();
   }, [getAllConversationList]);
 
   useEffect(() => {

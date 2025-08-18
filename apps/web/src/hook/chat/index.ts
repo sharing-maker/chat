@@ -7,9 +7,9 @@ export const useChatSdkSetup = () => {
       platformID: DChatPlatform.Web,
       apiAddr: "https://apistg.droppii.com/chat-service",
       wsAddr: "wss://apistg.droppii.com/chat-service/ws",
-      userID: "3526966997",
+      userID: "1967023155",
       token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIzNTI2OTY2OTk3IiwiUGxhdGZvcm1JRCI6NSwiZXhwIjoxNzYyMzk2NDY4LCJpYXQiOjE3NTQ2MjA0NjN9.WhNDCiIawE-OEEb-2RaTmocvXjLSjY-d48lJdzMSYnQ",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIxOTY3MDIzMTU1IiwiUGxhdGZvcm1JRCI6NSwiZXhwIjoxNzYzMjY3OTc5LCJpYXQiOjE3NTU0OTE5NzR9.-WStTlqROyTJnQ1Kgdp-5fXjW1Ihjls3Ir2vH_nMfIo",
     };
   }, []);
 

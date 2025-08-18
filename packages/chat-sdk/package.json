@@ -1,6 +1,6 @@
 {
   "name": "@droppii-org/chat-sdk",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Droppii React Chat SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -32,6 +32,10 @@
     "./assets/*": {
       "import": "./dist/assets/*.js",
       "types": "./dist/assets/*.d.ts"
+    },
+    "./constants/*": {
+      "import": "./dist/constants/*.js",
+      "types": "./dist/constants/*.d.ts"
     },
     "./styles/global.css": "./dist/styles/global.css"
   },
