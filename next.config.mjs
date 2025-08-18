@@ -9,6 +9,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  webpack: {
+    resolve: {
+      fallback: {
+        path: false,
+        crypto: false,
+      },
+    },
+  },
 }
 
 export default nextConfig

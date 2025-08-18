@@ -1,26 +1,30 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ChatProvider } from "@droppii-org/chat-sdk"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import MainLayout from "@web/components/layouts/MainLayout";
+import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Chat SDK Demo",
-  description: "A modern React Chat SDK demonstration",
-}
+  title: "Droppii Chat Management",
+  description: "Chat management system for Droppii",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en">
-      <ChatProvider userId="current-user" token="demo-token" websocketUrl="demo" enableWebSocket={false}>
-        <body className={inter.className}>{children}</body>
-      </ChatProvider>
+    <html lang="vi">
+      <head>
+        {/* This line adds the <script> tag to the final HTML */}
+        <script src="/wasm_exec.js" />
+      </head>
+      <body className={inter.className}>
+        <MainLayout>{children}</MainLayout>
+      </body>
     </html>
-  )
+  );
 }

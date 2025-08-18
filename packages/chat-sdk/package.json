@@ -1,6 +1,6 @@
 {
   "name": "@droppii-org/chat-sdk",
-  "version": "0.0.4",
+  "version": "0.0.19",
   "description": "Droppii React Chat SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -24,28 +24,53 @@
     "./types/*": {
       "import": "./dist/types/*.js",
       "types": "./dist/types/*.d.ts"
-    }
+    },
+    "./screens/*": {
+      "import": "./dist/screens/*.js",
+      "types": "./dist/screens/*.d.ts"
+    },
+    "./assets/*": {
+      "import": "./dist/assets/*.js",
+      "types": "./dist/assets/*.d.ts"
+    },
+    "./constants/*": {
+      "import": "./dist/constants/*.js",
+      "types": "./dist/constants/*.d.ts"
+    },
+    "./styles/global.css": "./dist/styles/global.css"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm build:css && tsc -p tsconfig.build.json && cp -R src/assets dist ",
+    "build:css": "tailwindcss -i ./src/styles/global.css -o ./dist/styles/global.css --minify",
     "dev": "tsc --noEmit --watch",
     "lint": "eslint src/",
     "type-check": "tsc --noEmit",
-    "prepare": "pnpm build"
+    "prepublishOnly": "pnpm build"
   },
-  "keywords": ["chat", "sdk", "react", "messenger-style"],
+  "keywords": [
+    "chat",
+    "sdk",
+    "react",
+    "messenger-style"
+  ],
   "author": "Garru",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
+    "@openim/wasm-client-sdk": "3.8.3-patch.10",
+    "@tailwindcss/postcss": "^4.1.12",
+    "antd": "^5.27.0",
     "clsx": "^2.0.0",
     "lucide-react": "^0.263.1",
-    "tailwind-merge": "^2.0.0"
+    "postcss": "^8.5.6",
+    "react-icomoon": "^2.6.1",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss": "^3.3.0"
   },
   "peerDependencies": {
     "react": "^18.0.0",
