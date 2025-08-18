@@ -13,6 +13,7 @@ const DChatDeskMessage = () => {
   });
   return (
     <div className="flex flex-1 flex-row h-screen bg-gray-50">
+      <AssignedSessionFilter />
       <DeskConversationList />
       <MessageList
         conversationId="sg_3408237279"

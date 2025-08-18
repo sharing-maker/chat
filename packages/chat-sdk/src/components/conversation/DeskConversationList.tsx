@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { Input, Avatar, Badge, Empty } from "antd";
+import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 
@@ -14,158 +16,87 @@ interface DeskConversationItem {
   timestamp: string;
   unreadCount: number;
   isOnline: boolean;
-  status:
-    | "unassigned"
-    | "slow"
-    | "waiting"
-    | "not_replied"
-    | "processing"
-    | "paused"
-    | "closed";
   source: string;
 }
 
-const mockConversations: DeskConversationItem[] = [
-  {
-    id: "1",
-    threadId: "thread_001",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
+const parseLatestMessage = (latestMsg: string): string => {
+  if (!latestMsg) return "";
+
+  try {
+    const msgData = JSON.parse(latestMsg);
+
+    // Check for text message (textElem)
+    if (msgData.textElem?.content) {
+      return msgData.textElem.content;
+    }
+
+    // TODO: Handle other message types (fileElem, videoElem, etc.)
+    // For now, return empty string for non-text messages
+    // This can be enhanced later to show appropriate previews
+
+    return "Tin nhắn không khả dụng";
+  } catch (error) {
+    console.error("Error parsing latest message:", error);
+    return "";
+  }
+};
+
+// Utility function to format timestamp
+const formatTimestamp = (timestamp: number): string => {
+  if (!timestamp) return "";
+
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) {
+    // Today - show time
+    return date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  } else if (diffInDays === 1) {
+    // Yesterday
+    return "Hôm qua";
+  } else if (diffInDays < 7) {
+    // This week - show day name
+    return date.toLocaleDateString("vi-VN", { weekday: "long" });
+  } else {
+    // Older - show date
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+    });
+  }
+};
+
+// Transform API data to UI-friendly format
+const transformConversationData = (
+  apiData: ConversationItem[]
+): DeskConversationItem[] => {
+  return apiData.map((conv) => ({
+    id: conv.conversationID,
+    threadId: conv.groupID || conv.userID || conv.conversationID,
+    name: conv.showName || "Unknown User",
+    username: conv.userID || conv.groupID || "",
     avatar:
+      conv.faceURL ||
       "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "unassigned",
-    source: "obefe",
-  },
-  {
-    id: "2",
-    threadId: "thread_002",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
-    avatar:
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "slow",
-    source: "obefe",
-  },
-  {
-    id: "3",
-    threadId: "thread_003",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
-    avatar:
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "waiting",
-    source: "obefe",
-  },
-  {
-    id: "4",
-    threadId: "thread_004",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
-    avatar:
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "not_replied",
-    source: "obefe",
-  },
-  {
-    id: "5",
-    threadId: "thread_005",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
-    avatar:
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "processing",
-    source: "obefe",
-  },
-  {
-    id: "6",
-    threadId: "thread_006",
-    name: "Phương Huyền (phhuyen2110)",
-    username: "phhuyen2110",
-    avatar:
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: "Customer: hi Livechat Obefe",
-    timestamp: "27/07",
-    unreadCount: 1,
-    isOnline: true,
-    status: "closed",
-    source: "obefe",
-  },
-];
+    lastMessage: parseLatestMessage(conv.latestMsg),
+    timestamp: formatTimestamp(conv.latestMsgSendTime),
+    unreadCount: conv.unreadCount,
+    isOnline: true, // Default to online, you can implement real status later
+    source: conv.conversationType === 3 ? "group" : "direct",
+  }));
+};
 
 interface DeskConversationListProps {
   onConversationSelect?: (conversationId: string, threadId: string) => void;
   selectedConversationId?: string;
   className?: string;
 }
-
-const getStatusIcon = (status: DeskConversationItem["status"]) => {
-  switch (status) {
-    case "unassigned":
-      return {
-        icon: "user-del-o",
-        bgColor: "bg-red-100",
-        iconColor: "text-red-500",
-      };
-    case "slow":
-      return {
-        icon: "warning-square-o",
-        bgColor: "bg-orange-100",
-        iconColor: "text-orange-500",
-      };
-    case "waiting":
-      return {
-        icon: "time-circle-o",
-        bgColor: "bg-yellow-100",
-        iconColor: "text-yellow-600",
-      };
-    case "not_replied":
-      return {
-        icon: "arrow-reply-o",
-        bgColor: "bg-orange-100",
-        iconColor: "text-orange-500",
-      };
-    case "processing":
-      return {
-        icon: "play-b",
-        bgColor: "bg-blue-100",
-        iconColor: "text-blue-500",
-      };
-    case "paused":
-      return {
-        icon: "pause-b",
-        bgColor: "bg-gray-100",
-        iconColor: "text-gray-500",
-      };
-    case "closed":
-      return {
-        icon: "check-b",
-        bgColor: "bg-green-100",
-        iconColor: "text-green-500",
-      };
-    default:
-      return null;
-  }
-};
 
 const DeskConversationList = ({
   onConversationSelect,
@@ -178,8 +109,6 @@ const DeskConversationList = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  console.log(conversationList);
-
   const currentThreadId = searchParams.get("threadId");
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(
     currentThreadId
@@ -189,10 +118,11 @@ const DeskConversationList = ({
     setSelectedThreadId(currentThreadId);
   }, [currentThreadId]);
 
-  const conversations = mockConversations;
+  // Transform real conversation data from the API
+  const conversations = transformConversationData(conversationList || []);
 
   const filteredConversations = conversations.filter(
-    (conv) =>
+    (conv: DeskConversationItem) =>
       conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -213,24 +143,17 @@ const DeskConversationList = ({
       className={`flex flex-col h-full bg-white border-r border-gray-200 ${className}`}
     >
       <div className="p-3 border-b border-gray-200">
-        <div className="relative">
-          <Icon
-            icon="search-o"
-            size={18}
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            placeholder="Tìm kiếm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          />
-        </div>
+        <Input
+          placeholder="Tìm kiếm"
+          prefix={<Icon icon="search-o" size={18} className="text-gray-400" />}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="rounded-lg"
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.map((conversation) => (
+        {filteredConversations.map((conversation: DeskConversationItem) => (
           <div
             key={conversation.id}
             onClick={() => handleConversationClick(conversation)}
@@ -248,15 +171,17 @@ const DeskConversationList = ({
             <div className="flex items-start gap-3">
               {/* Avatar */}
               <div className="relative flex-shrink-0">
-                <img
-                  src={conversation.avatar}
-                  alt={conversation.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                {/* Online status */}
-                {conversation.isOnline && (
-                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                )}
+                <Badge
+                  dot={conversation.isOnline}
+                  status={conversation.isOnline ? "success" : "default"}
+                  offset={[-2, 36]}
+                >
+                  <Avatar
+                    size={48}
+                    src={conversation.avatar}
+                    alt={conversation.name}
+                  />
+                </Badge>
               </div>
 
               {/* Conversation Info */}
@@ -277,32 +202,11 @@ const DeskConversationList = ({
                       {conversation.timestamp}
                     </span>
 
-                    {/* Icons row */}
+                    {/* Unread count only */}
                     <div className="flex items-center gap-1">
-                      {/* Unread count */}
                       {conversation.unreadCount > 0 && (
-                        <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-red-500 rounded-full">
-                          {conversation.unreadCount}
-                        </span>
+                        <Badge count={conversation.unreadCount} />
                       )}
-
-                      {/* Status icon */}
-                      {(() => {
-                        const statusIcon = getStatusIcon(conversation.status);
-                        if (!statusIcon) return null;
-
-                        return (
-                          <div
-                            className={`w-5 h-5 ${statusIcon.bgColor} rounded-full flex items-center justify-center`}
-                          >
-                            <Icon
-                              icon={statusIcon.icon as any}
-                              size={12}
-                              className={statusIcon.iconColor}
-                            />
-                          </div>
-                        );
-                      })()}
                     </div>
                   </div>
                 </div>
@@ -313,20 +217,28 @@ const DeskConversationList = ({
 
         {/* Empty state */}
         {filteredConversations.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-            <Icon
-              icon="chat-square-b"
-              size={48}
-              className="text-gray-300 mb-4"
+          <div className="flex items-center justify-center py-12">
+            <Empty
+              image={
+                <Icon
+                  icon="chat-square-b"
+                  size={48}
+                  className="text-gray-300"
+                />
+              }
+              description={
+                <div>
+                  <p className="text-lg font-medium mb-2 text-gray-500">
+                    Không tìm thấy cuộc trò chuyện
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {searchQuery
+                      ? "Thử tìm kiếm với từ khóa khác"
+                      : "Chưa có cuộc trò chuyện nào"}
+                  </p>
+                </div>
+              }
             />
-            <p className="text-lg font-medium mb-2">
-              Không tìm thấy cuộc trò chuyện
-            </p>
-            <p className="text-sm text-center">
-              {searchQuery
-                ? "Thử tìm kiếm với từ khóa khác"
-                : "Chưa có cuộc trò chuyện nào"}
-            </p>
           </div>
         )}
       </div>
