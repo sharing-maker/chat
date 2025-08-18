@@ -17,6 +17,7 @@
     "baseUrl": ".",
     "paths": {
       "@droppii-org/chat-sdk/*": ["packages/chat-sdk/src/*"],
+      "@droppii-org/ui/*": ["packages/ui/src/*"],
       "@web/*": ["apps/web/src/*"]
     },
     "plugins": [

@@ -5,17 +5,14 @@
     "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "@web/*": [
-        "./src/*"
-      ],
-      "@droppii-org/chat-sdk": ["../../packages/chat-sdk/src"]
+      "@web/*": ["./src/*"],
+      "@droppii-org/chat-sdk": ["../../packages/chat-sdk/src"],
+      "@droppii-org/ui": ["../../packages/ui/src"]
     }
   },
   "references": [
-    { "path": "../../packages/chat-sdk" }
+    { "path": "../../packages/chat-sdk" },
+    { "path": "../../packages/ui" }
   ],
-  "include": [
-    "src",
-    ".next/types/**/*.ts"
-  ]
+  "include": ["src", ".next/types/**/*.ts"]
 }
