@@ -82,7 +82,7 @@ export function createFormElement<TFromElement, TNonNativeOnChange = any>(
           size="sm"
           strong={strongLabel}
           style={{
-            marginBottom: 6,
+            marginBottom: 8,
             height: noLabel ? 0 : 22,
           }}
           type={error ? "danger" : undefined}

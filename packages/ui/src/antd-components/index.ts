@@ -1,3 +1,3 @@
-export * from "./AntdInputNumber";
-export * from "./AntdText";
-export * from "./AntdButton";
+export { AntdInputNumber } from "./AntdInputNumber";
+export { AntdText } from "./AntdText";
+export { AntdButton } from "./AntdButton";

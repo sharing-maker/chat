@@ -1,67 +1,87 @@
 "use client";
 
-import { useState } from "react";
 import { Icon } from "@droppii-org/chat-sdk";
-import { Button } from "@web/components/common/Button";
-import { Input } from "@web/components/common/Input";
+import { AntdButton, AntdInputForm } from "@droppii-org/ui";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  username: z
+    .string()
+    .min(1, "Tài khoản là bắt buộc")
+    .min(3, "Tài khoản phải có ít nhất 3 ký tự"),
+  password: z
+    .string()
+    .min(1, "Mật khẩu là bắt buộc")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ username: "", password: "" });
+  const formInstance = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
 
-  const validateField = (name: string, value: string) => {
-    if (!value.trim()) {
-      return `${name === "username" ? "Tài khoản" : "Mật khẩu"} là bắt buộc`;
-    }
-    return "";
-  };
+  const {
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = formInstance;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      // TODO: Add your actual login API call here
+      // const result = await loginAPI(data);
 
-    const usernameError = validateField("username", username);
-    const passwordError = validateField("password", password);
-
-    setErrors({
-      username: usernameError,
-      password: passwordError,
-    });
-
-    // Sẽ check thêm điều kiện khi integrate với backend
-    if (!usernameError && !passwordError) {
+      // Navigate to chat page after successful login
       window.location.href = "/chat";
+    } catch (error) {
+      console.error("Login failed:", error);
+      // Handle login error
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 w-full max-w-lg"
-    >
-      <h1 className="text-2xl font-semibold mb-6 text-center">
-        Đăng nhập Quản lý Chat
-      </h1>
-      <Input
-        leftIcon={<Icon icon="user-b" className="text-blue-600" />}
-        label="Tài khoản"
-        placeholder="Nhập tài khoản"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        error={errors.username}
-      />
-      <Input
-        leftIcon={<Icon icon="lock-b" className="text-blue-600" />}
-        label="Mật khẩu"
-        placeholder="Nhập mật khẩu"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        error={errors.password}
-      />
-      <Button type="submit" className="w-full mt-6">
-        Đăng nhập
-      </Button>
-    </form>
+    <FormProvider {...formInstance}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4 w-full max-w-lg"
+      >
+        <h1 className="text-2xl font-semibold mb-6 text-center">
+          Đăng nhập Quản lý Chat
+        </h1>
+
+        <AntdInputForm
+          name="username"
+          label="Tài khoản"
+          isRequired={true}
+          placeholder="Nhập tài khoản"
+          prefix={<Icon icon="user-b" className="text-blue-600" />}
+        />
+
+        <AntdInputForm
+          name="password"
+          label="Mật khẩu"
+          isRequired={true}
+          type="password"
+          placeholder="Nhập mật khẩu"
+          prefix={<Icon icon="lock-b" className="text-blue-600" />}
+        />
+
+        <AntdButton
+          htmlType="submit"
+          type="primary"
+          disabled={isSubmitting}
+          className="w-full mt-4"
+        >
+          {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+        </AntdButton>
+      </form>
+    </FormProvider>
   );
 }
