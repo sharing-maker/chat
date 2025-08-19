@@ -5,6 +5,9 @@ import { Input, Avatar, Badge, Empty } from "antd";
 import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
+import { useChatContext } from "../../context/ChatContext";
+import useMessageStore from "../../hooks/zustand/useMessageStore";
+import { useMessage } from "../../hooks/message/useMessage";
 
 interface DeskConversationItem {
   id: string;
@@ -19,7 +22,10 @@ interface DeskConversationItem {
   source: string;
 }
 
-const parseLatestMessage = (latestMsg: string): string => {
+const parseLatestMessage = (
+  latestMsg: string,
+  currentUserId?: string
+): string => {
   if (!latestMsg) return "";
 
   try {
@@ -27,7 +33,9 @@ const parseLatestMessage = (latestMsg: string): string => {
 
     // Check for text message (textElem)
     if (msgData.textElem?.content) {
-      return msgData.textElem.content;
+      const isMe = currentUserId && msgData.sendID === currentUserId;
+      const sender = isMe ? "Me" : msgData?.senderNickname || msgData.sendID;
+      return `${sender}: ${msgData.textElem.content}`;
     }
 
     // TODO: Handle other message types (fileElem, videoElem, etc.)
@@ -74,17 +82,18 @@ const formatTimestamp = (timestamp: number): string => {
 
 // Transform API data to UI-friendly format
 const transformConversationData = (
-  apiData: ConversationItem[]
+  apiData: ConversationItem[],
+  currentUserId?: string
 ): DeskConversationItem[] => {
   return apiData.map((conv) => ({
     id: conv.conversationID,
-    threadId: conv.groupID || conv.userID || conv.conversationID,
+    threadId: conv.conversationID,
     name: conv.showName || "Unknown User",
     username: conv.userID || conv.groupID || "",
     avatar:
       conv.faceURL ||
       "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
-    lastMessage: parseLatestMessage(conv.latestMsg),
+    lastMessage: parseLatestMessage(conv.latestMsg, currentUserId),
     timestamp: formatTimestamp(conv.latestMsgSendTime),
     unreadCount: conv.unreadCount,
     isOnline: true, // Default to online, you can implement real status later
@@ -94,32 +103,32 @@ const transformConversationData = (
 
 interface DeskConversationListProps {
   onConversationSelect?: (conversationId: string, threadId: string) => void;
-  selectedConversationId?: string;
   className?: string;
 }
 
 const DeskConversationList = ({
   onConversationSelect,
-  selectedConversationId,
   className = "",
 }: DeskConversationListProps) => {
-  const { conversationList } = useConversationList();
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const currentThreadId = searchParams.get("threadId");
-  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(
-    currentThreadId
+  const { user } = useChatContext();
+  const selectedThreadId = useMessageStore((state) => state.selectedThreadId);
+  const setSelectedThreadId = useMessageStore(
+    (state) => state.setSelectedThreadId
   );
+  const { markConversationMessageAsRead } = useMessage(selectedThreadId);
+  const { conversationList } = useConversationList(selectedThreadId);
 
-  useEffect(() => {
-    setSelectedThreadId(currentThreadId);
-  }, [currentThreadId]);
+  console.log("conversationList", conversationList);
 
   // Transform real conversation data from the API
-  const conversations = transformConversationData(conversationList || []);
+  const conversations = transformConversationData(
+    conversationList || [],
+    user?.userID
+  );
 
   const filteredConversations = conversations.filter(
     (conv: DeskConversationItem) =>
@@ -129,14 +138,31 @@ const DeskConversationList = ({
 
   const handleConversationClick = (conversation: DeskConversationItem) => {
     const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("threadId", conversation.threadId);
-
+    newSearchParams.set("threadId", conversation.id);
     router.push(`${pathname}?${newSearchParams.toString()}`);
 
-    setSelectedThreadId(conversation.threadId);
+    setSelectedThreadId(conversation.id);
 
-    onConversationSelect?.(conversation.id, conversation.threadId);
+    onConversationSelect?.(conversation.id, conversation.id);
   };
+
+  useEffect(() => {
+    const threadId = searchParams.get("threadId");
+    if (threadId) {
+      setSelectedThreadId(threadId);
+    } else if (conversations.length > 0) {
+      setSelectedThreadId(conversations[0].id);
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set("threadId", conversations[0].id);
+      router.replace(`${pathname}?${newSearchParams.toString()}`);
+    }
+  }, [searchParams, conversations.length]);
+
+  useEffect(() => {
+    if (selectedThreadId) {
+      markConversationMessageAsRead();
+    }
+  }, [selectedThreadId]);
 
   return (
     <div

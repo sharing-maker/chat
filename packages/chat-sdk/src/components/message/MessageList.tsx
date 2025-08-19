@@ -165,7 +165,7 @@ const MessageList = (props: MessageListProps) => {
         )}
       </div>
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="relative h-full h-full">
+        <div className="relative h-full">
           <div
             ref={scrollRef}
             className="h-full overflow-y-auto p-3 sm:p-4 flex flex-col gap-2"
