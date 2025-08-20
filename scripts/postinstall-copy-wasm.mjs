@@ -3,24 +3,20 @@ import path from "path";
 import { glob } from "glob";
 import { fileURLToPath } from "url";
 
-// --- Configuration ---
-// The package inside your local `packages/chat-sdk` that contains the assets.
 const WASM_PACKAGE_NAME = "@openim/wasm-client-sdk";
-// The folder inside that package containing the files to copy.
 const ASSETS_SUBFOLDER = "assets";
-// --- End Configuration ---
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Get the project root (assuming this script is in `scripts/` at the root)
 const projectRoot = path.resolve(__dirname, "..");
+
+// Tên file muốn exclude (ví dụ)
+const EXCLUDE_FILE = "openIM.wasm";
 
 console.log("Starting postinstall script to copy WASM assets...");
 
 async function run() {
   try {
-    // Define the source directory for the WASM assets
     const sourceDir = path.join(
       projectRoot,
       "packages",
@@ -40,25 +36,29 @@ async function run() {
     console.log(`Source assets directory: ${sourceDir}`);
 
     if (!fs.existsSync(sourceDir)) {
-      console.error(`\n\n--- ERROR ---`);
       console.error(`Source directory not found: ${sourceDir}`);
-      console.error(
-        `Please ensure 'pnpm install' has been run within the 'packages/chat-sdk' workspace or at the root.`
-      );
-      console.error(`-------------\n\n`);
       process.exit(1);
     }
 
-    // Ensure the public directory exists
     await fs.ensureDir(assetsDir);
 
-    // Copy the assets
-    await fs.copy(sourceDir, assetsDir, {
-      overwrite: true,
-      errorOnExist: false,
-    });
+    // Lấy tất cả file trong source, exclude file cụ thể
+    const files = await glob(`${sourceDir}/**/*`, { nodir: true });
 
-    console.log(`  -> Successfully copied assets to ${assetsDir}`);
+    for (const file of files) {
+      if (path.basename(file) === EXCLUDE_FILE) continue; // skip file exclude
+
+      // Lấy đường dẫn tương đối so với source
+      const relativePath = path.relative(sourceDir, file);
+      const destPath = path.join(assetsDir, relativePath);
+
+      await fs.ensureDir(path.dirname(destPath));
+      await fs.copyFile(file, destPath);
+    }
+
+    console.log(
+      `  -> Successfully copied assets to ${assetsDir} (excluded ${EXCLUDE_FILE})`
+    );
   } catch (error) {
     console.error("An error occurred during the postinstall script:", error);
     process.exit(1);
