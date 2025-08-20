@@ -14,7 +14,6 @@ export const useConversationList = (selectedThreadId?: string) => {
   const getAllConversationList = useCallback(async () => {
     DChatSDK.getAllConversationList()
       .then(({ data }) => {
-        console.log("getAllConversationList", data);
         setConversationList(data);
       })
       .catch((err) => {
@@ -66,7 +65,6 @@ export const useConversationDetail = ({
       sessionType,
     })
       .then(({ data }) => {
-        console.log("getOneConversation", data);
         setConversationDetail(data);
       })
       .catch((err) => {

@@ -122,8 +122,6 @@ const DeskConversationList = ({
   const { markConversationMessageAsRead } = useMessage(selectedThreadId);
   const { conversationList } = useConversationList(selectedThreadId);
 
-  console.log("conversationList", conversationList);
-
   // Transform real conversation data from the API
   const conversations = transformConversationData(
     conversationList || [],

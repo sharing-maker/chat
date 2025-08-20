@@ -27,7 +27,6 @@ export const useMessage = (conversationId?: string) => {
       viewType: ViewType.History,
     })
       .then(({ data }) => {
-        console.log("getAdvancedHistoryMessageList", data);
         setDataMessages(data);
       })
       .catch((err) => {
@@ -60,7 +59,6 @@ export const useMessage = (conversationId?: string) => {
 
   useEffect(() => {
     DChatSDK.on(CbEvents.OnRecvNewMessages, ({ data }) => {
-      console.log("OnRecvNewMessages123", data);
       onRecvNewMessages(data);
     });
     return () => {
