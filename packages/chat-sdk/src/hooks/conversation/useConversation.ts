@@ -29,19 +29,21 @@ export const useConversationList = (selectedThreadId?: string) => {
   useEffect(() => {
     DChatSDK.on(CbEvents.OnConversationChanged, ({ data }) => {
       setConversationList(data);
-      if (selectedThreadId) {
-        console.log("trigger");
-        DChatSDK.markConversationMessageAsRead(selectedThreadId).catch(
-          ({ errCode, errMsg }) => {
-            console.error("Failed to mark messages as read", errCode, errMsg);
-          }
-        );
-      }
     });
     return () => {
       DChatSDK.off(CbEvents.OnConversationChanged, () => {});
     };
   }, []);
+
+  setTimeout(() => {
+    if (selectedThreadId) {
+      DChatSDK.markConversationMessageAsRead(selectedThreadId).catch(
+        ({ errCode, errMsg }) => {
+          console.error("Failed to mark messages as read", errCode, errMsg);
+        }
+      );
+    }
+  }, 1000);
 
   return {
     conversationList,
