@@ -1,4 +1,5 @@
-import DChatDeskMessage from "./screens/desk-message";
+import DChatDeskMessage from "./screens/deskMessage";
+import DChatBubble from "./screens/chatBubble";
 import {
   Platform,
   LogLevel,
@@ -6,13 +7,12 @@ import {
   InitAndLoginConfig,
 } from "@openim/wasm-client-sdk";
 import { Icon } from "./components/icon";
-import ChatBubble from "./components/ChatBubble";
 
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
 
 //Components
-export { DChatDeskMessage, ChatBubble, Icon };
+export { DChatDeskMessage, DChatBubble, Icon };
 
 //Hooks
 export { useDChatAuth } from "./hooks/user/useAuth";

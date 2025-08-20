@@ -6,8 +6,13 @@ interface SendMessageProps {
 }
 
 export const createTextMessage = async (text: string) => {
-  let textMessage = await DChatSDK.createTextMessage(text)
+  console.log("createTextMessage", text);
+  let textMessage = await DChatSDK.createTextMessage(
+    text,
+    new Date().getTime().toString()
+  )
     .then(({ data }) => {
+      console.log("createTextMessage", data);
       return data;
     })
     .catch(({ errCode, errMsg }) => {

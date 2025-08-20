@@ -38,6 +38,8 @@ const MessageList = (props: MessageListProps) => {
         : conversationData?.groupID || "",
   });
   const [textMessage, setTextMessage] = useState("");
+  const [composing, setComposing] = useState(false);
+
   const [showScrollToBottomButton, setShowScrollToBottomButton] =
     useState(false);
 
@@ -184,10 +186,16 @@ const MessageList = (props: MessageListProps) => {
               value={textMessage}
               onChange={(e) => setTextMessage(e.target.value)}
               onKeyDown={(e) => {
+                if (composing) {
+                  return;
+                }
+
                 if (e.key === "Enter") {
                   onSendTextMessage();
                 }
               }}
+              onCompositionStart={() => setComposing(true)}
+              onCompositionEnd={() => setComposing(false)}
             />
             <Tooltip title="Gửi tin nhắn">
               <Button
