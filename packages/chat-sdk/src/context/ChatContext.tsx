@@ -2,13 +2,16 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { CbEvents, SelfUserInfo } from "@openim/wasm-client-sdk";
-import { ChatContextType, ChatProviderProps } from "../types/chat";
-import { Spin } from "antd";
+import {
+  ChatContextType,
+  ChatProviderProps,
+  ConnectStatus,
+} from "../types/chat";
 import { DChatSDK } from "../constants/sdk";
 
 export const ChatContext = createContext<ChatContextType>({
   user: null,
-  isConnected: false,
+  connectStatus: ConnectStatus.Disconnected,
 });
 
 export const useChatContext = () => useContext(ChatContext);
@@ -18,7 +21,9 @@ export const ChatProvider = ({
   config,
   refetchToken,
 }: ChatProviderProps) => {
-  const [isConnected, setIsConnected] = useState(false);
+  const [connectStatus, setConnectStatus] = useState<ConnectStatus>(
+    ConnectStatus.Disconnected
+  );
   const [user, setUser] = useState<SelfUserInfo | null>(null);
 
   const getUserInfo = () => {
@@ -66,22 +71,25 @@ export const ChatProvider = ({
       });
     });
     DChatSDK.on(CbEvents.OnConnectSuccess, () => {
-      setIsConnected(true);
+      setConnectStatus(ConnectStatus.Connected);
+    });
+    DChatSDK.on(CbEvents.OnConnecting, () => {
+      setConnectStatus(ConnectStatus.Connecting);
     });
     DChatSDK.on(CbEvents.OnConnectFailed, () => {
-      setIsConnected(false);
+      setConnectStatus(ConnectStatus.Disconnected);
     });
     return () => {
       DChatSDK.off(CbEvents.OnUserTokenExpired, () => {});
       DChatSDK.off(CbEvents.OnUserTokenInvalid, () => {});
       DChatSDK.off(CbEvents.OnConnectSuccess, () => {});
       DChatSDK.off(CbEvents.OnConnectFailed, () => {});
+      DChatSDK.off(CbEvents.OnConnecting, () => {});
     };
   }, [refetchToken]);
 
-  console.log("isConnected", isConnected);
   return (
-    <ChatContext.Provider value={{ user, isConnected }}>
+    <ChatContext.Provider value={{ user, connectStatus }}>
       {children}
     </ChatContext.Provider>
   );

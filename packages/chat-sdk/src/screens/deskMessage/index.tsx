@@ -8,18 +8,21 @@ import AssignedSessionFilter from "../../components/session/AssignedSessionFilte
 import useMessageStore from "../../hooks/zustand/useMessageStore";
 import { useChatContext } from "../../context/ChatContext";
 import { Spin } from "antd";
+import { ConnectStatus } from "../../types/chat";
 
 const DChatDeskMessage = () => {
+  const selectedThreadId = useMessageStore((state) => state.selectedThreadId);
+  const selectedSourceId = useMessageStore((state) => state.selectedSourceId);
+
   const { conversationDetail } = useConversationDetail({
-    sourceID: "123-123",
+    sourceID: selectedSourceId,
     sessionType: SessionType.Group,
   });
-  const selectedThreadId = useMessageStore((state) => state.selectedThreadId);
 
-  const { isConnected } = useChatContext();
+  const { connectStatus } = useChatContext();
   return (
     <>
-      {isConnected ? (
+      {connectStatus === ConnectStatus.Connected ? (
         <div className="flex flex-1 flex-row h-screen bg-gray-50">
           <AssignedSessionFilter />
           <DeskConversationList />
@@ -30,7 +33,7 @@ const DChatDeskMessage = () => {
         </div>
       ) : (
         <div className="flex flex-1 flex-row h-screen bg-gray-50">
-          <Spin fullscreen />
+          {connectStatus === ConnectStatus.Connecting && <Spin fullscreen />}
         </div>
       )}
     </>

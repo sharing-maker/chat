@@ -1,8 +1,13 @@
 import { InitAndLoginConfig, SelfUserInfo } from "@openim/wasm-client-sdk";
 
+export enum ConnectStatus {
+  Disconnected = 0,
+  Connected = 1,
+  Connecting = 2,
+}
 export interface ChatContextType {
   user: SelfUserInfo | null;
-  isConnected: boolean;
+  connectStatus: ConnectStatus;
 }
 
 export interface ChatProviderProps {
