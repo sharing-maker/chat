@@ -24,7 +24,6 @@ export const useSendMessage = (props: SendMessageProps) => {
     let result = false;
     if (!recvID && !groupID) return false;
     const textMessage = await createTextMessage(text);
-    console.log("textMessage", textMessage);
     if (!textMessage) return false;
     try {
       await DChatSDK.sendMessage(
