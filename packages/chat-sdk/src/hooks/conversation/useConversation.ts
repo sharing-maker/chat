@@ -35,7 +35,7 @@ export const useConversationList = (selectedThreadId?: string) => {
     };
   }, []);
 
-  setTimeout(() => {
+  useEffect(() => {
     if (selectedThreadId) {
       DChatSDK.markConversationMessageAsRead(selectedThreadId).catch(
         ({ errCode, errMsg }) => {
@@ -43,7 +43,7 @@ export const useConversationList = (selectedThreadId?: string) => {
         }
       );
     }
-  }, 1000);
+  }, [selectedThreadId]);
 
   return {
     conversationList,
