@@ -1,6 +1,7 @@
 import { SessionType } from "@openim/wasm-client-sdk";
 import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
+import { ConnectStatus } from "../../types/chat";
 
 interface DChatBubbleProps {
   conversationId: string;
@@ -11,8 +12,8 @@ interface DChatBubbleProps {
 
 const DChatBubble = (props: DChatBubbleProps) => {
   const { conversationId, sourceID, sessionType, className } = props;
-  const { isConnected } = useChatContext();
-  if (!isConnected) return null;
+  const { connectStatus } = useChatContext();
+  if (connectStatus !== ConnectStatus.Connected) return null;
   return (
     <ChatBubble
       conversationId={conversationId}
