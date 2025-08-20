@@ -1,15 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Input, Avatar, Badge, Empty } from "antd";
-import { ConversationItem } from "@openim/wasm-client-sdk";
+import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
 import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
 import useMessageStore from "../../hooks/zustand/useMessageStore";
 import { useMessage } from "../../hooks/message/useMessage";
 
-interface DeskConversationItem {
+interface DChatConversationItem extends ConversationItem {
   id: string;
   threadId: string;
   name: string;
@@ -84,8 +84,9 @@ const formatTimestamp = (timestamp: number): string => {
 const transformConversationData = (
   apiData: ConversationItem[],
   currentUserId?: string
-): DeskConversationItem[] => {
+): DChatConversationItem[] => {
   return apiData.map((conv) => ({
+    ...conv,
     id: conv.conversationID,
     threadId: conv.conversationID,
     name: conv.showName || "Unknown User",
@@ -119,6 +120,9 @@ const DeskConversationList = ({
   const setSelectedThreadId = useMessageStore(
     (state) => state.setSelectedThreadId
   );
+  const setSelectedSourceId = useMessageStore(
+    (state) => state.setSelectedSourceId
+  );
   const { markConversationMessageAsRead } = useMessage(selectedThreadId);
   const { conversationList } = useConversationList(selectedThreadId);
 
@@ -129,12 +133,12 @@ const DeskConversationList = ({
   );
 
   const filteredConversations = conversations.filter(
-    (conv: DeskConversationItem) =>
+    (conv: DChatConversationItem) =>
       conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleConversationClick = (conversation: DeskConversationItem) => {
+  const handleConversationClick = (conversation: DChatConversationItem) => {
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("threadId", conversation.id);
     router.push(`${pathname}?${newSearchParams.toString()}`);
@@ -143,6 +147,20 @@ const DeskConversationList = ({
 
     onConversationSelect?.(conversation.id, conversation.id);
   };
+
+  const onSetSelectedSourceId = useCallback(() => {
+    const selectedConversation = conversations.findIndex(
+      (conv: DChatConversationItem) => conv.id === selectedThreadId
+    );
+    if (selectedConversation !== -1) {
+      const conversation = conversations[selectedConversation];
+      const sourceId =
+        conversation.conversationType === SessionType.Group
+          ? conversation.groupID
+          : conversation.userID;
+      setSelectedSourceId(sourceId);
+    }
+  }, [conversationList, selectedThreadId]);
 
   useEffect(() => {
     const threadId = searchParams.get("threadId");
@@ -157,10 +175,11 @@ const DeskConversationList = ({
   }, [searchParams, conversations.length]);
 
   useEffect(() => {
-    if (selectedThreadId) {
+    if (!!selectedThreadId) {
       markConversationMessageAsRead();
+      onSetSelectedSourceId();
     }
-  }, [selectedThreadId]);
+  }, [selectedThreadId, onSetSelectedSourceId, markConversationMessageAsRead]);
 
   return (
     <div
@@ -177,7 +196,7 @@ const DeskConversationList = ({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.map((conversation: DeskConversationItem) => (
+        {filteredConversations.map((conversation: DChatConversationItem) => (
           <div
             key={conversation.id}
             onClick={() => handleConversationClick(conversation)}

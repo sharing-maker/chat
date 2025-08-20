@@ -1,15 +1,14 @@
+"use client";
 import type React from "react";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import MainLayout from "@web/components/layouts/MainLayout";
 import "./globals.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Droppii Chat Management",
-  description: "Chat management system for Droppii",
-};
+// Create a client
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -23,7 +22,9 @@ export default function RootLayout({
         <script src="/wasm_exec.js" />
       </head>
       <body className={inter.className}>
-        <MainLayout>{children}</MainLayout>
+        <QueryClientProvider client={queryClient}>
+          <MainLayout>{children}</MainLayout>
+        </QueryClientProvider>
       </body>
     </html>
   );
