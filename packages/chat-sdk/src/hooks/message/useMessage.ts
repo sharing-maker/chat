@@ -42,6 +42,18 @@ export const useMessage = (conversationId?: string) => {
     [getAdvancedHistoryMessageList]
   );
 
+  const markConversationMessageAsRead = useCallback(
+    (message?: MessageItem) => {
+      if (!conversationId) return;
+      DChatSDK.markConversationMessageAsRead(conversationId)
+        .then()
+        .catch(({ errCode, errMsg }) => {
+          // Failed call
+        });
+    },
+    [conversationId]
+  );
+
   useEffect(() => {
     getAdvancedHistoryMessageList();
   }, [getAdvancedHistoryMessageList]);
@@ -59,5 +71,6 @@ export const useMessage = (conversationId?: string) => {
   return {
     ...dataMessages,
     refetch: getAdvancedHistoryMessageList,
+    markConversationMessageAsRead,
   };
 };

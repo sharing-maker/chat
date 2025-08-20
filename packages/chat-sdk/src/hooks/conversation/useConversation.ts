@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { DChatSDK } from "../../constants/sdk";
 
-export const useConversationList = () => {
+export const useConversationList = (selectedThreadId?: string) => {
   const [conversationList, setConversationList] = useState<ConversationItem[]>(
     []
   );
@@ -34,6 +34,16 @@ export const useConversationList = () => {
       DChatSDK.off(CbEvents.OnConversationChanged, () => {});
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedThreadId) {
+      DChatSDK.markConversationMessageAsRead(selectedThreadId).catch(
+        ({ errCode, errMsg }) => {
+          console.error("Failed to mark messages as read", errCode, errMsg);
+        }
+      );
+    }
+  }, [selectedThreadId]);
 
   return {
     conversationList,

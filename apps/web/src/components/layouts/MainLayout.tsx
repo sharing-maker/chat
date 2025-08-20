@@ -4,9 +4,8 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
-import { ChatProvider } from "@droppii-org/chat-sdk";
+import { ChatProvider, useDChatAuth } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat";
-import { useDChatAuth } from "@droppii-org/chat-sdk";
 
 interface MainLayoutProps {
   children: React.ReactNode;

@@ -3,7 +3,6 @@
     "target": "es2017",
     "module": "esnext",
     "lib": ["dom", "esnext"],
-    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "emitDeclarationOnly": false,

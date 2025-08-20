@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@droppii-org/chat-sdk"],
+  transpilePackages: ["@droppii-org/chat-sdk", "@droppii-org/ui"],
   experimental: {
     typedRoutes: true,
   },
