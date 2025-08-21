@@ -74,22 +74,21 @@ export function createFormElement<TFromElement, TNonNativeOnChange = any>(
     const isError = Boolean(error);
 
     return (
-      <div
-        className={containerClassName}
-        style={{ display: "flex", flexDirection: "column", width: "100%" }}
-      >
+      <div className={`flex flex-col gap-1 w-full ${containerClassName || ""}`}>
         <AntdText
           size="sm"
           strong={strongLabel}
-          style={{
-            marginBottom: 8,
-            height: noLabel ? 0 : 22,
-          }}
+          style={{ height: noLabel ? 0 : 22 }}
           type={error ? "danger" : undefined}
+          className={`flex items-center gap-1 ${
+            error ? "text-red-500" : "text-gray-700"
+          } ${noLabel ? "h-0" : "h-6"}`}
         >
-          {isRequired ? <span style={{ color: "red" }}>* </span> : null}
+          {isRequired ? <span className="text-red-500">* </span> : null}
           {label}
-          <span style={{ marginLeft: 4 }}>{helpText}</span>
+          {helpText && (
+            <span className="ml-1 text-xs text-gray-400">{helpText}</span>
+          )}
         </AntdText>
         <Controller
           control={control}
@@ -119,7 +118,11 @@ export function createFormElement<TFromElement, TNonNativeOnChange = any>(
           rules={rules}
         />
         {error ? (
-          <Text style={{ fontSize: 12 }} type="danger">
+          <Text
+            className="text-xs mt-2"
+            style={{ color: "#ef4444" }}
+            type="danger"
+          >
             {error?.message}
           </Text>
         ) : null}
