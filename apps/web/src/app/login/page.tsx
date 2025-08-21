@@ -50,9 +50,10 @@ export default function LoginPage() {
     <FormProvider {...formInstance}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-lg"
+        className="flex flex-col gap-6 w-full h-full bg-white rounded-2xl shadow-xl p-16 py-16 border border-gray-200 justify-center"
+        style={{ minHeight: "600px" }}
       >
-        <h1 className="text-2xl font-semibold mb-6 text-center">
+        <h1 className="text-3xl font-bold mb-10 text-center text-gray-900">
           Đăng nhập Quản lý Chat
         </h1>
 
@@ -61,7 +62,8 @@ export default function LoginPage() {
           label="Tài khoản"
           isRequired={true}
           placeholder="Nhập tài khoản"
-          prefix={<Icon icon="user-b" className="text-blue-600" />}
+          prefix={<Icon icon="user-b" className="text-blue-600 text-2xl" />}
+          className="h-14 text-lg"
         />
 
         <AntdInputForm
@@ -70,14 +72,15 @@ export default function LoginPage() {
           isRequired={true}
           type="password"
           placeholder="Nhập mật khẩu"
-          prefix={<Icon icon="lock-b" className="text-blue-600" />}
+          prefix={<Icon icon="lock-b" className="text-blue-600 text-2xl" />}
+          className="h-14 text-lg"
         />
 
         <AntdButton
           htmlType="submit"
           type="primary"
           disabled={isSubmitting}
-          className="w-full mt-4"
+          className="w-full mt-8 h-14 text-lg font-semibold rounded-xl"
         >
           {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
         </AntdButton>

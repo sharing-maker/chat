@@ -33,7 +33,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <ChatProvider config={chatConfigProps} refetchToken={onRefetchChatToken}>
-      <div className="flex min-h-screen bg-white">
+      <div className="flex bg-white">
         {shouldShowSidebar && <Sidebar onLogout={logout} />}
         <div className="flex-1 bg-white">{children}</div>
       </div>
