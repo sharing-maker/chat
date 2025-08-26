@@ -123,8 +123,8 @@ const DeskConversationList = ({
   const setSelectedSourceId = useMessageStore(
     (state) => state.setSelectedSourceId
   );
-  const { markConversationMessageAsRead } = useMessage(selectedThreadId);
-  const { conversationList } = useConversationList(selectedThreadId);
+  const { conversationList, markConversationMessageAsRead } =
+    useConversationList(selectedThreadId);
 
   // Transform real conversation data from the API
   const conversations = transformConversationData(
@@ -176,14 +176,14 @@ const DeskConversationList = ({
 
   useEffect(() => {
     if (!!selectedThreadId) {
-      markConversationMessageAsRead();
+      markConversationMessageAsRead(selectedThreadId);
       onSetSelectedSourceId();
     }
   }, [selectedThreadId, onSetSelectedSourceId, markConversationMessageAsRead]);
 
   return (
     <div
-      className={`flex flex-col h-full bg-white border-r border-gray-200 ${className}`}
+      className={`flex flex-col h-full bg-white border-r border-gray-200 w-[320px] ${className}`}
     >
       <div className="p-3 border-b border-gray-200">
         <Input

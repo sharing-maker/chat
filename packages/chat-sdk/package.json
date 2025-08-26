@@ -1,6 +1,6 @@
 {
   "name": "@droppii-org/chat-sdk",
-  "version": "0.0.19",
+  "version": "0.0.21",
   "description": "Droppii React Chat SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -37,6 +37,14 @@
       "import": "./dist/constants/*.js",
       "types": "./dist/constants/*.d.ts"
     },
+    "./layout/*": {
+      "import": "./dist/layout/*.js",
+      "types": "./dist/layout/*.d.ts"
+    },
+    "./utils/*": {
+      "import": "./dist/utils/*.js",
+      "types": "./dist/utils/*.d.ts"
+    },
     "./styles/global.css": "./dist/styles/global.css"
   },
   "files": [
@@ -62,15 +70,22 @@
     "access": "public"
   },
   "dependencies": {
+    "@lexical/react": "^0.34.0",
     "@openim/wasm-client-sdk": "3.8.3-patch.10",
     "@tailwindcss/postcss": "^4.1.12",
+    "ahooks": "^3.9.4",
     "antd": "^5.27.0",
     "clsx": "^2.0.0",
+    "dayjs": "^1.11.13",
+    "lexical": "^0.34.0",
     "lucide-react": "^0.263.1",
+    "mitt": "^3.0.1",
     "postcss": "^8.5.6",
     "react-icomoon": "^2.6.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss": "^3.3.0",
+    "uuid": "^11.1.0",
     "zustand": "^5.0.7"
   },
   "peerDependencies": {

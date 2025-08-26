@@ -8,6 +8,7 @@ import {
   ConnectStatus,
 } from "../types/chat";
 import { DChatSDK } from "../constants/sdk";
+import MainLayout from "../layout";
 
 export const ChatContext = createContext<ChatContextType>({
   user: null,
@@ -90,7 +91,7 @@ export const ChatProvider = ({
 
   return (
     <ChatContext.Provider value={{ user, connectStatus }}>
-      {children}
+      <MainLayout>{children}</MainLayout>
     </ChatContext.Provider>
   );
 };

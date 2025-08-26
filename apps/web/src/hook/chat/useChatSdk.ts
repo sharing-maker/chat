@@ -13,7 +13,7 @@ export const useChatSdkSetup = () => {
       wsAddr: "wss://apistg.droppii.com/chat-service/ws",
       userID: "1967023155",
       token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIxOTY3MDIzMTU1IiwiUGxhdGZvcm1JRCI6NSwiZXhwIjoxNzYzNDU0Mzc2LCJpYXQiOjE3NTU2NzgzNzF9.MFvJVcqKZPN3_yw_g9MAVNG1TfRlc4LOjxqBCyCohN4",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIxOTY3MDIzMTU1IiwiUGxhdGZvcm1JRCI6NSwiZXhwIjoxNzYzOTc4MjI4LCJpYXQiOjE3NTYyMDIyMjN9.5cZt68eJ2CCQBfbAb7hY5Nv9d2XvofFy3Go5kGpFgr4",
     };
   }, []);
 
