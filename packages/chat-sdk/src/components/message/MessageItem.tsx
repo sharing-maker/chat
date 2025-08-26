@@ -24,7 +24,7 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
       <div className="flex justify-center">
         <span className="text-xs text-gray-600 text-center bg-neutral-100 px-2 py-1 rounded-full">
           {dayjs(groupMessage?.sendTime).format(
-            isToday ? "HH:mm" : "HH:mm, DD MM"
+            isToday ? "HH:mm" : "HH:mm, DD MMMM"
           )}
         </span>
       </div>
