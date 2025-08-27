@@ -1,16 +1,12 @@
-import { $getRoot, $getSelection } from "lexical";
-import { useEffect } from "react";
-
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+"use client";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import FooterBottomSection from "./BottomSection";
 
 const theme = {
   // Theme styling goes here
-  //...
 };
 
 // Catch any errors that occur during Lexical updates and log them
@@ -29,17 +25,23 @@ const initialConfig = {
 const MessageFooter = () => {
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <RichTextPlugin
-        contentEditable={
-          <ContentEditable
-            aria-placeholder={"Enter some text..."}
-            placeholder={<div>Enter some text...</div>}
+      <div className="border-t px-4 py-3">
+        <div className="relative">
+          <RichTextPlugin
+            contentEditable={
+              <ContentEditable className="border border-indigo-500 rounded-md bg-blue-100 min-h-[64px] px-3 py-2 text-sm" />
+            }
+            ErrorBoundary={LexicalErrorBoundary}
+            aria-placeholder="Nhập tin nhắn"
+            placeholder={
+              <div className="absolute top-2 left-3">
+                <p className="text-gray-500 text-sm">Nhập tin nhắn</p>
+              </div>
+            }
           />
-        }
-        ErrorBoundary={LexicalErrorBoundary}
-      />
-      <HistoryPlugin />
-      <AutoFocusPlugin />
+        </div>
+        <FooterBottomSection />
+      </div>
     </LexicalComposer>
   );
 };

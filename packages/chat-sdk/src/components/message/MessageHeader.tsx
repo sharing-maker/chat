@@ -19,24 +19,36 @@ const MessageHeader = ({ conversationData, onClose }: MessageHeaderProps) => {
         <p>{conversationData?.showName || ""}</p>
         <p className="text-xs text-gray-500">{"2 thành viên"}</p>
       </div>
-      <div className="flex items-center gap-1">
-        <Button type="text" shape="default" className="text-gray-500 px-2">
-          <Icon icon="search-o" size={24} />
+      <div className="flex items-center gap-2">
+        <Button
+          type="text"
+          shape="default"
+          className="text-gray-500 w-8 h-8 p-0"
+        >
+          <Icon icon="search-o" size={22} />
         </Button>
-        <Button type="text" shape="default" className="text-gray-500 px-2">
-          <Icon icon="folder-o" size={24} />
+        <Button
+          type="text"
+          shape="default"
+          className="text-gray-500 w-8 h-8 p-0"
+        >
+          <Icon icon="folder-o" size={22} />
         </Button>
-        <Button type="text" shape="default" className="text-gray-500 px-2">
-          <Icon icon="align-justify-o" size={24} />
+        <Button
+          type="text"
+          shape="default"
+          className="text-gray-500 w-8 h-8 p-0"
+        >
+          <Icon icon="align-justify-o" size={22} />
         </Button>
         {!!onClose && (
           <Button
             type="text"
             shape="default"
-            className="text-gray-500 px-2"
+            className="text-gray-500 w-8 h-8 p-0"
             onClick={onClose}
           >
-            <Icon icon="close-b" size={24} />
+            <Icon icon="close-b" size={22} />
           </Button>
         )}
       </div>

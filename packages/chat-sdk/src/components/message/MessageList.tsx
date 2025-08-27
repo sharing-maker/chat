@@ -11,6 +11,7 @@ import emitter from "../../utils/events";
 import MessageItem from "./MessageItem";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MessageHeader from "./MessageHeader";
+import MessageFooter from "./footer";
 
 dayjs.extend(isToday);
 
@@ -84,10 +85,7 @@ const MessageList = (props: MessageListProps) => {
       >
         <InfiniteScroll
           dataLength={loadState.groupMessageList?.length || 0}
-          next={() => {
-            console.log("loadMoreMessage");
-            loadMoreMessage();
-          }}
+          next={loadMoreMessage}
           style={{ display: "flex", flexDirection: "column-reverse" }}
           inverse={true}
           hasMore={loadState.hasMoreOld}
@@ -104,7 +102,8 @@ const MessageList = (props: MessageListProps) => {
         </InfiniteScroll>
       </div>
 
-      <div className="border-t px-4 py-3">
+      <MessageFooter />
+      {/* <div className="border-t px-4 py-3">
         <div className="border rounded-lg bg-gray-50">
           <div className="px-4 py-3 flex items-center gap-4">
             <Input
@@ -137,7 +136,7 @@ const MessageList = (props: MessageListProps) => {
             </Tooltip>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
