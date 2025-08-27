@@ -11,3 +11,19 @@ export const apiInstance = axios.create({
   },
   timeout: TIMEOUT,
 });
+
+apiInstance.interceptors.request.use(
+  (config: any) => {
+    return {
+      ...config,
+      headers: {
+        ...config.headers,
+        Authorization: `Bearer ${window.localStorage.getItem("user_token")}`,
+      },
+    };
+  },
+  (error) => {
+    // Handle errors globally
+    return Promise.reject(error);
+  }
+);

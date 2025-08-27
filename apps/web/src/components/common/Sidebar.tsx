@@ -32,48 +32,41 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleLogout = async () => {
-    // Có thể thêm logic xóa token/session ở đây
-    // localStorage.removeItem('authToken');
-    await onLogout?.();
-    router.push("/login");
-  };
-
-  if (pathname === "/login") {
-    return null;
-  }
-
-  if (!mounted) {
-    return <SidebarSkeleton />;
-  }
-
+  // ...existing code up to the main return...
   return (
     <div
       className={`${
         isCollapsed ? "w-16" : "w-64"
-      } bg-gray-900 text-white min-h-screen transition-all duration-300 ease-in-out flex flex-col`}
+      } bg-gray-900 text-white min-h-screen transition-all duration-300 ease-in-out flex flex-col ${
+        isCollapsed ? "items-center" : ""
+      }`}
     >
       {/* Header with Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-700">
-        {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <Image src="/droppii.svg" alt="Logo" width={32} height={32} />
-            <h1 className="text-lg font-bold">Droppii Chat</h1>
-          </div>
-        )}
-        {isCollapsed && (
-          <Image src="/droppii.svg" alt="Logo" width={24} height={24} />
-        )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 rounded hover:bg-gray-800 transition-colors ml-auto"
+      <div className="flex items-center justify-between p-4 border-b h-16 border-gray-700">
+        <div
+          className={`flex items-center gap-4 cursor-pointer ${
+            isCollapsed ? "justify-center w-full" : ""
+          }`}
+          onClick={() => isCollapsed && setIsCollapsed(false)}
         >
-          <Icon icon="menu" size={16} />
-        </button>
+          <Image src="/droppii.svg" alt="Logo" width={32} height={32} />
+          {!isCollapsed && (
+            <h1 className="text-lg font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+              Droppii Chat
+            </h1>
+          )}
+        </div>
+        {!isCollapsed && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCollapsed(true);
+            }}
+            className="p-1 rounded hover:bg-gray-800 transition-colors ml-auto"
+          >
+            <Icon icon="control-bar-b" size={16} />
+          </button>
+        )}
       </div>
 
       {/* Navigation Menu */}
@@ -95,7 +88,9 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
                     <Icon icon={item.icon} size={20} />
                   </div>
                   {!isCollapsed && (
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium whitespace-nowrap overflow-hidden">
+                      {item.label}
+                    </span>
                   )}
                 </Link>
               </li>
@@ -105,7 +100,7 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
       </nav>
 
       {/* User Profile Section */}
-      <div className="border-t border-gray-700 p-4">
+      <div className="border-t border-gray-700 h-28 p-4">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
             <svg
@@ -118,10 +113,10 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
           </div>
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-white truncate">
+              <p className="text-sm font-medium whitespace-nowrap overflow-hidden text-white truncate">
                 Admin User
               </p>
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-gray-400 whitespace-nowrap overflow-hidden truncate">
                 admin@droppii.com
               </p>
             </div>
@@ -129,14 +124,20 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
         </div>
 
         <button
-          onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group ${
-            isCollapsed ? "justify-center" : ""
-          }`}
+          onClick={() => {
+            window.localStorage.removeItem("user_token");
+            onLogout?.();
+            router.push("/login");
+          }}
+          className={`w-full flex items-center py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group`}
         >
-          <Icon icon="logout-o" size={20} className="flex-shrink-0" />
+          <span className="w-8 flex justify-center">
+            <Icon icon="logout-o" size={20} className="flex-shrink-0" />
+          </span>
           {!isCollapsed && (
-            <span className="text-sm font-medium">Đăng xuất</span>
+            <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+              Đăng xuất
+            </span>
           )}
         </button>
       </div>

@@ -7,7 +7,6 @@ import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
 import useMessageStore from "../../hooks/zustand/useMessageStore";
-import { useMessage } from "../../hooks/message/useMessage";
 
 interface DChatConversationItem extends ConversationItem {
   id: string;
@@ -179,7 +178,7 @@ const DeskConversationList = ({
       markConversationMessageAsRead(selectedThreadId);
       onSetSelectedSourceId();
     }
-  }, [selectedThreadId, onSetSelectedSourceId, markConversationMessageAsRead]);
+  }, [selectedThreadId, onSetSelectedSourceId]);
 
   return (
     <div
