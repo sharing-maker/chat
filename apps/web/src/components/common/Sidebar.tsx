@@ -129,13 +129,15 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
             onLogout?.();
             router.push("/login");
           }}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group ${
-            isCollapsed ? "justify-center" : ""
-          }`}
+          className={`w-full flex items-center py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group`}
         >
-          <Icon icon="logout-o" size={20} className="flex-shrink-0" />
+          <span className="w-8 flex justify-center">
+            <Icon icon="logout-o" size={20} className="flex-shrink-0" />
+          </span>
           {!isCollapsed && (
-            <span className="text-sm font-medium">Đăng xuất</span>
+            <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+              Đăng xuất
+            </span>
           )}
         </button>
       </div>
