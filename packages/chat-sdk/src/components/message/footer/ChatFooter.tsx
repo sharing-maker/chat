@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useRef, useEffect } from "react"
 import { LexicalComposer } from "@lexical/react/LexicalComposer"
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { ContentEditable } from "@lexical/react/LexicalContentEditable"
@@ -12,6 +13,8 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ListItemNode, ListNode } from "@lexical/list"
 import { CodeHighlightNode, CodeNode } from "@lexical/code"
 import { LinkNode } from "@lexical/link"
+import EmojiPicker from "./EmojiPicker"
+import StickerPicker from "./StickerPicker"
 
 const theme = {
   text: {
@@ -45,8 +48,36 @@ const initialConfig = {
 }
 
 const ChatFooter = () => {
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [showStickerPicker, setShowStickerPicker] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false)
+        setShowStickerPicker(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const handleEmojiSelect = (emoji: string) => {
+    console.log("[v0] Selected emoji:", emoji)
+    // TODO: Insert emoji into editor
+    setShowEmojiPicker(false)
+  }
+
+  const handleStickerSelect = (sticker: string) => {
+    console.log("[v0] Selected sticker:", sticker)
+    // TODO: Insert sticker into editor
+    setShowStickerPicker(false)
+  }
+
   return (
-    <div className="border border-gray-200 rounded-2xl bg-white p-3">
+    <div ref={containerRef} className="border border-gray-200 rounded-2xl bg-white p-3 relative">
       <LexicalComposer initialConfig={initialConfig}>
         <ToolbarPlugin />
 
@@ -63,14 +94,30 @@ const ChatFooter = () => {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative">
             <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
               <span className="text-lg">Aa</span>
             </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => {
+                setShowEmojiPicker(!showEmojiPicker)
+                setShowStickerPicker(false)
+              }}
+              className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${
+                showEmojiPicker ? "bg-blue-100 text-blue-600" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
               🙂
             </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => {
+                setShowStickerPicker(!showStickerPicker)
+                setShowEmojiPicker(false)
+              }}
+              className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${
+                showStickerPicker ? "bg-blue-100 text-blue-600" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
               😀
             </button>
             <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
@@ -88,6 +135,14 @@ const ChatFooter = () => {
             <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
               📡
             </button>
+
+            {showEmojiPicker && (
+              <EmojiPicker onEmojiSelect={handleEmojiSelect} onClose={() => setShowEmojiPicker(false)} />
+            )}
+
+            {showStickerPicker && (
+              <StickerPicker onStickerSelect={handleStickerSelect} onClose={() => setShowStickerPicker(false)} />
+            )}
           </div>
 
           <button className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-colors">
@@ -95,7 +150,6 @@ const ChatFooter = () => {
           </button>
         </div>
 
-        {/* Lexical plugins */}
         <HistoryPlugin />
         <ListPlugin />
         <LinkPlugin />
