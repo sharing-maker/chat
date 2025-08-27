@@ -1,25 +1,34 @@
 "use client";
 
 import { Icon } from "@droppii-org/chat-sdk";
-import { AntdButton, AntdInputForm } from "@droppii-org/ui";
+import { AntdButton, AntdInputForm, useAntdToast } from "@droppii-org/ui";
+import { useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useFetchToken } from "@web/hook/user/useLogin";
+import useUserStore from "@web/hook/user/useUserStore";
+import { handleLogin } from "../utils/auth";
 
 const loginSchema = z.object({
   username: z
     .string()
     .min(1, "Tài khoản là bắt buộc")
-    .min(3, "Tài khoản phải có ít nhất 3 ký tự"),
-  password: z
-    .string()
-    .min(1, "Mật khẩu là bắt buộc")
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+    .regex(
+      /^[A-Za-z0-9_]+$/,
+      "Tài khoản vui lòng viết liền không dấu, không chứa kí tự đặc biệt"
+    ),
+  password: z.string().min(1, "Mật khẩu là bắt buộc"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const { mutate } = useFetchToken();
+  const setToken = useUserStore((state) => state.setAccessToken);
+  const toast = useAntdToast();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
   const formInstance = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -30,20 +39,27 @@ export default function LoginPage() {
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = formInstance;
 
-  const onSubmit = async (data: LoginFormData) => {
-    try {
-      // TODO: Add your actual login API call here
-      // const result = await loginAPI(data);
-
-      // Navigate to chat page after successful login
-      window.location.href = "/chat";
-    } catch (error) {
-      console.error("Login failed:", error);
-      // Handle login error
-    }
+  const onSubmit = (data: LoginFormData) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      mutate(
+        {
+          username: data.username,
+          password: data.password,
+        },
+        {
+          onSuccess: (data) => {
+            handleLogin({ data, setToken, toast });
+          },
+          onError: (error) => {
+            console.error("Login error:", error);
+          },
+        }
+      );
+    }, 400);
   };
 
   return (

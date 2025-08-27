@@ -7,6 +7,8 @@ import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
 import { ChatProvider } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
+import useUserStore from "@web/hook/user/useUserStore";
+import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,7 +18,21 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { chatConfigProps, onRefetchChatToken } = useChatSdkSetup();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
   const { logout } = useDChatAuth();
+  const { data: currentUser } = useFetchCurrentUser(!hasToken);
+  const setUser = useUserStore((state) => state.setUser);
+
+  useEffect(() => {
+    const token = window.localStorage.getItem("user_token");
+    setHasToken(!!token);
+  }, []);
+
+  useEffect(() => {
+    if (hasToken) {
+      setUser(currentUser);
+    }
+  }, [currentUser, setUser, hasToken]);
 
   useEffect(() => {
     setMounted(true);
