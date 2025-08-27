@@ -9,7 +9,6 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { LinkNode } from "@lexical/link"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ListItemNode, ListNode } from "@lexical/list"
-import { CodeNode } from "@lexical/code"
 import { useEffect, useRef, useState } from "react"
 import EmojiPicker from "./EmojiPicker"
 import StickerPicker from "./StickerPicker"
@@ -22,8 +21,6 @@ const theme = {
     underline: "underline",
   },
   quote: "border-l-4 border-gray-300 pl-4 italic text-gray-600",
-  code: "bg-gray-100 px-1 py-0.5 rounded text-sm font-mono",
-  codeblock: "bg-gray-100 p-3 rounded-lg font-mono text-sm",
   list: {
     nested: {
       listitem: "list-none",
@@ -45,7 +42,7 @@ const initialConfig = {
   namespace: "ChatInput",
   theme,
   onError,
-  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, LinkNode],
+  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode],
 }
 
 const MessageFooter = () => {

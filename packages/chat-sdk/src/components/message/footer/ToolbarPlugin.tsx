@@ -4,7 +4,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND } from "lexical"
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from "@lexical/list"
 import { $createQuoteNode } from "@lexical/rich-text"
-import { $createCodeNode } from "@lexical/code"
 import { TOGGLE_LINK_COMMAND } from "@lexical/link"
 import { useCallback, useEffect, useState } from "react"
 
@@ -64,19 +63,6 @@ export const ToolbarPlugin = () => {
       if ($isRangeSelection(selection)) {
         const quote = $createQuoteNode()
         selection.insertNodes([quote])
-      }
-    })
-  }, [editor, activeFeature])
-
-  const insertCode = useCallback(() => {
-    const newActiveFeature = activeFeature === "code" ? null : "code"
-    setActiveFeature(newActiveFeature)
-
-    editor.update(() => {
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        const code = $createCodeNode()
-        selection.insertNodes([code])
       }
     })
   }, [editor, activeFeature])
@@ -151,12 +137,6 @@ export const ToolbarPlugin = () => {
       <button onClick={insertQuote} className={getButtonClasses(activeFeature === "quote")} title="Quote">
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path d="M6 10c0-2 1.5-4 4-4s4 2 4 4-1.5 4-4 4-4-2-4-4zm8 0c0-2 1.5-4 4-4s4 2 4 4-1.5 4-4 4-4-2-4-4z" />
-        </svg>
-      </button>
-
-      <button onClick={insertCode} className={getButtonClasses(activeFeature === "code")} title="Code">
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M13.962 8.795l1.414-1.414L12 4l-3.376 3.381 1.414 1.414L12 6.828l1.962 1.967zM6.038 11.205l-1.414 1.414L8 16l3.376-3.381-1.414-1.414L8 13.172l-1.962-1.967z" />
         </svg>
       </button>
     </div>

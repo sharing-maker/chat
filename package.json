@@ -25,7 +25,6 @@
     "@droppii-org/chat-sdk": "latest",
     "@droppii-org/ui": "latest",
     "@hookform/resolvers": "latest",
-    "@lexical/code": "latest",
     "@lexical/link": "latest",
     "@lexical/list": "latest",
     "@lexical/react": "latest",
