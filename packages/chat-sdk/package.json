@@ -70,7 +70,11 @@
     "access": "public"
   },
   "dependencies": {
+    "@lexical/code": "^0.34.0",
+    "@lexical/link": "^0.34.0",
+    "@lexical/list": "^0.34.0",
     "@lexical/react": "^0.34.0",
+    "@lexical/rich-text": "^0.34.0",
     "@openim/wasm-client-sdk": "3.8.3-patch.10",
     "@tailwindcss/postcss": "^4.1.12",
     "ahooks": "^3.9.4",

@@ -292,9 +292,21 @@ importers:
 
   packages/chat-sdk:
     dependencies:
+      '@lexical/code':
+        specifier: ^0.34.0
+        version: 0.34.0
+      '@lexical/link':
+        specifier: ^0.34.0
+        version: 0.34.0
+      '@lexical/list':
+        specifier: ^0.34.0
+        version: 0.34.0
       '@lexical/react':
         specifier: ^0.34.0
         version: 0.34.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yjs@13.6.27)
+      '@lexical/rich-text':
+        specifier: ^0.34.0
+        version: 0.34.0
       '@openim/wasm-client-sdk':
         specifier: 3.8.3-patch.10
         version: 3.8.3-patch.10
