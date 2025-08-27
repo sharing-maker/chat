@@ -102,8 +102,8 @@ const MessageList = (props: MessageListProps) => {
         </InfiniteScroll>
       </div>
 
-      {/* <MessageFooter /> */}
-      <div className="border-t px-4 py-3">
+      <MessageFooter />
+      {/* <div className="border-t px-4 py-3">
         <div className="border rounded-lg bg-gray-50">
           <div className="px-4 py-3 flex items-center gap-4">
             <Input
@@ -136,7 +136,7 @@ const MessageList = (props: MessageListProps) => {
             </Tooltip>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
