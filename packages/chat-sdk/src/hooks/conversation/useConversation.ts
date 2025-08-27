@@ -21,6 +21,18 @@ export const useConversationList = (selectedThreadId?: string) => {
       });
   }, []);
 
+  const markConversationMessageAsRead = useCallback(
+    (conversationId: string) => {
+      if (!conversationId) return;
+      DChatSDK.markConversationMessageAsRead(conversationId)
+        .then()
+        .catch(({ errCode, errMsg }) => {
+          // Failed call
+        });
+    },
+    []
+  );
+
   useEffect(() => {
     getAllConversationList();
   }, [getAllConversationList]);
@@ -36,17 +48,14 @@ export const useConversationList = (selectedThreadId?: string) => {
 
   useEffect(() => {
     if (selectedThreadId) {
-      DChatSDK.markConversationMessageAsRead(selectedThreadId).catch(
-        ({ errCode, errMsg }) => {
-          console.error("Failed to mark messages as read", errCode, errMsg);
-        }
-      );
+      markConversationMessageAsRead(selectedThreadId);
     }
-  }, [selectedThreadId]);
+  }, [selectedThreadId, markConversationMessageAsRead]);
 
   return {
     conversationList,
     getAllConversationList,
+    markConversationMessageAsRead,
   };
 };
 
