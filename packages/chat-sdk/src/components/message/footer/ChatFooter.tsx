@@ -9,7 +9,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin"
 import { LinkNode } from "@lexical/link"
 import { HeadingNode, QuoteNode } from "@lexical/rich-text"
 import { ListItemNode, ListNode } from "@lexical/list"
-import { CodeHighlightNode, CodeNode } from "@lexical/code"
+import { CodeNode } from "@lexical/code"
 import { useEffect, useRef, useState } from "react"
 import EmojiPicker from "./EmojiPicker"
 import StickerPicker from "./StickerPicker"
@@ -42,7 +42,7 @@ const initialConfig = {
   namespace: "ChatInput",
   theme,
   onError,
-  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, CodeHighlightNode, LinkNode],
+  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, LinkNode],
 }
 
 const ChatFooter = () => {
