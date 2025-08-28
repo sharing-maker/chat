@@ -37,4 +37,18 @@ export interface GroupMessageItem
 
 export interface ExtendMessageInfo {
   groupMessageID: string;
+  messageInfo?: {
+    type: "MESSAGE_INFO";
+    data: {
+      type: "rich_text";
+      content: string;
+    };
+  };
+  sessionInfo?: {
+    type: "SESSION_INFO";
+    data: {
+      sessionId: string;
+      applicationType: "OBEFE";
+    };
+  };
 }

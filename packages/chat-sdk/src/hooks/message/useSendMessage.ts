@@ -33,15 +33,23 @@ export const useSendMessage = (props: SendMessageProps) => {
   const { user } = useChatContext();
 
   const sendTextMessage = useCallback(
-    async (text: string, lastMessage?: MessageItem) => {
-      let result = null;
-      if (!recvID && !groupID) return null;
-      const textMessage = await createTextMessage(text);
-      if (!textMessage) return null;
-      const extendMessageInfo = generateExtendMessageInfo(
-        user?.userID || "",
-        lastMessage
-      );
+    async ({
+      plainText,
+      richText,
+      lastMessage,
+    }: {
+      plainText: string;
+      richText: string;
+      lastMessage?: MessageItem;
+    }) => {
+      if (!recvID && !groupID) return;
+      const textMessage = await createTextMessage(plainText);
+      if (!textMessage) return;
+      const extendMessageInfo = generateExtendMessageInfo({
+        richText,
+        currentUserID: user?.userID || "",
+        lastMessage,
+      });
       const messageItem = {
         ...textMessage,
         ex: JSON.stringify(extendMessageInfo) || "{}",
@@ -72,10 +80,15 @@ export const useSendMessage = (props: SendMessageProps) => {
   };
 };
 
-export const generateExtendMessageInfo = (
-  currentUserID: string,
-  lastMessage?: MessageItem
-) => {
+export const generateExtendMessageInfo = ({
+  richText,
+  currentUserID,
+  lastMessage,
+}: {
+  richText?: string;
+  currentUserID: string;
+  lastMessage?: MessageItem;
+}) => {
   const diffSendTime = dayjs().diff(lastMessage?.sendTime, "minutes");
   const isSameSender = lastMessage?.sendID === currentUserID;
   const lastMessageExtendMessageInfo = JSON.parse(
@@ -87,5 +100,12 @@ export const generateExtendMessageInfo = (
       isSameSender && diffSendTime <= 5
         ? lastMessageExtendMessageInfo?.groupMessageID || uuidv4()
         : uuidv4(),
+    messageInfo: {
+      type: "MESSAGE_INFO",
+      data: {
+        type: "rich_text",
+        content: richText || "",
+      },
+    },
   } as ExtendMessageInfo;
 };

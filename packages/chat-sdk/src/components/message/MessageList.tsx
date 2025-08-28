@@ -1,14 +1,13 @@
 "use client";
 import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
 import { useMessage } from "../../hooks/message/useMessage";
-import { Button, Input, Spin, Tooltip } from "antd";
-import { Icon } from "../icon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Spin } from "antd";
+import { useCallback, useEffect, useRef } from "react";
 import { useSendMessage } from "../../hooks/message/useSendMessage";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import emitter from "../../utils/events";
-import MessageItem from "./MessageItem";
+import MessageItem from "./item";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MessageHeader from "./MessageHeader";
 import MessageFooter from "./footer";
@@ -38,8 +37,6 @@ const MessageList = (props: MessageListProps) => {
         ? ""
         : conversationData?.groupID || "",
   });
-  const [textMessage, setTextMessage] = useState("");
-  const [composing, setComposing] = useState(false);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -50,16 +47,23 @@ const MessageList = (props: MessageListProps) => {
     });
   };
 
-  const onSendTextMessage = useCallback(async () => {
-    const messageList = latestLoadState.current?.messageList;
-    setTextMessage("");
-    const lastMessage = messageList?.[messageList?.length - 1];
-    sendTextMessage(textMessage, lastMessage);
-  }, [textMessage, sendTextMessage, latestLoadState]);
+  const onSendTextMessage = useCallback(
+    async ({
+      plainText,
+      richText,
+    }: {
+      plainText: string;
+      richText: string;
+    }) => {
+      const messageList = latestLoadState.current?.messageList;
+      const lastMessage = messageList?.[messageList?.length - 1];
+      sendTextMessage({ plainText, richText, lastMessage });
+    },
+    [sendTextMessage, latestLoadState]
+  );
 
   const loadMoreMessage = () => {
     if (!loadState.hasMoreOld || moreOldLoading) return;
-
     getMoreOldMessages();
   };
 
@@ -102,41 +106,7 @@ const MessageList = (props: MessageListProps) => {
         </InfiniteScroll>
       </div>
 
-      {/* <MessageFooter /> */}
-      <div className="border-t px-4 py-3">
-        <div className="border rounded-lg bg-gray-50">
-          <div className="px-4 py-3 flex items-center gap-4">
-            <Input
-              placeholder="Nhập tin nhắn"
-              size="small"
-              variant="borderless"
-              value={textMessage}
-              onChange={(e) => setTextMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (composing) {
-                  return;
-                }
-
-                if (e.key === "Enter") {
-                  onSendTextMessage();
-                }
-              }}
-              onCompositionStart={() => setComposing(true)}
-              onCompositionEnd={() => setComposing(false)}
-            />
-            <Tooltip title="Gửi tin nhắn">
-              <Button
-                type="primary"
-                shape="circle"
-                size="middle"
-                icon={<Icon icon="send-b" color="white" size={16} />}
-                disabled={textMessage.length === 0}
-                onClick={onSendTextMessage}
-              />
-            </Tooltip>
-          </div>
-        </div>
-      </div>
+      <MessageFooter sendTextMessage={onSendTextMessage} />
     </div>
   );
 };

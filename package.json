@@ -21,7 +21,6 @@
     "version-packages": "changeset version"
   },
   "dependencies": {
-    "@ant-design/icons": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
     "@radix-ui/react-aspect-ratio": "latest",
