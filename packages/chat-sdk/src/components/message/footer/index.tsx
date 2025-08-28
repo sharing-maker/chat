@@ -1,17 +1,27 @@
-"use client"
-import { LexicalComposer } from "@lexical/react/LexicalComposer"
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
-import { ContentEditable } from "@lexical/react/LexicalContentEditable"
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
-import { ToolbarPlugin } from "./ToolbarPlugin"
-import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin"
-import { ListPlugin } from "@lexical/react/LexicalListPlugin"
-import { LinkNode } from "@lexical/link"
-import { HeadingNode, QuoteNode } from "@lexical/rich-text"
-import { ListItemNode, ListNode } from "@lexical/list"
-import { useEffect, useRef, useState } from "react"
-import EmojiPicker from "./EmojiPicker"
-import StickerPicker from "./StickerPicker"
+"use client";
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { ToolbarPlugin } from "./ToolbarPlugin";
+import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { LinkNode } from "@lexical/link";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { ListItemNode, ListNode } from "@lexical/list";
+import { useCallback } from "react";
+import EnterHandler from "./EnterHandler";
+import ActionBar from "./ActionBar";
+
+interface IMessageFooterProps {
+  sendTextMessage: ({
+    plainText,
+    richText,
+  }: {
+    plainText: string;
+    richText: string;
+  }) => void;
+}
 
 const theme = {
   text: {
@@ -29,128 +39,54 @@ const theme = {
     ul: "list-disc list-inside",
   },
   link: "text-blue-500 underline hover:text-blue-700",
-}
+};
 
-// Catch any errors that occur during Lexical updates and log them
-// or throw them as needed. If you don't throw them, Lexical will
-// try to recover gracefully without losing user data.
 const onError = (error: Error) => {
-  console.error(error)
-}
+  console.error(error);
+};
 
 const initialConfig = {
   namespace: "ChatInput",
   theme,
   onError,
   nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode],
-}
+};
 
-const MessageFooter = () => {
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
-  const [showStickerPicker, setShowStickerPicker] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+const MessageFooter = (props: IMessageFooterProps) => {
+  const { sendTextMessage } = props;
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setShowEmojiPicker(false)
-        setShowStickerPicker(false)
-      }
-    }
+  const handleSendTextMessage = useCallback(
+    ({ plainText, richText }: { plainText: string; richText: string }) => {
+      sendTextMessage({ plainText, richText });
+    },
+    [sendTextMessage]
+  );
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
-
-  const handleEmojiSelect = (emoji: string) => {
-    console.log("[v0] Selected emoji:", emoji)
-    // TODO: Insert emoji into editor
-    setShowEmojiPicker(false)
-  }
-
-  const handleStickerSelect = (sticker: string) => {
-    console.log("[v0] Selected sticker:", sticker)
-    // TODO: Insert sticker into editor
-    setShowStickerPicker(false)
-  }
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="border-t px-4 py-3">
+      <div className="border-t px-4 py-2 flex flex-col gap-2">
         <ToolbarPlugin />
         <div className="relative">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="border border-indigo-500 rounded-md bg-blue-100 min-h-[64px] px-3 py-2 text-sm" />
+              <ContentEditable className="border border-indigo-500 rounded-md bg-blue-100 min-h-[64px] max-h-[140px] overflow-y-auto px-3 py-2 text-sm" />
             }
             ErrorBoundary={LexicalErrorBoundary}
             aria-placeholder="Nhập tin nhắn"
             placeholder={
-              <div className="absolute top-2 left-3">
+              <div className="absolute top-2 left-3 pointer-events-none">
                 <p className="text-gray-500 text-sm">Nhập tin nhắn</p>
               </div>
             }
           />
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 relative">
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <span className="text-lg">Aa</span>
-            </button>
-            <button
-              onClick={() => {
-                setShowEmojiPicker(!showEmojiPicker)
-                setShowStickerPicker(false)
-              }}
-              className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${
-                showEmojiPicker ? "bg-blue-100 text-blue-600" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              🙂
-            </button>
-            <button
-              onClick={() => {
-                setShowStickerPicker(!showStickerPicker)
-                setShowEmojiPicker(false)
-              }}
-              className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${
-                showStickerPicker ? "bg-blue-100 text-blue-600" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              😀
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              🖼️
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              📎
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              👤
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              🎤
-            </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              📡
-            </button>
-
-            {showEmojiPicker && (
-              <EmojiPicker onEmojiSelect={handleEmojiSelect} onClose={() => setShowEmojiPicker(false)} />
-            )}
-
-            {showStickerPicker && (
-              <StickerPicker onStickerSelect={handleStickerSelect} onClose={() => setShowStickerPicker(false)} />
-            )}
-          </div>
-
-          <button className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-colors">
-            👍
-          </button>
-        </div>
+        <ActionBar onSend={handleSendTextMessage} />
       </div>
       <LinkPlugin />
       <ListPlugin />
+      <EnterHandler onSend={handleSendTextMessage} />
     </LexicalComposer>
-  )
-}
-export default MessageFooter
+  );
+};
+
+export default MessageFooter;

@@ -70,7 +70,9 @@
     "access": "public"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@lexical/code": "^0.34.0",
+    "@lexical/html": "^0.34.0",
     "@lexical/link": "^0.34.0",
     "@lexical/list": "^0.34.0",
     "@lexical/react": "^0.34.0",
