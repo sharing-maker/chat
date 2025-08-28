@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
 import { ChatProvider } from "@droppii-org/chat-sdk";

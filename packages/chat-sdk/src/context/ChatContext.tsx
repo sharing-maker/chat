@@ -38,16 +38,18 @@ export const ChatProvider = ({
   };
 
   const handleLogin = (newToken?: string) => {
-    DChatSDK.login({
-      ...config,
-      token: newToken || config.token,
-    })
-      .then((res) => {
-        getUserInfo();
+    if (config) {
+      DChatSDK.login({
+        ...config,
+        token: newToken || config.token,
       })
-      .catch(({ errCode, errMsg }) => {
-        console.log("handleLogin", errCode, errMsg);
-      });
+        .then((res) => {
+          getUserInfo();
+        })
+        .catch(({ errCode, errMsg }) => {
+          console.log("handleLogin", errCode, errMsg);
+        });
+    }
   };
 
   useEffect(() => {

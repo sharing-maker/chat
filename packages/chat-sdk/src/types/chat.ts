@@ -25,7 +25,7 @@ export interface ChatContextType {
 
 export interface ChatProviderProps {
   children: React.ReactNode;
-  config: InitAndLoginConfig;
+  config: InitAndLoginConfig | null;
   refetchToken: () => Promise<string>;
 }
 
