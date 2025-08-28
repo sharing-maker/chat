@@ -1,6 +1,6 @@
 export const ENDPOINTS = {
   chatService: {
-    getChatToken: "/chat-service/auth/get_user_token",
+    getChatToken: "/chat-service/v1/auth/token",
   },
   identityService: {
     getToken: "/identity-service/v1/identity/get-token",

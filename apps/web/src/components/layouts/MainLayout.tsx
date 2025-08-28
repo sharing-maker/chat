@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
 import { ChatProvider } from "@droppii-org/chat-sdk";
@@ -18,21 +18,25 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { chatConfigProps, onRefetchChatToken } = useChatSdkSetup();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
   const { logout } = useDChatAuth();
-  const { data: currentUser } = useFetchCurrentUser(!hasToken);
   const setUser = useUserStore((state) => state.setUser);
+  const setToken = useUserStore((state) => state.setAccessToken);
+  const setChatToken = useUserStore((state) => state.setChatToken);
+  const token = useUserStore((state) => state.accessToken);
+  const { data: currentUser } = useFetchCurrentUser(!token);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("user_token");
-    setHasToken(!!token);
+    const token = window.localStorage.getItem("user_token") || "";
+    const chatToken = window.localStorage.getItem("chat_token") || "";
+    setToken(token);
+    setChatToken(chatToken);
   }, []);
 
   useEffect(() => {
-    if (hasToken) {
-      setUser(currentUser);
+    if (token && currentUser?.data) {
+      setUser(currentUser?.data);
     }
-  }, [currentUser, setUser, hasToken]);
+  }, [currentUser, setUser, token]);
 
   useEffect(() => {
     setMounted(true);

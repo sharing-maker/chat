@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AntdToastProvider } from "@droppii-org/ui";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
+import useUserStore from "@web/hook/user/useUserStore";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,20 +16,22 @@ const queryClient = new QueryClient();
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const setToken = useUserStore((state) => state.setAccessToken);
+  const setChatToken = useUserStore((state) => state.setChatToken);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("user_token");
+    const token = window.localStorage.getItem("user_token") || "";
+    const chatToken = window.localStorage.getItem("chat_token") || "";
 
-    if (token) {
-      if (pathname === "/login") {
-        router.replace("/chat");
-      }
-    } else {
-      if (pathname !== "/login") {
-        router.replace("/login");
-      }
+    if (!token && !chatToken && pathname !== "/login") {
+      router.replace("/login");
+      return;
     }
-  }, [pathname, router]);
+
+    if (token && chatToken && (pathname === "/login" || pathname === "/")) {
+      router.replace("/chat");
+    }
+  }, [pathname, router, setChatToken, setToken]);
 
   return <>{children}</>;
 }

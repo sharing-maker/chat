@@ -6,7 +6,7 @@ import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
 import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
-import useMessageStore from "../../hooks/zustand/useMessageStore";
+import useConversationStore from "../../hooks/conversation/useConversationStore";
 
 interface DChatConversationItem extends ConversationItem {
   id: string;
@@ -115,11 +115,16 @@ const DeskConversationList = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useChatContext();
-  const selectedThreadId = useMessageStore((state) => state.selectedThreadId);
-  const setSelectedThreadId = useMessageStore(
+  const setConversationData = useConversationStore(
+    (state) => state.setConversationData
+  );
+  const selectedThreadId = useConversationStore(
+    (state) => state.selectedThreadId
+  );
+  const setSelectedThreadId = useConversationStore(
     (state) => state.setSelectedThreadId
   );
-  const setSelectedSourceId = useMessageStore(
+  const setSelectedSourceId = useConversationStore(
     (state) => state.setSelectedSourceId
   );
   const { conversationList, markConversationMessageAsRead } =
@@ -138,6 +143,7 @@ const DeskConversationList = ({
   );
 
   const handleConversationClick = (conversation: DChatConversationItem) => {
+    setConversationData(conversation);
     const newSearchParams = new URLSearchParams(searchParams);
     newSearchParams.set("threadId", conversation.id);
     router.push(`${pathname}?${newSearchParams.toString()}`);

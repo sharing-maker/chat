@@ -5,14 +5,18 @@ import MessageList from "../../components/message/MessageList";
 import DeskConversationList from "../../components/conversation/DeskConversationList";
 import { useConversationDetail } from "../../hooks/conversation/useConversation";
 import AssignedSessionFilter from "../../components/session/AssignedSessionFilter";
-import useMessageStore from "../../hooks/zustand/useMessageStore";
 import { useChatContext } from "../../context/ChatContext";
 import { Spin } from "antd";
 import { ConnectStatus } from "../../types/chat";
+import useConversationStore from "../../hooks/conversation/useConversationStore";
 
 const DChatDeskMessage = () => {
-  const selectedThreadId = useMessageStore((state) => state.selectedThreadId);
-  const selectedSourceId = useMessageStore((state) => state.selectedSourceId);
+  const selectedThreadId = useConversationStore(
+    (state) => state.selectedThreadId
+  );
+  const selectedSourceId = useConversationStore(
+    (state) => state.selectedSourceId
+  );
 
   const { conversationDetail } = useConversationDetail({
     sourceID: selectedSourceId,

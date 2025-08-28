@@ -6,9 +6,9 @@ import { useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useFetchToken } from "@web/hook/user/useLogin";
+import { handleLogin, useFetchToken } from "@web/hook/user/useLogin";
 import useUserStore from "@web/hook/user/useUserStore";
-import { handleLogin } from "../utils/auth";
+import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 const loginSchema = z.object({
   username: z
@@ -26,8 +26,10 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const { mutate } = useFetchToken();
   const setToken = useUserStore((state) => state.setAccessToken);
+  const setChatToken = useUserStore((state) => state.setChatToken);
   const toast = useAntdToast();
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   const formInstance = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -52,7 +54,13 @@ export default function LoginPage() {
         },
         {
           onSuccess: (data) => {
-            handleLogin({ data, setToken, toast });
+            handleLogin({
+              data,
+              setToken,
+              setChatToken,
+              toast,
+              refetchChatToken,
+            });
           },
           onError: (error) => {
             console.error("Login error:", error);
