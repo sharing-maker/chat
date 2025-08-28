@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
-import { useState, useEffect } from "react";
-import { SidebarSkeleton } from "./LoadingSkeleton";
+import { useState } from "react";
+import useUserStore from "@web/hook/user/useUserStore";
 
 interface MenuItem {
   label: string;
@@ -30,9 +30,8 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const user = useUserStore((state) => state.user);
 
-  // ...existing code up to the main return...
   return (
     <div
       className={`${
@@ -103,21 +102,31 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
       <div className="border-t border-gray-700 h-28 p-4">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-            <svg
-              className="w-4 h-4 text-white"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
+            {user?.avatarFullUrl ? (
+              <Image
+                src={user.avatarFullUrl}
+                alt={user?.personalInfo?.fullName || "Avatar"}
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <svg
+                className="w-4 h-4 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+            )}
           </div>
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium whitespace-nowrap overflow-hidden text-white truncate">
-                Admin User
+                {user?.personalInfo?.fullName}
               </p>
               <p className="text-xs text-gray-400 whitespace-nowrap overflow-hidden truncate">
-                admin@droppii.com
+                {user?.email}
               </p>
             </div>
           )}
@@ -126,6 +135,7 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
         <button
           onClick={() => {
             window.localStorage.removeItem("user_token");
+            window.localStorage.removeItem("chat_token");
             onLogout?.();
             router.push("/login");
           }}

@@ -11,13 +11,15 @@ import {
 import { CustomType } from "../../types/chat";
 import { pushNewMessage, updateOneMessage } from "../message/useMessage";
 import { useChatContext } from "../../context/ChatContext";
-import useMessageStore from "../zustand/useMessageStore";
+import useConversationStore from "../conversation/useConversationStore";
 
 const notPushType = [MessageType.TypingMessage, MessageType.RevokeMessage];
 
 export const useGlobalEvent = () => {
   const { user } = useChatContext();
-  const selectedSourceId = useMessageStore((state) => state.selectedSourceId);
+  const selectedSourceId = useConversationStore(
+    (state) => state.selectedSourceId
+  );
 
   const revokedMessageHandler = ({ data }: WSEvent<RevokedInfo>) => {
     updateOneMessage({

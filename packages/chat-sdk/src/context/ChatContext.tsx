@@ -51,7 +51,9 @@ export const ChatProvider = ({
   };
 
   useEffect(() => {
-    handleLogin();
+    if (config) {
+      handleLogin();
+    }
   }, [config]);
 
   useEffect(() => {
