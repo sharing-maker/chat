@@ -38,11 +38,23 @@ export const useConversationList = (selectedThreadId?: string) => {
   }, [getAllConversationList]);
 
   useEffect(() => {
-    DChatSDK.on(CbEvents.OnConversationChanged, ({ data }) => {
-      setConversationList(data);
-    });
+    const handler = ({ data }: { data: ConversationItem[] }) => {
+      setConversationList((prev) => {
+        // Tạo map để cập nhật
+        const map = new Map(prev.map((c) => [c.conversationID, c]));
+
+        data.forEach((changed) => {
+          map.set(changed.conversationID, changed);
+        });
+
+        return Array.from(map.values());
+      });
+    };
+
+    DChatSDK.on(CbEvents.OnConversationChanged, handler);
+
     return () => {
-      DChatSDK.off(CbEvents.OnConversationChanged, () => {});
+      DChatSDK.off(CbEvents.OnConversationChanged, handler);
     };
   }, []);
 

@@ -75,7 +75,7 @@ export async function handleLogin({
         onError: () => {},
       });
     }
-    // window.location.href = "/chat";
+    window.location.href = "/chat";
     return true;
   } else {
     toast.show({
