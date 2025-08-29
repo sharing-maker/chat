@@ -171,8 +171,15 @@ const DeskConversationList = ({
     const threadId = searchParams.get("threadId");
     if (threadId) {
       setSelectedThreadId(threadId);
+      const selectedConversation = conversations.find(
+        (conv: DChatConversationItem) => conv.id === threadId
+      );
+      if (selectedConversation) {
+        setConversationData(selectedConversation);
+      }
     } else if (conversations.length > 0) {
       setSelectedThreadId(conversations[0].id);
+      setConversationData(conversations[0]);
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.set("threadId", conversations[0].id);
       router.replace(`${pathname}?${newSearchParams.toString()}`);
