@@ -19,11 +19,30 @@ dayjs.extend(isToday);
 interface MessageItemProps {
   groupMessage: GroupMessageItem;
 }
+
+const visibleTypeMessage = [
+  MessageType.TextMessage,
+  MessageType.PictureMessage,
+  MessageType.VoiceMessage,
+  MessageType.VideoMessage,
+  MessageType.FileMessage,
+  MessageType.AtTextMessage,
+  MessageType.MergeMessage,
+  MessageType.CardMessage,
+  MessageType.LocationMessage,
+  MessageType.CustomMessage,
+  MessageType.QuoteMessage,
+  MessageType.FaceMessage,
+];
+
 const MessageItem = ({ groupMessage }: MessageItemProps) => {
   const { user } = useChatContext();
 
   const messagesInGroup = groupMessage?.messages || [];
   const isToday = dayjs(groupMessage?.sendTime).isToday();
+  const isVisibleGroup = messagesInGroup?.some((message) =>
+    visibleTypeMessage.includes(message?.contentType)
+  );
 
   const renderMessageByType = (message: MessageItemType) => {
     switch (message?.contentType) {
@@ -39,6 +58,7 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
         return <TextMessageItem message={message} />;
     }
   };
+  if (!isVisibleGroup) return null;
 
   return (
     <div
@@ -53,6 +73,7 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
         </span>
       </div>
       {messagesInGroup?.map((message, messageIndex) => {
+        if (!visibleTypeMessage.includes(message?.contentType)) return null;
         const isMine = message?.sendID === user?.userID;
         const showAvatar = messageIndex === messagesInGroup.length - 1;
         const showSenderName =
@@ -77,7 +98,12 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
                   )}
                 </div>
               )}
-              <div className="flex flex-col items-end flex-[0.8]">
+              <div
+                className={clsx(
+                  "flex flex-col flex-[0.8]",
+                  isMine ? "items-end" : "items-start"
+                )}
+              >
                 {!isMine && showSenderName && (
                   <span className="text-xs text-gray-500 mb-1 px-3">
                     {message?.senderNickname}

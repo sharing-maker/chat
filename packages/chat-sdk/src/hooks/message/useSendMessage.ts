@@ -325,6 +325,7 @@ export const generateExtendMessageInfo = ({
         content: richText || "",
       },
     },
+    applicationType: "OBEFE", // TODO: Only support for cx chat - remove later
   } as ExtendMessageInfo;
 };
 

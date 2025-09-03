@@ -55,6 +55,7 @@ export interface ExtendMessageInfo {
       applicationType: "OBEFE";
     };
   };
+  applicationType?: "OBEFE";
 }
 
 export interface MessageFooterContextType {

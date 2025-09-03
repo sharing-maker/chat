@@ -1,27 +1,50 @@
-import { SessionType } from "@openim/wasm-client-sdk";
 import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
 import { ConnectStatus } from "../../types/chat";
+import { useConversationList } from "../../hooks/conversation/useConversation";
+import useConversationStore from "../../hooks/conversation/useConversationStore";
+import { useEffect } from "react";
+import { SessionType } from "@openim/wasm-client-sdk";
 
 interface DChatBubbleProps {
-  conversationId: string;
-  sourceID: string;
-  sessionType: SessionType;
+  conversationID: string;
   className?: string;
 }
 
 const DChatBubble = (props: DChatBubbleProps) => {
-  const { conversationId, sourceID, sessionType, className } = props;
+  const { conversationID, className } = props;
+
   const { connectStatus } = useChatContext();
   if (connectStatus !== ConnectStatus.Connected) return null;
-  return (
-    <ChatBubble
-      conversationId={conversationId}
-      sourceID={sourceID}
-      sessionType={sessionType}
-      className={className}
-    />
+  const { conversationList } = useConversationList();
+
+  const setSelectedThreadId = useConversationStore(
+    (state) => state.setSelectedThreadId
   );
+  const setConversationData = useConversationStore(
+    (state) => state.setConversationData
+  );
+  const setSelectedSourceId = useConversationStore(
+    (state) => state.setSelectedSourceId
+  );
+
+  useEffect(() => {
+    if (!conversationList) return;
+    const conversation = conversationList.find(
+      (item) => item.conversationID === conversationID
+    );
+
+    if (!conversation) return;
+    const sourceId =
+      conversation?.conversationType === SessionType.Group
+        ? conversation?.groupID
+        : conversation?.userID;
+    setSelectedThreadId(conversation.conversationID);
+    setConversationData(conversation);
+    setSelectedSourceId(sourceId);
+  }, [conversationList, conversationID]);
+
+  return <ChatBubble className={className} />;
 };
 
 export default DChatBubble;

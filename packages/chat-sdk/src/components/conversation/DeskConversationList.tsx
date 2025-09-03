@@ -90,9 +90,7 @@ const transformConversationData = (
     threadId: conv.conversationID,
     name: conv.showName || "Unknown User",
     username: conv.userID || conv.groupID || "",
-    avatar:
-      conv.faceURL ||
-      "https://i.pinimg.com/736x/55/e5/ed/55e5edbb1a5b5f6e4f3cefc98de629ca.jpg",
+    avatar: conv.faceURL || "",
     lastMessage: parseLatestMessage(conv.latestMsg, currentUserId),
     timestamp: formatTimestamp(conv.latestMsgSendTime),
     unreadCount: conv.unreadCount,
@@ -235,7 +233,9 @@ const DeskConversationList = ({
                     size={48}
                     src={conversation.avatar}
                     alt={conversation.name}
-                  />
+                  >
+                    {conversation.name.charAt(0).toUpperCase()}
+                  </Avatar>
                 </Badge>
               </div>
 

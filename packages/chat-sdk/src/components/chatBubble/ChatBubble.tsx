@@ -1,28 +1,23 @@
 "use client";
-import { useState } from "react";
-import { FloatButton, Drawer } from "antd";
+import { useEffect, useState } from "react";
+import { FloatButton, Drawer, Popover } from "antd";
 import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import MessageList from "../message/MessageList";
-import { SessionType } from "@openim/wasm-client-sdk";
-import { useConversationDetail } from "../../hooks/conversation/useConversation";
+import useConversationStore from "../../hooks/conversation/useConversationStore";
 
 interface ChatBubbleProps {
-  conversationId: string;
-  sourceID: string;
-  sessionType: SessionType;
   className?: string;
 }
 
-const ChatBubble = ({
-  conversationId,
-  sourceID,
-  sessionType,
-  className,
-}: ChatBubbleProps) => {
-  const { conversationDetail } = useConversationDetail({
-    sourceID,
-    sessionType,
-  });
+const ChatBubble = ({ className }: ChatBubbleProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const conversationDetail = useConversationStore(
+    (state) => state.conversationData
+  );
+
+  const selectedThreadId = useConversationStore(
+    (state) => state.selectedThreadId
+  );
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,9 +25,68 @@ const ChatBubble = ({
     setIsOpen(!isOpen);
   };
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <>
+        <FloatButton
+          icon={isOpen ? <CloseOutlined /> : <MessageOutlined />}
+          type="primary"
+          style={{
+            right: 24,
+            bottom: 24,
+            width: 60,
+            height: 60,
+          }}
+          onClick={toggleChat}
+          className={className}
+        />
+        <Drawer
+          placement="right"
+          onClose={() => setIsOpen(false)}
+          open={isOpen}
+          mask={true}
+          closable={false}
+          styles={{
+            body: { padding: 0 },
+          }}
+          classNames={{
+            wrapper: "!z-[9999]",
+          }}
+        >
+          <MessageList
+            conversationId={selectedThreadId}
+            conversationData={conversationDetail}
+            className="flex-1"
+            onClose={() => setIsOpen(false)}
+          />
+        </Drawer>
+      </>
+    );
+  }
+
   return (
-    <>
-      {/* Floating Chat Bubble */}
+    <Popover
+      placement="topLeft"
+      trigger="click"
+      content={
+        <div style={{ width: 400, height: 640 }}>
+          <MessageList
+            conversationId={selectedThreadId}
+            conversationData={conversationDetail}
+            className="flex-1"
+            onClose={() => setIsOpen(false)}
+          />
+        </div>
+      }
+      styles={{ body: { padding: 0 } }}
+    >
       <FloatButton
         icon={isOpen ? <CloseOutlined /> : <MessageOutlined />}
         type="primary"
@@ -45,29 +99,7 @@ const ChatBubble = ({
         onClick={toggleChat}
         className={className}
       />
-
-      {/* Chat Panel Drawer */}
-      <Drawer
-        placement="right"
-        onClose={() => setIsOpen(false)}
-        open={isOpen}
-        mask={true}
-        closable={false}
-        styles={{
-          body: { padding: 0 },
-        }}
-        classNames={{
-          wrapper: "!z-[9999]",
-        }}
-      >
-        <MessageList
-          conversationId={conversationId}
-          conversationData={conversationDetail}
-          className="flex-1"
-          onClose={() => setIsOpen(false)}
-        />
-      </Drawer>
-    </>
+    </Popover>
   );
 };
 
