@@ -1,8 +1,12 @@
 import {
+  FileMsgParamsByURL,
+  ImageMsgParamsByURL,
   InitAndLoginConfig,
   MessageItem,
   SelfUserInfo,
+  VideoMsgParamsByURL,
 } from "@openim/wasm-client-sdk";
+import { UploadFile } from "antd";
 
 export enum ConnectStatus {
   Disconnected = 0,
@@ -51,4 +55,31 @@ export interface ExtendMessageInfo {
       applicationType: "OBEFE";
     };
   };
+}
+
+export interface MessageFooterContextType {
+  onSendMessage: ({
+    plainText,
+    richText,
+    type,
+  }: {
+    plainText: string;
+    richText: string;
+    type: "text" | "file";
+  }) => void;
+  listUploadFiles: UploadFile[];
+  setListUploadFiles: (files: UploadFile[]) => void;
+}
+
+export interface ImageMsgParamsByFile extends ImageMsgParamsByURL {
+  file: File;
+}
+
+export interface VideoMsgParamsByFile extends VideoMsgParamsByURL {
+  videoFile: File;
+  snapshotFile: File;
+}
+
+export interface FileMsgParamsByFile extends FileMsgParamsByURL {
+  file: File;
 }

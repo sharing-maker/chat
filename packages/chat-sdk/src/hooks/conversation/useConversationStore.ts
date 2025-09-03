@@ -1,8 +1,9 @@
+import { ConversationItem } from "@openim/wasm-client-sdk";
 import { create } from "zustand";
 
 interface ConversationStore {
-  conversationData: any;
-  setConversationData: (data: any) => void;
+  conversationData: ConversationItem | null;
+  setConversationData: (data: ConversationItem) => void;
   selectedThreadId: string;
   selectedSourceId: string;
   setSelectedThreadId: (threadId: string) => void;
