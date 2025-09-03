@@ -83,7 +83,9 @@ const FilePreview = () => {
 
   const renderFilePreview = useCallback(
     (file: UploadFile) => {
-      const isDocument = documentTypes.includes(file.type || "");
+      const isDocument = documentTypes.includes(
+        file?.originFileObj?.type || ""
+      );
       const isVideo = file.type?.startsWith("video/");
       let src = file.url;
       if (!src && file.originFileObj) {

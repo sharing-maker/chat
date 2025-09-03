@@ -25,7 +25,7 @@ const VideoMessageItem = (props: VideoMessageItemProps) => {
   return (
     <Spin spinning={isSending}>
       <div className="relative max-w-[200px]" style={minStyle}>
-        <video className="max-w-[200px] rounded-md" src={sourceUrl} controls />
+        <video className="rounded-md" src={sourceUrl} controls />
       </div>
     </Spin>
   );
