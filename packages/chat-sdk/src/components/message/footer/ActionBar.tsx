@@ -1,6 +1,13 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "antd";
+import {
+  Button,
+  Upload,
+  GetProp,
+  UploadProps,
+  message,
+  UploadFile,
+} from "antd";
 import clsx from "clsx";
 import EmojiPicker from "./EmojiPicker";
 import { Icon } from "../../icon";
@@ -18,6 +25,16 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 import { $isQuoteNode } from "@lexical/rich-text";
+import { useMessageFooterContext } from ".";
+import { UploadChangeParam } from "antd/es/upload";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+const documentTypes = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 
 const EmojiIcon = (
   <svg
@@ -45,21 +62,12 @@ const EmojiIcon = (
   </svg>
 );
 
-interface IActionBarProps {
-  onSend: ({
-    plainText,
-    richText,
-  }: {
-    plainText: string;
-    richText: string;
-  }) => void;
-}
-
-const ActionBar = (props: IActionBarProps) => {
-  const { onSend } = props;
+const ActionBar = () => {
   const [editor] = useLexicalComposerContext();
+  const { onSendMessage, setListUploadFiles } = useMessageFooterContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const { listUploadFiles } = useMessageFooterContext();
 
   const handleSend = useCallback(() => {
     let plainText = "";
@@ -71,8 +79,12 @@ const ActionBar = (props: IActionBarProps) => {
       richText = $generateHtmlFromNodes(editor);
     });
 
-    if (plainText.trim().length > 0 || richText.trim().length > 0) {
-      onSend({ plainText, richText });
+    if (plainText.trim().length > 0 || listUploadFiles.length > 0) {
+      onSendMessage({
+        plainText,
+        richText,
+        type: listUploadFiles.length > 0 ? "file" : "text",
+      });
     }
 
     editor.update(() => {
@@ -118,7 +130,7 @@ const ActionBar = (props: IActionBarProps) => {
         }
       }
     });
-  }, [editor, onSend]);
+  }, [editor, onSendMessage]);
 
   const handleEmojiSelect = useCallback(
     (emoji: string) => {
@@ -132,6 +144,68 @@ const ActionBar = (props: IActionBarProps) => {
     },
     [editor]
   );
+
+  const beforeUploadImagesAndVideo = (file: File, fileList: UploadFile[]) => {
+    const isImage =
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      file.type === "image/jpg";
+
+    const isVideo = file.type.startsWith("video/");
+
+    // check format
+    if (!isImage && !isVideo) {
+      message.error(
+        `${file.name} không đúng định dạng JPG, JPEG, PNG hoặc VIDEO`
+      );
+      return Upload.LIST_IGNORE;
+    }
+
+    // check size
+    const maxSize = isImage ? 5 : 200; // MB
+    if (file.size / 1024 / 1024 > maxSize) {
+      message.error(`${file.name} có kích thước tập tin vượt quá ${maxSize}MB`);
+      return Upload.LIST_IGNORE;
+    }
+
+    // nếu là video thì chỉ cho 1 cái duy nhất
+    if (isVideo) {
+      const hasVideo = listUploadFiles.some(
+        (f) => f.type?.startsWith("video/")
+      );
+      if (hasVideo) {
+        message.error("Chỉ được phép tải lên 1 video duy nhất");
+        return Upload.LIST_IGNORE;
+      }
+    }
+
+    return true;
+  };
+
+  const beforeUploadFile = (file: File) => {
+    const isAllowed = documentTypes.includes(file.type);
+    if (!isAllowed) {
+      message.error(
+        `${file.name} không đúng định dạng (chỉ hỗ trợ PDF, DOC, DOCX)`
+      );
+    }
+    return isAllowed;
+  };
+
+  const handleChange = (info: UploadChangeParam) => {
+    let newList = [...info.fileList];
+
+    // Nếu file mới là tài liệu -> chỉ giữ 1 cái (file cuối)
+    const lastFile = info.file;
+    if (documentTypes.includes(lastFile.type || "")) {
+      newList = newList.filter(
+        (f) => documentTypes.includes(f.type || "") === false
+      ); // remove doc cũ
+      newList.push(lastFile); // add doc mới
+    }
+
+    setListUploadFiles(newList);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -148,7 +222,7 @@ const ActionBar = (props: IActionBarProps) => {
   }, []);
 
   return (
-    <div className="flex items-center justify-between" ref={containerRef}>
+    <div className="flex items-center justify-between px-4" ref={containerRef}>
       <div className="flex items-center gap-3 relative">
         <Button
           type="text"
@@ -161,6 +235,37 @@ const ActionBar = (props: IActionBarProps) => {
         >
           {EmojiIcon}
         </Button>
+        <Upload
+          accept="image/jpeg, image/png, image/jpg, video/*"
+          beforeUpload={beforeUploadImagesAndVideo}
+          multiple
+          onChange={handleChange}
+          showUploadList={false}
+          fileList={listUploadFiles}
+        >
+          <Button
+            type="text"
+            shape="default"
+            className="text-gray-500 w-8 h-8 p-0 text-gray-500"
+          >
+            <Icon icon="image-02-o" size={22} />
+          </Button>
+        </Upload>
+        <Upload
+          accept=".doc,.docx,.pdf"
+          beforeUpload={beforeUploadFile}
+          onChange={handleChange}
+          showUploadList={false}
+          fileList={listUploadFiles}
+        >
+          <Button
+            type="text"
+            shape="default"
+            className="text-gray-500 w-8 h-8 p-0 text-gray-500"
+          >
+            <Icon icon="link-o" size={22} />
+          </Button>
+        </Upload>
 
         {showEmojiPicker && (
           <EmojiPicker
@@ -176,7 +281,7 @@ const ActionBar = (props: IActionBarProps) => {
         className="text-gray-500 w-8 h-8 p-0"
         onClick={handleSend}
       >
-        <Icon icon="send-b" size={22} className="text-blue-500" />
+        <Icon icon="send-b" size={28} className="text-blue-500" />
       </Button>
     </div>
   );

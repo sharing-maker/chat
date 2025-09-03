@@ -144,12 +144,6 @@ export const ToolbarPlugin = () => {
         onPress: () => insertQuote(),
         isActive: activeMarks.includes("quote"),
       },
-      {
-        key: "code",
-        icon: codeIcon,
-        onPress: () => {},
-        isActive: activeMarks.includes("code"),
-      },
     ];
   }, [activeMarks]);
 
@@ -262,7 +256,7 @@ export const ToolbarPlugin = () => {
   }, [editor]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 px-4">
       {formatTextButtons.map((button) => {
         const { icon, onPress, key, isActive } = button;
         return (

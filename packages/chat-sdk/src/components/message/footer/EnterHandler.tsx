@@ -18,20 +18,13 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
 } from "@lexical/list";
 import { $isQuoteNode } from "@lexical/rich-text";
+import { useMessageFooterContext } from ".";
 
-interface EnterHandlerProps {
-  onSend: ({
-    plainText,
-    richText,
-  }: {
-    plainText: string;
-    richText: string;
-  }) => void; // gọi khi Enter (submit)
-}
-
-export default function EnterHandler({ onSend }: EnterHandlerProps) {
+export default function EnterHandler() {
   const [editor] = useLexicalComposerContext();
+  const { onSendMessage } = useMessageFooterContext();
   const shiftEnterCount = useRef(0);
+  const { listUploadFiles } = useMessageFooterContext();
 
   useEffect(() => {
     return editor.registerCommand(
@@ -51,8 +44,12 @@ export default function EnterHandler({ onSend }: EnterHandlerProps) {
             richText = $generateHtmlFromNodes(editor);
           });
 
-          if (plainText.trim().length > 0 || richText.trim().length > 0) {
-            onSend({ plainText, richText });
+          if (plainText.trim().length > 0 || listUploadFiles.length > 0) {
+            onSendMessage({
+              plainText,
+              richText,
+              type: listUploadFiles.length > 0 ? "file" : "text",
+            });
           }
 
           editor.update(() => {
@@ -137,7 +134,7 @@ export default function EnterHandler({ onSend }: EnterHandlerProps) {
       },
       COMMAND_PRIORITY_NORMAL
     );
-  }, [editor, onSend]);
+  }, [editor, onSendMessage, listUploadFiles]);
 
   return null;
 }

@@ -17,7 +17,6 @@ const TextMessageItem = (props: TextMessageItemProps) => {
     console.error("Failed to parse extendMessageInfo", error);
   }
 
-  console.log("extendMessageInfo", extendMessageInfo);
   if (
     Object.keys(extendMessageInfo).length > 0 &&
     extendMessageInfo?.messageInfo

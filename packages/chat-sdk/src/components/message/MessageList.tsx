@@ -1,9 +1,8 @@
 "use client";
-import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
+import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useMessage } from "../../hooks/message/useMessage";
 import { Spin } from "antd";
-import { useCallback, useEffect, useRef } from "react";
-import { useSendMessage } from "../../hooks/message/useSendMessage";
+import { useEffect, useMemo, useRef } from "react";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import emitter from "../../utils/events";
@@ -27,16 +26,10 @@ const MessageList = (props: MessageListProps) => {
   const { getMoreOldMessages, moreOldLoading, loadState, latestLoadState } =
     useMessage(conversationId);
 
-  const { sendTextMessage } = useSendMessage({
-    recvID:
-      conversationData?.conversationType !== SessionType.Single
-        ? ""
-        : conversationData?.userID || "",
-    groupID:
-      conversationData?.conversationType === SessionType.Single
-        ? ""
-        : conversationData?.groupID || "",
-  });
+  const lastMessage = useMemo(() => {
+    const messageList = latestLoadState.current?.messageList;
+    return messageList?.[messageList?.length - 1];
+  }, [latestLoadState]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -47,21 +40,6 @@ const MessageList = (props: MessageListProps) => {
     });
   };
 
-  const onSendTextMessage = useCallback(
-    async ({
-      plainText,
-      richText,
-    }: {
-      plainText: string;
-      richText: string;
-    }) => {
-      const messageList = latestLoadState.current?.messageList;
-      const lastMessage = messageList?.[messageList?.length - 1];
-      sendTextMessage({ plainText, richText, lastMessage });
-    },
-    [sendTextMessage, latestLoadState]
-  );
-
   const loadMoreMessage = () => {
     if (!loadState.hasMoreOld || moreOldLoading) return;
     getMoreOldMessages();
@@ -69,7 +47,6 @@ const MessageList = (props: MessageListProps) => {
 
   useEffect(() => {
     emitter.on("CHAT_LIST_SCROLL_TO_BOTTOM", scrollToBottom);
-    console.log("CHAT_LIST_SCROLL_TO_BOTTOM");
     return () => {
       emitter.off("CHAT_LIST_SCROLL_TO_BOTTOM", scrollToBottom);
     };
@@ -106,7 +83,7 @@ const MessageList = (props: MessageListProps) => {
         </InfiniteScroll>
       </div>
 
-      <MessageFooter sendTextMessage={onSendTextMessage} />
+      <MessageFooter lastMessage={lastMessage} />
     </div>
   );
 };

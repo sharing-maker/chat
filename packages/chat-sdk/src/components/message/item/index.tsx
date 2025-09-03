@@ -4,8 +4,15 @@ import clsx from "clsx";
 import { Avatar } from "antd";
 import isToday from "dayjs/plugin/isToday";
 import { useChatContext } from "../../../context/ChatContext";
-import { MessageType, SessionType } from "@openim/wasm-client-sdk";
+import {
+  MessageItem as MessageItemType,
+  MessageType,
+  SessionType,
+} from "@openim/wasm-client-sdk";
 import TextMessageItem from "./TextMessage";
+import ImageMessageItem from "./ImageMessage";
+import FileMessageItem from "./FileMessage";
+import VideoMessageItem from "./VideoMessage";
 
 dayjs.extend(isToday);
 
@@ -17,6 +24,22 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
 
   const messagesInGroup = groupMessage?.messages || [];
   const isToday = dayjs(groupMessage?.sendTime).isToday();
+
+  const renderMessageByType = (message: MessageItemType) => {
+    switch (message?.contentType) {
+      case MessageType.TextMessage:
+        return <TextMessageItem message={message} />;
+      case MessageType.PictureMessage:
+        return <ImageMessageItem message={message} />;
+      case MessageType.FileMessage:
+        return <FileMessageItem message={message} />;
+      case MessageType.VideoMessage:
+        return <VideoMessageItem message={message} />;
+      default:
+        return <TextMessageItem message={message} />;
+    }
+  };
+
   return (
     <div
       className="flex flex-col gap-2 my-4 mx-3 sm:mx-4"
@@ -34,7 +57,6 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
         const showAvatar = messageIndex === messagesInGroup.length - 1;
         const showSenderName =
           messageIndex === 0 && message?.sessionType === SessionType.Group;
-        const messageType = message?.contentType;
         return (
           <div
             className={clsx("flex", isMine ? "justify-end" : "justify-start")}
@@ -63,12 +85,21 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
                 )}
                 <div
                   className={clsx(
-                    "px-3 py-2 rounded-2xl max-w-full break-words flex flex-col flex-1 text-gray-900",
+                    "px-3 py-2 rounded-2xl max-w-full break-words flex flex-col flex-1 text-gray-900 gap-1",
                     isMine ? "bg-blue-100" : "bg-gray-100"
                   )}
                 >
-                  {messageType === MessageType.TextMessage && (
-                    <TextMessageItem message={message} />
+                  {message?.contentType === MessageType.MergeMessage ? (
+                    <div>
+                      {message?.mergeElem?.multiMessage?.map((item) => {
+                        return renderMessageByType(item);
+                      })}
+                      {message?.textElem && (
+                        <TextMessageItem message={message} />
+                      )}
+                    </div>
+                  ) : (
+                    renderMessageByType(message)
                   )}
                   <span
                     className={clsx(
