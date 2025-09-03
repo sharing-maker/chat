@@ -172,19 +172,38 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
         try {
           if (isImage) {
             const picInfo = await createPicBaseInfoFromFile(file);
-
+            const baseInfo = {
+              uuid: uuidv4(),
+              type: file.type,
+              size: file.size,
+              width: picInfo.width,
+              height: picInfo.height,
+              url: URL.createObjectURL(file),
+            };
             const parsedImage: ImageMsgParamsByFile = {
-              sourcePicture: picInfo,
-              bigPicture: picInfo,
-              snapshotPicture: picInfo,
+              sourcePicture: baseInfo,
+              bigPicture: baseInfo,
+              snapshotPicture: baseInfo,
               sourcePath: "",
               file: file,
             };
 
             const imageMessage = await createImageMessageByFile(parsedImage);
+
             if (!imageMessage) continue;
 
-            messageList.push(imageMessage);
+            const extendMessageInfo = generateExtendMessageInfo({
+              currentUserID: user?.userID || "",
+              lastMessage:
+                messageList.length > 0
+                  ? messageList[messageList.length - 1]
+                  : lastMessage,
+            });
+
+            messageList.push({
+              ...imageMessage,
+              ex: JSON.stringify(extendMessageInfo) || "{}",
+            });
           } else if (isVideo) {
             const videoBaseInfo = await createVideoBaseInfoFromFile(file);
             const videoMessage = await createVideoMessageByFile({
@@ -205,7 +224,19 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
               snapshotFile: file,
             });
             if (!videoMessage) continue;
-            messageList.push(videoMessage);
+
+            const extendMessageInfo = generateExtendMessageInfo({
+              currentUserID: user?.userID || "",
+              lastMessage:
+                messageList.length > 0
+                  ? messageList[messageList.length - 1]
+                  : lastMessage,
+            });
+
+            messageList.push({
+              ...videoMessage,
+              ex: JSON.stringify(extendMessageInfo) || "{}",
+            });
           } else if (isDocument) {
             const fileMessage = await createFileMessageByFile({
               filePath: "",
@@ -217,33 +248,46 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
               file: file,
             });
             if (!fileMessage) continue;
-            messageList.push(fileMessage);
+
+            const extendMessageInfo = generateExtendMessageInfo({
+              currentUserID: user?.userID || "",
+              lastMessage:
+                messageList.length > 0
+                  ? messageList[messageList.length - 1]
+                  : lastMessage,
+            });
+
+            messageList.push({
+              ...fileMessage,
+              ex: JSON.stringify(extendMessageInfo) || "{}",
+            });
           }
         } catch (err) {
           console.error("Lỗi xử lý tin nhắn:", err);
         }
       }
 
-      const mergerMsgParams: MergerMsgParams = {
-        messageList,
-        title: plainText,
-        summaryList: [],
-      };
+      if (!!plainText && plainText.trim() !== "") {
+        const extendMessageInfo = generateExtendMessageInfo({
+          richText,
+          currentUserID: user?.userID || "",
+          lastMessage:
+            messageList.length > 0
+              ? messageList[messageList.length - 1]
+              : lastMessage,
+        });
+        const textMessage = await createTextMessage(plainText);
+        if (!textMessage) return;
+        const messageItem = {
+          ...textMessage,
+          ex: JSON.stringify(extendMessageInfo) || "{}",
+        };
+        messageList.push(messageItem);
+      }
 
-      const mergerMessage = await createMergerMessage(mergerMsgParams);
-      if (!mergerMessage) return;
-
-      const extendMessageInfo = generateExtendMessageInfo({
-        richText,
-        currentUserID: user?.userID || "",
-        lastMessage,
-      });
-      const messageItem = {
-        ...mergerMessage,
-        ex: JSON.stringify(extendMessageInfo) || "{}",
-      };
-
-      sendMessage(messageItem);
+      for (const message of messageList) {
+        await sendMessage(message);
+      }
     },
     [recvID, groupID, lastMessage, sendMessage]
   );
@@ -284,31 +328,15 @@ export const generateExtendMessageInfo = ({
   } as ExtendMessageInfo;
 };
 
-const createPicBaseInfoFromFile = (
-  file: File,
-  url = ""
-): Promise<PicBaseInfo> => {
-  return new Promise((resolve, reject) => {
+const createPicBaseInfoFromFile = (file: File): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const _URL = window.URL || window.webkitURL;
     const img = new Image();
-    const objectUrl = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(objectUrl);
-      resolve({
-        uuid: uuidv4(),
-        type: file.type,
-        size: file.size,
-        width: img.width,
-        height: img.height,
-        url: url, // để trống nếu không cần dùng
-      });
+    img.onload = function () {
+      resolve(img);
     };
-    img.onerror = (err) => {
-      URL.revokeObjectURL(objectUrl);
-      reject(err);
-    };
-    img.src = objectUrl;
+    img.src = _URL.createObjectURL(file);
   });
-};
 
 function createVideoBaseInfoFromFile(file: File): Promise<{
   duration: number;

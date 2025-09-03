@@ -26,7 +26,7 @@ import {
 } from "@lexical/list";
 import { $isQuoteNode } from "@lexical/rich-text";
 import { useMessageFooterContext } from ".";
-import { UploadChangeParam } from "antd/es/upload";
+import { RcFile, UploadChangeParam } from "antd/es/upload";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -179,7 +179,7 @@ const ActionBar = () => {
       }
     }
 
-    return true;
+    return false;
   };
 
   const beforeUploadFile = (file: File) => {
@@ -188,20 +188,22 @@ const ActionBar = () => {
       message.error(
         `${file.name} không đúng định dạng (chỉ hỗ trợ PDF, DOC, DOCX)`
       );
+      return Upload.LIST_IGNORE;
     }
-    return isAllowed;
+    return false;
   };
 
   const handleChange = (info: UploadChangeParam) => {
     let newList = [...info.fileList];
 
-    // Nếu file mới là tài liệu -> chỉ giữ 1 cái (file cuối)
     const lastFile = info.file;
     if (documentTypes.includes(lastFile.type || "")) {
-      newList = newList.filter(
-        (f) => documentTypes.includes(f.type || "") === false
-      ); // remove doc cũ
-      newList.push(lastFile); // add doc mới
+      newList = newList.filter((f) => !documentTypes.includes(f.type || ""));
+      const originFile = (lastFile.originFileObj ?? lastFile) as RcFile;
+      newList.push({
+        ...lastFile,
+        originFileObj: originFile,
+      });
     }
 
     setListUploadFiles(newList);

@@ -31,7 +31,7 @@ const ImageMessageItem = (props: ImageMessageItemProps) => {
       <div className="relative max-w-[200px]" style={minStyle}>
         <Image
           rootClassName="message-image cursor-pointer"
-          className="max-w-[200px] rounded-md"
+          className="rounded-md"
           src={sourceUrl}
           preview
           placeholder={
