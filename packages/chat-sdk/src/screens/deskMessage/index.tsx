@@ -6,7 +6,7 @@ import AssignedSessionFilter from "../../components/session/AssignedSessionFilte
 import { useChatContext } from "../../context/ChatContext";
 import { Spin } from "antd";
 import { ConnectStatus } from "../../types/chat";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
+import useConversationStore from "../../store/conversation";
 
 const DChatDeskMessage = () => {
   const conversationData = useConversationStore(

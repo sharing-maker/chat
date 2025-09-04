@@ -6,7 +6,7 @@ import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
 import { useConversationList } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
+import useConversationStore from "../../store/conversation";
 
 interface DChatConversationItem extends ConversationItem {
   id: string;
