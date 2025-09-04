@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FloatButton, Drawer, Popover } from "antd";
 import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import MessageList from "../message/MessageList";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
+import useConversationStore from "../../store/conversation";
 
 interface ChatBubbleProps {
   className?: string;

@@ -2,9 +2,9 @@ import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
 import { ConnectStatus } from "../../types/chat";
 import { useConversationList } from "../../hooks/conversation/useConversation";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
 import { useEffect } from "react";
 import { SessionType } from "@openim/wasm-client-sdk";
+import useConversationStore from "../../store/conversation";
 
 interface DChatBubbleProps {
   conversationID: string;

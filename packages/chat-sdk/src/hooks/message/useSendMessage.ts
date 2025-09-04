@@ -17,9 +17,9 @@ import { useChatContext } from "../../context/ChatContext";
 import { useCallback } from "react";
 import { pushNewMessage, updateOneMessage } from "./useMessage";
 import { emit } from "../../utils/events";
-import useConversationStore from "../conversation/useConversationStore";
 import { UploadFile } from "antd";
 import { RcFile } from "antd/es/upload";
+import useConversationStore from "../../store/conversation";
 
 export const createTextMessage = async (text: string) => {
   let textMessage = await DChatSDK.createTextMessage(
