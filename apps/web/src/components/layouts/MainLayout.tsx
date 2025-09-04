@@ -9,7 +9,6 @@ import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
-
 interface MainLayoutProps {
   children: React.ReactNode;
 }

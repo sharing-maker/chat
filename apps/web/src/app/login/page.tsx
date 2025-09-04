@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { handleLogin, useFetchToken } from "@web/hook/user/useLogin";
 import useUserStore from "@web/hook/user/useUserStore";
-import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 const loginSchema = z.object({
   username: z
@@ -29,7 +28,6 @@ export default function LoginPage() {
   const setChatToken = useUserStore((state) => state.setChatToken);
   const toast = useAntdToast();
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   const formInstance = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -57,9 +55,7 @@ export default function LoginPage() {
             handleLogin({
               data,
               setToken,
-              setChatToken,
               toast,
-              refetchChatToken,
             });
           },
           onError: (error) => {

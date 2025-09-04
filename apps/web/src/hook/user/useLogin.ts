@@ -1,8 +1,4 @@
-import {
-  UseMutateFunction,
-  useMutation,
-  UseMutationResult,
-} from "@tanstack/react-query";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { apiInstance } from "@web/services/api";
 import { ENDPOINTS } from "@web/services/routes";
 import { BaseResponse } from "@web/types/common";
@@ -39,15 +35,11 @@ export const useFetchToken = (): UseMutationResult<
 export async function handleLogin({
   data,
   setToken,
-  setChatToken,
   toast,
-  refetchChatToken,
 }: {
   data: any;
   setToken: (token: string) => void;
-  setChatToken: (token: string) => void;
   toast: any;
-  refetchChatToken: UseMutateFunction<any, Error, any, unknown>;
 }) {
   if (data?.statusCode !== 0) {
     toast.show({
@@ -67,13 +59,6 @@ export async function handleLogin({
     setToken(token);
     if (token) {
       window.localStorage.setItem("user_token", token);
-      refetchChatToken(undefined, {
-        onSuccess: (data) => {
-          window.localStorage.setItem("chat_token", data?.data?.token);
-          setChatToken(data?.data?.token);
-        },
-        onError: () => {},
-      });
     }
     window.location.href = "/chat";
     return true;

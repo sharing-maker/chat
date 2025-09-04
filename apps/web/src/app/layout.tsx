@@ -8,6 +8,7 @@ import { AntdToastProvider } from "@droppii-org/ui";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import useUserStore from "@web/hook/user/useUserStore";
+import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,21 +18,35 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const setToken = useUserStore((state) => state.setAccessToken);
+  const token = useUserStore((state) => state.accessToken);
   const setChatToken = useUserStore((state) => state.setChatToken);
+  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
-    const chatToken = window.localStorage.getItem("chat_token") || "";
 
-    if (!token && !chatToken && pathname !== "/login") {
+    if (!token && pathname !== "/login") {
       router.replace("/login");
       return;
     }
 
-    if (token && chatToken && (pathname === "/login" || pathname === "/")) {
+    if (token && (pathname === "/login" || pathname === "/")) {
       router.replace("/chat");
     }
-  }, [pathname, router, setChatToken, setToken]);
+  }, [pathname, router, setToken]);
+
+  useEffect(() => {
+    const chatToken = window.localStorage.getItem("chat_token") || "";
+    if (token && !chatToken) {
+      refetchChatToken(undefined, {
+        onSuccess: (data) => {
+          setChatToken(data?.data?.token);
+        },
+      });
+    } else {
+      setChatToken(chatToken);
+    }
+  }, [token]);
 
   return <>{children}</>;
 }
