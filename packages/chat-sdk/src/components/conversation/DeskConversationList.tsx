@@ -116,17 +116,17 @@ const DeskConversationList = ({
   const setConversationData = useConversationStore(
     (state) => state.setConversationData
   );
-  const selectedThreadId = useConversationStore(
-    (state) => state.selectedThreadId
+  const selectedConversationId = useConversationStore(
+    (state) => state.selectedConversationId
   );
-  const setSelectedThreadId = useConversationStore(
-    (state) => state.setSelectedThreadId
+  const setSelectedConversationId = useConversationStore(
+    (state) => state.setSelectedConversationId
   );
   const setSelectedSourceId = useConversationStore(
     (state) => state.setSelectedSourceId
   );
   const { conversationList, markConversationMessageAsRead } =
-    useConversationList(selectedThreadId);
+    useConversationList(selectedConversationId);
 
   // Transform real conversation data from the API
   const conversations = transformConversationData(
@@ -146,14 +146,14 @@ const DeskConversationList = ({
     newSearchParams.set("threadId", conversation.id);
     router.push(`${pathname}?${newSearchParams.toString()}`);
 
-    setSelectedThreadId(conversation.id);
+    setSelectedConversationId(conversation.id);
 
     onConversationSelect?.(conversation.id, conversation.id);
   };
 
   const onSetSelectedSourceId = useCallback(() => {
     const selectedConversation = conversations.findIndex(
-      (conv: DChatConversationItem) => conv.id === selectedThreadId
+      (conv: DChatConversationItem) => conv.id === selectedConversationId
     );
     if (selectedConversation !== -1) {
       const conversation = conversations[selectedConversation];
@@ -163,12 +163,12 @@ const DeskConversationList = ({
           : conversation.userID;
       setSelectedSourceId(sourceId);
     }
-  }, [conversationList, selectedThreadId]);
+  }, [conversationList, selectedConversationId]);
 
   useEffect(() => {
     const threadId = searchParams.get("threadId");
     if (threadId) {
-      setSelectedThreadId(threadId);
+      setSelectedConversationId(threadId);
       const selectedConversation = conversations.find(
         (conv: DChatConversationItem) => conv.id === threadId
       );
@@ -176,7 +176,7 @@ const DeskConversationList = ({
         setConversationData(selectedConversation);
       }
     } else if (conversations.length > 0) {
-      setSelectedThreadId(conversations[0].id);
+      setSelectedConversationId(conversations[0].id);
       setConversationData(conversations[0]);
       const newSearchParams = new URLSearchParams(searchParams);
       newSearchParams.set("threadId", conversations[0].id);
@@ -185,11 +185,11 @@ const DeskConversationList = ({
   }, [searchParams, conversations.length]);
 
   useEffect(() => {
-    if (!!selectedThreadId) {
-      markConversationMessageAsRead(selectedThreadId);
+    if (!!selectedConversationId) {
+      markConversationMessageAsRead(selectedConversationId);
       onSetSelectedSourceId();
     }
-  }, [selectedThreadId, onSetSelectedSourceId]);
+  }, [selectedConversationId, onSetSelectedSourceId]);
 
   return (
     <div
@@ -211,13 +211,13 @@ const DeskConversationList = ({
             key={conversation.id}
             onClick={() => handleConversationClick(conversation)}
             className={`relative p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-              selectedThreadId === conversation.threadId
+              selectedConversationId === conversation.threadId
                 ? "bg-blue-50"
                 : "bg-white"
             }`}
           >
             {/* Selected indicator */}
-            {selectedThreadId === conversation.threadId && (
+            {selectedConversationId === conversation.threadId && (
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
             )}
 

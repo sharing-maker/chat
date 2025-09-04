@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Icon } from "../icon";
+import useConversationStore from "../../store/conversation";
+import { SESSION_STATUS_ENUM, TAG_ENUM } from "../../constants";
 
 interface MessageSubCategory {
   icon: string;
@@ -18,59 +20,6 @@ interface MessageCategory {
   subCategories?: MessageSubCategory[];
 }
 
-const messageCategories: MessageCategory[] = [
-  {
-    icon: "chat-square-b",
-    label: "Đang mở",
-    count: 43,
-    color: "text-gray-600",
-    subCategories: [
-      {
-        icon: "user-del-o",
-        label: "Chưa phân công",
-        count: 1,
-        color: "text-orange-500",
-      },
-      {
-        icon: "warning-square-o",
-        label: "Chậm xử lý",
-        count: 1,
-        color: "text-red-500",
-      },
-      {
-        icon: "time-circle-o",
-        label: "Chờ xử lý",
-        count: 0,
-        color: "text-orange-400",
-      },
-      {
-        icon: "arrow-reply-o",
-        label: "Chưa trả lời",
-        count: 1,
-        color: "text-purple-500",
-      },
-      {
-        icon: "play-b",
-        label: "Đang xử lý",
-        count: 38,
-        color: "text-gray-600",
-      },
-      {
-        icon: "pause-b",
-        label: "Tạm chờ",
-        count: 2,
-        color: "text-gray-600",
-      },
-    ],
-  },
-  {
-    icon: "check-b",
-    label: "Đã đóng",
-    count: 0,
-    color: "text-green-600",
-  },
-];
-
 interface AssignedSessionFilterProps {
   onFilterChange?: (categoryId: string, subCategoryId?: string) => void;
   className?: string;
@@ -84,6 +33,118 @@ const AssignedSessionFilter = ({
     new Set([0])
   );
   const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const summary = useConversationStore((state) => state.summary);
+  const setFilterSummary = useConversationStore(
+    (state) => state.setFilterSummary
+  );
+
+  const messageCategories: MessageCategory[] = useMemo(() => {
+    return [
+      {
+        icon: "chat-square-b",
+        label: "Đang mở",
+        count: summary?.activeSessionCount || 0,
+        color: "text-gray-600",
+        query: {
+          status: undefined,
+          tag: undefined,
+        },
+        subCategories: [
+          {
+            icon: "user-del-o",
+            label: "Chưa phân công",
+            count:
+              summary?.sessionStatuses?.find(
+                (status) => status.type === SESSION_STATUS_ENUM.UNASSIGNED
+              )?.count || 0,
+            color: "text-orange-500",
+            query: {
+              status: SESSION_STATUS_ENUM.UNASSIGNED,
+              tag: undefined,
+            },
+          },
+          {
+            icon: "warning-square-o",
+            label: "Chậm xử lý",
+            count:
+              summary?.tagCounts?.find(
+                (status) => status.type === TAG_ENUM.SLOW_PROCESSING
+              )?.count || 0,
+            color: "text-red-500",
+            query: {
+              status: undefined,
+              tag: TAG_ENUM.SLOW_PROCESSING,
+            },
+          },
+          {
+            icon: "time-circle-o",
+            label: "Chờ xử lý",
+            count:
+              summary?.sessionStatuses?.find(
+                (status) => status.type === SESSION_STATUS_ENUM.WAITING_PROCESS
+              )?.count || 0,
+            color: "text-orange-400",
+            query: {
+              status: SESSION_STATUS_ENUM.WAITING_PROCESS,
+              tag: undefined,
+            },
+          },
+          {
+            icon: "arrow-reply-o",
+            label: "Chưa trả lời",
+            count:
+              summary?.tagCounts?.find(
+                (status) => status.type === TAG_ENUM.AWAITING_REPLY
+              )?.count || 0,
+            color: "text-purple-500",
+            query: {
+              status: undefined,
+              tag: TAG_ENUM.AWAITING_REPLY,
+            },
+          },
+          {
+            icon: "play-b",
+            label: "Đang xử lý",
+            count:
+              summary?.sessionStatuses?.find(
+                (status) => status.type === SESSION_STATUS_ENUM.IN_PROCESS
+              )?.count || 0,
+            color: "text-gray-600",
+            query: {
+              status: SESSION_STATUS_ENUM.IN_PROCESS,
+              tag: undefined,
+            },
+          },
+          {
+            icon: "pause-b",
+            label: "Tạm chờ",
+            count:
+              summary?.sessionStatuses?.find(
+                (status) => status.type === TAG_ENUM.TEMPORARILY_PAUSED
+              )?.count || 0,
+            color: "text-gray-600",
+            query: {
+              status: undefined,
+              tag: TAG_ENUM.TEMPORARILY_PAUSED,
+            },
+          },
+        ],
+      },
+      {
+        icon: "check-b",
+        label: "Đã đóng",
+        count:
+          summary?.sessionStatuses?.find(
+            (status) => status.type === SESSION_STATUS_ENUM.COMPLETED
+          )?.count || 0,
+        color: "text-green-600",
+        query: {
+          status: SESSION_STATUS_ENUM.COMPLETED,
+          tag: undefined,
+        },
+      },
+    ];
+  }, []);
 
   const toggleCategory = (index: number) => {
     const newExpanded = new Set(expandedCategories);

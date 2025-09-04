@@ -5,7 +5,7 @@ import {
 } from "@openim/wasm-client-sdk";
 import { create } from "zustand";
 import { DChatSDK } from "../constants/sdk";
-import { ConversationStore } from "./type";
+import { ConversationStore, IFilterSummary, ISessionSummary } from "./type";
 import { conversationSort, isGroupSession } from "../utils/imCommon";
 import useUserStore from "./user";
 
@@ -14,11 +14,22 @@ const CONVERSATION_SPLIT_COUNT = 500;
 const useConversationStore = create<ConversationStore>((set, get) => ({
   conversationData: null,
   setConversationData: (data) => set({ conversationData: data }),
-  selectedThreadId: "",
-  setSelectedThreadId: (threadId) => set({ selectedThreadId: threadId }),
+  selectedConversationId: "",
+  setSelectedConversationId: (threadId) =>
+    set({ selectedConversationId: threadId }),
   selectedSourceId: "",
   setSelectedSourceId: (sourceId) => set({ selectedSourceId: sourceId }),
 
+  // assigned session
+  summary: null,
+  setSummary: (summary: ISessionSummary | null) => set({ summary }),
+  filterSummary: {
+    status: undefined,
+    tag: undefined,
+  },
+  setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),
+
+  // conversation
   conversationList: [],
   currentConversation: undefined,
   unreadCount: 0,

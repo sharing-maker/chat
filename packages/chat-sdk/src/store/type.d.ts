@@ -6,13 +6,58 @@ import {
 
 export type ConversationListUpdateType = "push" | "filter";
 
+type SessionStatus =
+  | "UNASSIGNED"
+  | "WAITING_PROCESS"
+  | "IN_PROCESS"
+  | "COMPLETED";
+
+type Tag = "NONE" | "AWAITING_REPLY" | "SLOW_PROCESSING" | "TEMPORARILY_PAUSED";
+
+interface SessionStatusItem {
+  type: SessionStatus;
+  count: number;
+}
+
+interface TagItem {
+  type: Tag;
+  count: number;
+}
+
+interface ISessionSummary {
+  activeSessionCount: number;
+  completedSessionCount: number;
+  sessionStatuses: SessionStatusItem[];
+  tagCounts: TagItem[];
+}
+
+interface ISessionByStatus {
+  id: string;
+  botId: string;
+  ownerId: string;
+  conversationId: string;
+  status: SessionStatus;
+  tag: Tag;
+  applicationType: string;
+}
+
+interface IFilterSummary {
+  status?: SessionStatus;
+  tag?: Tag;
+}
+
 interface ConversationStore {
   conversationData: ConversationItem | null;
   setConversationData: (data: ConversationItem) => void;
-  selectedThreadId: string;
+  selectedConversationId: string;
   selectedSourceId: string;
-  setSelectedThreadId: (threadId: string) => void;
+  setSelectedConversationId: (threadId: string) => void;
   setSelectedSourceId: (sourceId: string) => void;
+  summary: ISessionSummary | null;
+  setSummary: (summary: ISessionSummary | null) => void;
+
+  filterSummary: IFilterSummary;
+  setFilterSummary: (filter: IFilterSummary) => void;
 
   conversationList: ConversationItem[];
   currentConversation?: ConversationItem;

@@ -12,8 +12,8 @@ const DChatDeskMessage = () => {
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
-  const selectedThreadId = useConversationStore(
-    (state) => state.selectedThreadId
+  const selectedConversationId = useConversationStore(
+    (state) => state.selectedConversationId
   );
 
   const { connectStatus } = useChatContext();
@@ -24,7 +24,7 @@ const DChatDeskMessage = () => {
           <AssignedSessionFilter />
           <DeskConversationList />
           <MessageList
-            conversationId={selectedThreadId}
+            conversationId={selectedConversationId}
             conversationData={conversationData}
           />
         </div>

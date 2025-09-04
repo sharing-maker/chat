@@ -10,6 +10,7 @@ import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
+import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const token = useUserStore((state) => state.accessToken);
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
+  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
@@ -38,6 +40,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if (token && currentUser?.data) {
       setUser(currentUser?.data);
       getSelfInfo(currentUser?.data);
+      refetchChatToken(undefined, {
+        onSuccess: (data) => {
+          window.localStorage.setItem("chat_token", data?.data?.token);
+          setChatToken(data?.data?.token);
+        },
+        onError: () => {},
+      });
     }
   }, [currentUser, setUser, token]);
 
