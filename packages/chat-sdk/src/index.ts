@@ -7,6 +7,8 @@ import {
   InitAndLoginConfig,
 } from "@openim/wasm-client-sdk";
 import { Icon } from "./components/icon";
+import useUserStore from "./store/user";
+import useConversationStore from "./store/conversation";
 
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
@@ -16,6 +18,9 @@ export { DChatDeskMessage, DChatBubble, Icon };
 
 //Hooks
 export { useDChatAuth } from "./hooks/user/useAuth";
+
+//Store
+export { useUserStore, useConversationStore };
 
 // export * from "./types/sdk";
 

@@ -1,0 +1,95 @@
+import {
+  GroupItem,
+  GroupMemberItem,
+  ConversationItem,
+} from "@openim/wasm-client-sdk";
+
+export type ConversationListUpdateType = "push" | "filter";
+
+type SessionStatus =
+  | "UNASSIGNED"
+  | "WAITING_PROCESS"
+  | "IN_PROCESS"
+  | "COMPLETED";
+
+type Tag = "NONE" | "AWAITING_REPLY" | "SLOW_PROCESSING" | "TEMPORARILY_PAUSED";
+
+interface SessionStatusItem {
+  type: SessionStatus;
+  count: number;
+}
+
+interface TagItem {
+  type: Tag;
+  count: number;
+}
+
+interface ISessionSummary {
+  activeSessionCount: number;
+  completedSessionCount: number;
+  sessionStatuses: SessionStatusItem[];
+  tagCounts: TagItem[];
+}
+
+interface ISessionByStatus {
+  id: string;
+  botId: string;
+  ownerId: string;
+  conversationId: string;
+  status: SessionStatus;
+  tag: Tag;
+  applicationType: string;
+}
+
+interface IFilterSummary {
+  status?: SessionStatus;
+  tag?: Tag;
+}
+
+interface ConversationStore {
+  conversationData: ConversationItem | null;
+  setConversationData: (data: ConversationItem) => void;
+  selectedConversationId: string;
+  selectedSourceId: string;
+  setSelectedConversationId: (threadId: string) => void;
+  setSelectedSourceId: (sourceId: string) => void;
+  summary: ISessionSummary | null;
+  setSummary: (summary: ISessionSummary | null) => void;
+
+  filterSummary: IFilterSummary;
+  setFilterSummary: (filter: IFilterSummary) => void;
+
+  conversationList: ConversationItem[];
+  currentConversation?: ConversationItem;
+  unreadCount: number;
+  currentGroupInfo?: GroupItem;
+  currentMemberInGroup?: GroupMemberItem;
+  getConversationListByReq: (isOffset?: boolean) => Promise<boolean>;
+  updateConversationList: (
+    list: ConversationItem[],
+    type: ConversationListUpdateType
+  ) => void;
+  updateCurrentConversation: (conversation?: ConversationItem) => Promise<void>;
+  getCurrentGroupInfoByReq: (groupID: string) => Promise<void>;
+  getCurrentMemberInGroupByReq: (groupID: string) => Promise<void>;
+}
+
+interface IPersonalInfo {
+  fullName: string;
+  dateOfBirth: string;
+  sex: number;
+}
+
+interface IUserInfo {
+  id: string;
+  personalInfo: IPersonalInfo;
+  username: string;
+  phone: string;
+  email: string;
+  avatarFullUrl: string;
+}
+
+interface UserStore {
+  selfInfo: IUserInfo;
+  getSelfInfo: (data: IUserInfo) => void;
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FloatButton, Drawer, Popover } from "antd";
 import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import MessageList from "../message/MessageList";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
+import useConversationStore from "../../store/conversation";
 
 interface ChatBubbleProps {
   className?: string;
@@ -15,8 +15,8 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
     (state) => state.conversationData
   );
 
-  const selectedThreadId = useConversationStore(
-    (state) => state.selectedThreadId
+  const selectedConversationId = useConversationStore(
+    (state) => state.selectedConversationId
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +61,7 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
           }}
         >
           <MessageList
-            conversationId={selectedThreadId}
+            conversationId={selectedConversationId}
             conversationData={conversationDetail}
             className="flex-1"
             onClose={() => setIsOpen(false)}
@@ -78,7 +78,7 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
       content={
         <div style={{ width: 400, height: 640 }}>
           <MessageList
-            conversationId={selectedThreadId}
+            conversationId={selectedConversationId}
             conversationData={conversationDetail}
             className="flex-1"
             onClose={() => setIsOpen(false)}

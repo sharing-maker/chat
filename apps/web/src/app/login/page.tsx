@@ -25,7 +25,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const { mutate } = useFetchToken();
   const setToken = useUserStore((state) => state.setAccessToken);
-  const setChatToken = useUserStore((state) => state.setChatToken);
   const toast = useAntdToast();
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 

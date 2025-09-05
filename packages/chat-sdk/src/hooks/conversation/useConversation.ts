@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { DChatSDK } from "../../constants/sdk";
 
-export const useConversationList = (selectedThreadId?: string) => {
+export const useConversationList = (selectedConversationId?: string) => {
   const [conversationList, setConversationList] = useState<ConversationItem[]>(
     []
   );
@@ -59,10 +59,10 @@ export const useConversationList = (selectedThreadId?: string) => {
   }, []);
 
   useEffect(() => {
-    if (selectedThreadId) {
-      markConversationMessageAsRead(selectedThreadId);
+    if (selectedConversationId) {
+      markConversationMessageAsRead(selectedConversationId);
     }
-  }, [selectedThreadId, markConversationMessageAsRead]);
+  }, [selectedConversationId, markConversationMessageAsRead]);
 
   return {
     conversationList,

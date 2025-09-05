@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { DChatSDK } from "../../constants/sdk";
 import {
   CbEvents,
+  ConversationItem,
   MessageItem,
   MessageType,
   RevokedInfo,
@@ -11,7 +12,7 @@ import {
 import { CustomType } from "../../types/chat";
 import { pushNewMessage, updateOneMessage } from "../message/useMessage";
 import { useChatContext } from "../../context/ChatContext";
-import useConversationStore from "../conversation/useConversationStore";
+import useConversationStore from "../../store/conversation";
 
 const notPushType = [MessageType.TypingMessage, MessageType.RevokeMessage];
 
@@ -19,6 +20,9 @@ export const useGlobalEvent = () => {
   const { user } = useChatContext();
   const selectedSourceId = useConversationStore(
     (state) => state.selectedSourceId
+  );
+  const updateConversationList = useConversationStore(
+    (state) => state.updateConversationList
   );
 
   const revokedMessageHandler = ({ data }: WSEvent<RevokedInfo>) => {
@@ -78,11 +82,27 @@ export const useGlobalEvent = () => {
     // message
     DChatSDK.on(CbEvents.OnRecvNewMessages, newMessageHandler);
     DChatSDK.on(CbEvents.OnNewRecvMessageRevoked, revokedMessageHandler);
+
+    // conversation
+    DChatSDK.on(CbEvents.OnConversationChanged, conversationChangeHandler);
+    DChatSDK.on(CbEvents.OnNewConversation, newConversationHandler);
   };
 
   const disposeIMListener = () => {
     // message
     DChatSDK.off(CbEvents.OnRecvNewMessages, newMessageHandler);
+
+    // conversation
+    DChatSDK.off(CbEvents.OnConversationChanged, conversationChangeHandler);
+    DChatSDK.off(CbEvents.OnNewConversation, newConversationHandler);
+  };
+
+  // conversation
+  const conversationChangeHandler = ({ data }: WSEvent<ConversationItem[]>) => {
+    updateConversationList(data, "filter");
+  };
+  const newConversationHandler = ({ data }: WSEvent<ConversationItem[]>) => {
+    updateConversationList(data, "push");
   };
 
   /** LIFE CYCLE */

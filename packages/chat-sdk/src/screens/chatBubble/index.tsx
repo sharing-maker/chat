@@ -2,9 +2,9 @@ import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
 import { ConnectStatus } from "../../types/chat";
 import { useConversationList } from "../../hooks/conversation/useConversation";
-import useConversationStore from "../../hooks/conversation/useConversationStore";
 import { useEffect } from "react";
 import { SessionType } from "@openim/wasm-client-sdk";
+import useConversationStore from "../../store/conversation";
 
 interface DChatBubbleProps {
   conversationID: string;
@@ -18,8 +18,8 @@ const DChatBubble = (props: DChatBubbleProps) => {
   if (connectStatus !== ConnectStatus.Connected) return null;
   const { conversationList } = useConversationList();
 
-  const setSelectedThreadId = useConversationStore(
-    (state) => state.setSelectedThreadId
+  const setSelectedConversationId = useConversationStore(
+    (state) => state.setSelectedConversationId
   );
   const setConversationData = useConversationStore(
     (state) => state.setConversationData
@@ -39,7 +39,7 @@ const DChatBubble = (props: DChatBubbleProps) => {
       conversation?.conversationType === SessionType.Group
         ? conversation?.groupID
         : conversation?.userID;
-    setSelectedThreadId(conversation.conversationID);
+    setSelectedConversationId(conversation.conversationID);
     setConversationData(conversation);
     setSelectedSourceId(sourceId);
   }, [conversationList, conversationID]);
