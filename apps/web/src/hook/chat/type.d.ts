@@ -1,10 +1,14 @@
-type SessionStatus =
+export type SessionStatus =
   | "UNASSIGNED"
   | "WAITING_PROCESS"
   | "IN_PROCESS"
   | "COMPLETED";
 
-type Tag = "NONE" | "AWAITING_REPLY" | "SLOW_PROCESSING" | "TEMPORARILY_PAUSED";
+export type Tag =
+  | "NONE"
+  | "AWAITING_REPLY"
+  | "SLOW_PROCESSING"
+  | "TEMPORARILY_PAUSED";
 
 interface SessionStatusItem {
   type: SessionStatus;
