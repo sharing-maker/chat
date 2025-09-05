@@ -81,6 +81,10 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
     filterArr = get().conversationList.filter(
       (tc) => !chids.includes(tc.conversationID)
     );
+
+    set(() => ({
+      conversationList: conversationSort([...list, ...filterArr]),
+    }));
   },
 
   updateCurrentConversation: async (conversation?: ConversationItem) => {

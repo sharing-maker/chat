@@ -4,12 +4,14 @@ import { useMemo, useState } from "react";
 import { Icon } from "../icon";
 import useConversationStore from "../../store/conversation";
 import { SESSION_STATUS_ENUM, TAG_ENUM } from "../../constants";
+import { SessionStatus, Tag } from "../../store/type";
 
 interface MessageSubCategory {
   icon: string;
   label: string;
   count: number;
   color: string;
+  query: { status?: SessionStatus; tag?: Tag };
 }
 
 interface MessageCategory {
@@ -17,6 +19,7 @@ interface MessageCategory {
   label: string;
   count: number;
   color: string;
+  query: { status?: SessionStatus; tag?: Tag };
   subCategories?: MessageSubCategory[];
 }
 
@@ -159,6 +162,25 @@ const AssignedSessionFilter = ({
   const handleFilterSelect = (categoryId: string, subCategoryId?: string) => {
     const filterId = subCategoryId || categoryId;
     setSelectedFilter(filterId);
+
+    // Find the selected category and subcategory
+    const category = messageCategories.find((cat) => cat.label === categoryId);
+    let query;
+    if (category) {
+      if (subCategoryId && category.subCategories) {
+        const subCategory = category.subCategories.find(
+          (sub) => sub.label === subCategoryId
+        );
+        query = subCategory?.query;
+      } else {
+        query = category.query;
+      }
+    }
+
+    if (query) {
+      setFilterSummary(query);
+    }
+
     onFilterChange?.(categoryId, subCategoryId);
   };
 

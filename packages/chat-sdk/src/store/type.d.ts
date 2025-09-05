@@ -7,12 +7,9 @@ import {
 export type ConversationListUpdateType = "push" | "filter";
 
 type SessionStatus =
-  | "UNASSIGNED"
-  | "WAITING_PROCESS"
-  | "IN_PROCESS"
-  | "COMPLETED";
+  (typeof SESSION_STATUS_ENUM)[keyof typeof SESSION_STATUS_ENUM];
 
-type Tag = "NONE" | "AWAITING_REPLY" | "SLOW_PROCESSING" | "TEMPORARILY_PAUSED";
+type Tag = (typeof TAG_ENUM)[keyof typeof TAG_ENUM];
 
 interface SessionStatusItem {
   type: SessionStatus;

@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { apiInstance } from "@web/services/api";
 import { ENDPOINTS } from "@web/services/routes";
-import { BaseResponse } from "@web/types/common";
+import { ISessionSummary } from "./type";
 
 const GET_SESSION_SUMMARY_KEY = "GET_SESSION_SUMMARY_KEY";
 
