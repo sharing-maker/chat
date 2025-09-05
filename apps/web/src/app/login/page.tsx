@@ -2,7 +2,7 @@
 
 import { Icon } from "@droppii-org/chat-sdk";
 import { AntdButton, AntdInputForm, useAntdToast } from "@droppii-org/ui";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -38,8 +38,10 @@ export default function LoginPage() {
 
   const {
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, isValid },
   } = formInstance;
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (data: LoginFormData) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -89,16 +91,29 @@ export default function LoginPage() {
           name="password"
           label="Mật khẩu"
           isRequired={true}
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Nhập mật khẩu"
           prefix={<Icon icon="lock-b" className="text-blue-600 text-2xl" />}
           className="h-14 text-lg"
+          suffix={
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="focus:outline-none"
+            >
+              <Icon
+                icon={showPassword ? "eye-off-b" : "eye-b"}
+                className="text-gray-400 text-xl"
+              />
+            </button>
+          }
         />
 
         <AntdButton
           htmlType="submit"
           type="primary"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isValid}
           className="w-full mt-8 h-14 text-lg font-semibold rounded-xl"
         >
           {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}

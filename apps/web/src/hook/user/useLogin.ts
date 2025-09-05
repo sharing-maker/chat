@@ -60,7 +60,13 @@ export async function handleLogin({
     if (token) {
       window.localStorage.setItem("user_token", token);
     }
-    window.location.href = "/chat";
+    toast.show({
+      title: "Đăng nhập thành công",
+      type: "success",
+      position: "topRight",
+      isClosable: false,
+    });
+    // window.location.href = "/chat";
     return true;
   } else {
     toast.show({
