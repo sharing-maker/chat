@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { handleLogin, useFetchToken } from "@web/hook/user/useLogin";
 import useUserStore from "@web/hook/user/useUserStore";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   username: z
@@ -27,6 +28,7 @@ export default function LoginPage() {
   const setToken = useUserStore((state) => state.setAccessToken);
   const toast = useAntdToast();
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
 
   const formInstance = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -57,6 +59,7 @@ export default function LoginPage() {
               data,
               setToken,
               toast,
+              router,
             });
           },
           onError: (error) => {

@@ -3,6 +3,7 @@ import { apiInstance } from "@web/services/api";
 import { ENDPOINTS } from "@web/services/routes";
 import { BaseResponse } from "@web/types/common";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
 
 interface useFetchTokenProps {
   username: string;
@@ -36,10 +37,12 @@ export async function handleLogin({
   data,
   setToken,
   toast,
+  router,
 }: {
   data: any;
   setToken: (token: string) => void;
   toast: any;
+  router: any;
 }) {
   if (data?.statusCode !== 0) {
     toast.show({
@@ -66,7 +69,7 @@ export async function handleLogin({
       position: "topRight",
       isClosable: false,
     });
-    // window.location.href = "/chat";
+    router.push("/chat");
     return true;
   } else {
     toast.show({
