@@ -1,9 +1,7 @@
 import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
 import { ConnectStatus } from "../../types/chat";
-import { useConversationList } from "../../hooks/conversation/useConversation";
 import { useEffect } from "react";
-import { SessionType } from "@openim/wasm-client-sdk";
 import useConversationStore from "../../store/conversation";
 
 interface DChatBubbleProps {
@@ -16,16 +14,15 @@ const DChatBubble = (props: DChatBubbleProps) => {
 
   const { connectStatus } = useChatContext();
   if (connectStatus !== ConnectStatus.Connected) return null;
-  const { conversationList } = useConversationList();
+  const conversationList = useConversationStore(
+    (state) => state.conversationList
+  );
 
   const setSelectedConversationId = useConversationStore(
     (state) => state.setSelectedConversationId
   );
   const setConversationData = useConversationStore(
     (state) => state.setConversationData
-  );
-  const setSelectedSourceId = useConversationStore(
-    (state) => state.setSelectedSourceId
   );
 
   useEffect(() => {
@@ -35,13 +32,8 @@ const DChatBubble = (props: DChatBubbleProps) => {
     );
 
     if (!conversation) return;
-    const sourceId =
-      conversation?.conversationType === SessionType.Group
-        ? conversation?.groupID
-        : conversation?.userID;
     setSelectedConversationId(conversation.conversationID);
     setConversationData(conversation);
-    setSelectedSourceId(sourceId);
   }, [conversationList, conversationID]);
 
   return <ChatBubble className={className} />;

@@ -14,6 +14,12 @@ export enum ConnectStatus {
   Connecting = 2,
 }
 
+export enum SyncStatus {
+  Loading = 0,
+  Success = 1,
+  Failed = 2,
+}
+
 export enum CustomType {
   CallingInvite = 200,
   CallingAccept = 201,
@@ -25,6 +31,10 @@ export enum CustomType {
 export interface ChatContextType {
   user: SelfUserInfo | null;
   connectStatus: ConnectStatus;
+  syncStatus: SyncStatus;
+  userTokenHandler: () => void;
+  updateConnectStatus: (status: ConnectStatus) => void;
+  updateSyncStatus: (status: SyncStatus) => void;
 }
 
 export interface ChatProviderProps {
@@ -83,4 +93,24 @@ export interface VideoMsgParamsByFile extends VideoMsgParamsByURL {
 
 export interface FileMsgParamsByFile extends FileMsgParamsByURL {
   file: File;
+}
+
+export interface ExtendConversationInfo {
+  applicationType?: "OBEFE";
+  sessionInfo?: {
+    type: "SESSION_INFO";
+    data: {
+      ownerId: string;
+      botId: string;
+    };
+  };
+}
+
+export interface ExtendPublicUserInfo {
+  userInfo?: {
+    type: "USER_INFO";
+    data: {
+      username?: string;
+    };
+  };
 }

@@ -2,23 +2,31 @@ import {
   ConversationItem,
   GroupItem,
   GroupMemberItem,
+  SessionType,
 } from "@openim/wasm-client-sdk";
 import { create } from "zustand";
 import { DChatSDK } from "../constants/sdk";
 import { ConversationStore, IFilterSummary, ISessionSummary } from "./type";
 import { conversationSort, isGroupSession } from "../utils/imCommon";
 import useUserStore from "./user";
+import { markConversationMessageAsRead } from "../hooks/conversation/useConversation";
 
 const CONVERSATION_SPLIT_COUNT = 500;
 
 const useConversationStore = create<ConversationStore>((set, get) => ({
   conversationData: null,
-  setConversationData: (data) => set({ conversationData: data }),
+  setConversationData: (data) =>
+    set({
+      conversationData: data,
+      selectedSourceId:
+        data?.conversationType === SessionType.Group
+          ? data?.groupID
+          : data?.userID,
+    }),
   selectedConversationId: "",
   setSelectedConversationId: (threadId) =>
     set({ selectedConversationId: threadId }),
   selectedSourceId: "",
-  setSelectedSourceId: (sourceId) => set({ selectedSourceId: sourceId }),
 
   // assigned session
   summary: null,
@@ -63,7 +71,12 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
       (c) => c.conversationID === get().currentConversation?.conversationID
     );
 
-    if (idx > -1) get().updateCurrentConversation(list[idx]);
+    if (idx > -1) {
+      get().updateCurrentConversation(list[idx]);
+      if (type === "filter" && list[idx].unreadCount > 0) {
+        markConversationMessageAsRead(list[idx].conversationID);
+      }
+    }
 
     if (type === "filter") {
       set((state) => ({

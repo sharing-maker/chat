@@ -15,13 +15,12 @@ dayjs.extend(isToday);
 
 interface MessageListProps {
   conversationId: string;
-  conversationData: ConversationItem | null;
   className?: string;
   onClose?: () => void;
 }
 
 const MessageList = (props: MessageListProps) => {
-  const { conversationData, onClose, conversationId } = props;
+  const { onClose, conversationId } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
   const { getMoreOldMessages, moreOldLoading, loadState, latestLoadState } =
     useMessage(conversationId);
@@ -29,7 +28,7 @@ const MessageList = (props: MessageListProps) => {
   const lastMessage = useMemo(() => {
     const messageList = latestLoadState.current?.messageList;
     return messageList?.[messageList?.length - 1];
-  }, [latestLoadState]);
+  }, [latestLoadState?.current?.messageList]);
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -54,7 +53,7 @@ const MessageList = (props: MessageListProps) => {
 
   return (
     <div className="flex flex-col flex-1 relative h-full bg-white">
-      <MessageHeader conversationData={conversationData} onClose={onClose} />
+      <MessageHeader onClose={onClose} />
       <div
         id="scrollableDiv"
         style={{

@@ -18,8 +18,6 @@ export const useMessage = (conversationId: string) => {
 
   const latestLoadState = useLatest(loadState);
 
-  console.log(latestLoadState);
-
   const parseGroupMessageList = (messageList: MessageItem[]) => {
     if (!messageList) return [];
     const mGroupMessages: GroupMessageItem[] = messageList?.reduce(

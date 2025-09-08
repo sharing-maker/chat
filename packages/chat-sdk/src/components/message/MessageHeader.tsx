@@ -3,20 +3,26 @@
 import { ConversationItem } from "@openim/wasm-client-sdk";
 import { Avatar, Button } from "antd";
 import { Icon } from "../icon";
+import { useConversationDisplayData } from "../../hooks/conversation/useConversation";
+import useConversationStore from "../../store/conversation";
 
 interface MessageHeaderProps {
-  conversationData: ConversationItem | null;
   onClose?: () => void;
 }
 
-const MessageHeader = ({ conversationData, onClose }: MessageHeaderProps) => {
+const MessageHeader = ({ onClose }: MessageHeaderProps) => {
+  const conversationData = useConversationStore(
+    (state) => state.conversationData
+  );
+
+  const { avatar, displayName } = useConversationDisplayData(conversationData);
   return (
     <div className="px-4 py-3 flex items-center border-b gap-3">
-      <Avatar src={conversationData?.faceURL} size={"large"}>
-        {conversationData?.showName?.charAt?.(0) || "A"}
+      <Avatar src={avatar} size={"large"}>
+        {displayName?.charAt?.(0) || "A"}
       </Avatar>
       <div className="flex flex-col flex-1">
-        <p>{conversationData?.showName || ""}</p>
+        <p>{displayName || ""}</p>
         <p className="text-xs text-gray-500">{"2 thành viên"}</p>
       </div>
       <div className="flex items-center gap-2">

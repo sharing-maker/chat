@@ -9,7 +9,7 @@ import {
   SessionType,
   WSEvent,
 } from "@openim/wasm-client-sdk";
-import { CustomType } from "../../types/chat";
+import { ConnectStatus, CustomType, SyncStatus } from "../../types/chat";
 import { pushNewMessage, updateOneMessage } from "../message/useMessage";
 import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
@@ -18,11 +18,12 @@ const notPushType = [MessageType.TypingMessage, MessageType.RevokeMessage];
 
 export const useGlobalEvent = () => {
   const { user } = useChatContext();
-  const selectedSourceId = useConversationStore(
-    (state) => state.selectedSourceId
-  );
+  const { updateConnectStatus, updateSyncStatus } = useChatContext();
   const updateConversationList = useConversationStore(
     (state) => state.updateConversationList
+  );
+  const getConversationListByReq = useConversationStore(
+    (state) => state.getConversationListByReq
   );
 
   const revokedMessageHandler = ({ data }: WSEvent<RevokedInfo>) => {
@@ -36,6 +37,7 @@ export const useGlobalEvent = () => {
   };
 
   const inCurrentConversation = (newServerMsg: MessageItem) => {
+    const selectedSourceId = useConversationStore.getState().selectedSourceId;
     switch (newServerMsg.sessionType) {
       case SessionType.Single:
         return (
@@ -78,7 +80,51 @@ export const useGlobalEvent = () => {
     // check openIM token and user info
   };
 
+  const connectingHandler = () => {
+    updateConnectStatus(ConnectStatus.Connecting);
+  };
+
+  const connectSuccessHandler = () => {
+    updateConnectStatus(ConnectStatus.Connected);
+  };
+
+  const connectFailedHandler = () => {
+    updateConnectStatus(ConnectStatus.Disconnected);
+  };
+
+  const userTokenHandler = () => {
+    useChatContext().userTokenHandler();
+  };
+
+  const syncStartHandler = ({ data }: WSEvent<boolean>) => {
+    updateSyncStatus(SyncStatus.Loading);
+  };
+
+  const syncFinishHandler = () => {
+    updateSyncStatus(SyncStatus.Success);
+    // getFriendListByReq();
+    // getGroupListByReq();
+    getConversationListByReq(false);
+    // getUnReadCountByReq();
+  };
+  const syncFailedHandler = () => {
+    updateSyncStatus(SyncStatus.Failed);
+  };
+
   const setIMListener = () => {
+    //account
+    DChatSDK.on(CbEvents.OnUserTokenExpired, userTokenHandler);
+    DChatSDK.on(CbEvents.OnUserTokenInvalid, userTokenHandler);
+    DChatSDK.on(CbEvents.OnConnecting, connectingHandler);
+    DChatSDK.on(CbEvents.OnConnectSuccess, connectSuccessHandler);
+    DChatSDK.on(CbEvents.OnConnectFailed, connectFailedHandler);
+
+    // sync
+    DChatSDK.on(CbEvents.OnSyncServerStart, syncStartHandler);
+    // DChatSDK.on(CbEvents.OnSyncServerProgress, syncProgressHandler);
+    DChatSDK.on(CbEvents.OnSyncServerFinish, syncFinishHandler);
+    DChatSDK.on(CbEvents.OnSyncServerFailed, syncFailedHandler);
+
     // message
     DChatSDK.on(CbEvents.OnRecvNewMessages, newMessageHandler);
     DChatSDK.on(CbEvents.OnNewRecvMessageRevoked, revokedMessageHandler);
@@ -89,6 +135,19 @@ export const useGlobalEvent = () => {
   };
 
   const disposeIMListener = () => {
+    //account
+    DChatSDK.off(CbEvents.OnUserTokenExpired, userTokenHandler);
+    DChatSDK.off(CbEvents.OnUserTokenInvalid, userTokenHandler);
+    DChatSDK.off(CbEvents.OnConnecting, connectingHandler);
+    DChatSDK.off(CbEvents.OnConnectSuccess, connectSuccessHandler);
+    DChatSDK.off(CbEvents.OnConnectFailed, connectFailedHandler);
+
+    // sync
+    DChatSDK.off(CbEvents.OnSyncServerStart, syncStartHandler);
+    // DChatSDK.off(CbEvents.OnSyncServerProgress, syncProgressHandler);
+    DChatSDK.off(CbEvents.OnSyncServerFinish, syncFinishHandler);
+    DChatSDK.off(CbEvents.OnSyncServerFailed, syncFailedHandler);
+
     // message
     DChatSDK.off(CbEvents.OnRecvNewMessages, newMessageHandler);
 

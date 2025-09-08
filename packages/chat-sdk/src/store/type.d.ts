@@ -2,6 +2,7 @@ import {
   GroupItem,
   GroupMemberItem,
   ConversationItem,
+  PublicUserItem,
 } from "@openim/wasm-client-sdk";
 
 export type ConversationListUpdateType = "push" | "filter";
@@ -49,7 +50,6 @@ interface ConversationStore {
   selectedConversationId: string;
   selectedSourceId: string;
   setSelectedConversationId: (threadId: string) => void;
-  setSelectedSourceId: (sourceId: string) => void;
   summary: ISessionSummary | null;
   setSummary: (summary: ISessionSummary | null) => void;
 
@@ -89,4 +89,9 @@ interface IUserInfo {
 interface UserStore {
   selfInfo: IUserInfo;
   getSelfInfo: (data: IUserInfo) => void;
+}
+
+interface UsersInfoStore {
+  usersInfo: Record<string, PublicUserItem>;
+  upsertUsers: (data: PublicUserItem[]) => void;
 }
