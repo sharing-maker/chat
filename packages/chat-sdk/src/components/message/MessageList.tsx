@@ -78,7 +78,12 @@ const MessageList = (props: MessageListProps) => {
         >
           {loadState.groupMessageList
             ?.toReversed()
-            .map((message) => <MessageItem groupMessage={message} />)}
+            .map((message) => (
+              <MessageItem
+                key={message.groupMessageID}
+                groupMessage={message}
+              />
+            ))}
         </InfiniteScroll>
       </div>
 

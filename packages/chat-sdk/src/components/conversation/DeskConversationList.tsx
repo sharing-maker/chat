@@ -8,16 +8,8 @@ import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
 
 interface DChatConversationItem extends ConversationItem {
-  id: string;
-  threadId: string;
-  name: string;
-  username: string;
-  avatar: string;
   lastMessage: string;
   timestamp: string;
-  unreadCount: number;
-  isOnline: boolean;
-  source: string;
 }
 
 const parseLatestMessage = (
@@ -93,8 +85,6 @@ const transformConversationData = (
     lastMessage: parseLatestMessage(conv.latestMsg, currentUserId),
     timestamp: formatTimestamp(conv.latestMsgSendTime),
     unreadCount: conv.unreadCount,
-    isOnline: true, // Default to online, you can implement real status later
-    source: conv.conversationType === 3 ? "group" : "direct",
   }));
 };
 
@@ -126,27 +116,25 @@ const DeskConversationList = ({
     (state) => state.conversationList
   );
 
+  console.log({ conversationList });
   // Transform real conversation data from the API
   const conversations = transformConversationData(
     conversationList || [],
     user?.userID
   );
 
-  const filteredConversations = conversations.filter(
-    (conv: DChatConversationItem) =>
-      conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleConversationClick = (conversation: DChatConversationItem) => {
+  const handleConversationClick = (conversation: ConversationItem) => {
     setConversationData(conversation);
     const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("threadId", conversation.id);
+    newSearchParams.set("threadId", conversation.conversationID);
     router.push(`${pathname}?${newSearchParams.toString()}`);
 
-    setSelectedConversationId(conversation.id);
+    setSelectedConversationId(conversation.conversationID);
 
-    onConversationSelect?.(conversation.id, conversation.id);
+    onConversationSelect?.(
+      conversation.conversationID,
+      conversation.conversationID
+    );
   };
 
   useEffect(() => {
@@ -154,16 +142,16 @@ const DeskConversationList = ({
     if (threadId) {
       setSelectedConversationId(threadId);
       const selectedConversation = conversations.find(
-        (conv: DChatConversationItem) => conv.id === threadId
+        (conv: ConversationItem) => conv.conversationID === threadId
       );
       if (selectedConversation) {
         setConversationData(selectedConversation);
       }
     } else if (conversations.length > 0) {
-      setSelectedConversationId(conversations[0].id);
+      setSelectedConversationId(conversations[0].conversationID);
       setConversationData(conversations[0]);
       const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set("threadId", conversations[0].id);
+      newSearchParams.set("threadId", conversations[0].conversationID);
       router.replace(`${pathname}?${newSearchParams.toString()}`);
     }
   }, [searchParams, conversations.length]);
@@ -183,35 +171,32 @@ const DeskConversationList = ({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        {filteredConversations.map((conversation: DChatConversationItem) => (
+        {conversations.map((conversation: DChatConversationItem) => (
           <div
-            key={conversation.id}
+            key={conversation.conversationID}
             onClick={() => handleConversationClick(conversation)}
             className={`relative p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-              selectedConversationId === conversation.threadId
+              selectedConversationId === conversation.conversationID
                 ? "bg-blue-50"
                 : "bg-white"
             }`}
           >
             {/* Selected indicator */}
-            {selectedConversationId === conversation.threadId && (
+            {selectedConversationId === conversation.conversationID && (
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
             )}
 
             <div className="flex items-start gap-3">
               {/* Avatar */}
               <div className="relative flex-shrink-0">
-                <Badge
-                  dot={conversation.isOnline}
-                  status={conversation.isOnline ? "success" : "default"}
-                  offset={[-2, 36]}
-                >
+                {/* TODO: add status */}
+                <Badge dot={true} status={"success"} offset={[-2, 36]}>
                   <Avatar
                     size={48}
-                    src={conversation.avatar}
-                    alt={conversation.name}
+                    src={conversation.faceURL}
+                    alt={conversation.showName}
                   >
-                    {conversation.name.charAt(0).toUpperCase()}
+                    {conversation.showName.charAt(0).toUpperCase()}
                   </Avatar>
                 </Badge>
               </div>
@@ -221,7 +206,7 @@ const DeskConversationList = ({
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 text-sm truncate">
-                      {conversation.name}
+                      {conversation.showName}
                     </h3>
                     <p className="text-xs text-gray-500 truncate mt-0.5">
                       {conversation.lastMessage}
@@ -248,7 +233,7 @@ const DeskConversationList = ({
         ))}
 
         {/* Empty state */}
-        {filteredConversations.length === 0 && (
+        {conversations.length === 0 && (
           <div className="flex items-center justify-center py-12">
             <Empty
               image={

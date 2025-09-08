@@ -8,6 +8,9 @@ import { useEffect } from "react";
 export default function ChatPage() {
   const filterSummary = useConversationStore((state) => state.filterSummary);
   const setSummary = useConversationStore((state) => state.setSummary);
+  const setAssignedSessionList = useConversationStore(
+    (state) => state.setAssignedSessionList
+  );
 
   const { data: summary } = useFetchSessionSummary();
   const { data: listSessionQuery } = useFetchSessionByStatus(filterSummary);
@@ -17,6 +20,12 @@ export default function ChatPage() {
       setSummary(summary);
     }
   }, [summary, setSummary]);
+
+  useEffect(() => {
+    if (listSessionQuery) {
+      setAssignedSessionList(listSessionQuery);
+    }
+  }, [listSessionQuery, setAssignedSessionList]);
 
   return (
     <div className="h-full">

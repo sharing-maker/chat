@@ -9,6 +9,7 @@ import { SessionStatus, Tag } from "../../store/type";
 interface MessageSubCategory {
   icon: string;
   label: string;
+  key: string;
   count: number;
   color: string;
   query: { status?: SessionStatus; tag?: Tag };
@@ -19,6 +20,7 @@ interface MessageCategory {
   label: string;
   count: number;
   color: string;
+  key: string;
   query: { status?: SessionStatus; tag?: Tag };
   subCategories?: MessageSubCategory[];
 }
@@ -35,7 +37,10 @@ const AssignedSessionFilter = ({
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
     new Set([0])
   );
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>(
+    SESSION_STATUS_ENUM.UNASSIGNED
+  );
+  console.log({ selectedFilter });
   const summary = useConversationStore((state) => state.summary);
   const setFilterSummary = useConversationStore(
     (state) => state.setFilterSummary
@@ -46,6 +51,7 @@ const AssignedSessionFilter = ({
       {
         icon: "chat-square-b",
         label: "Đang mở",
+        key: "ALL",
         count: summary?.activeSessionCount || 0,
         color: "text-gray-600",
         query: {
@@ -56,6 +62,7 @@ const AssignedSessionFilter = ({
           {
             icon: "user-del-o",
             label: "Chưa phân công",
+            key: SESSION_STATUS_ENUM.UNASSIGNED,
             count:
               summary?.sessionStatuses?.find(
                 (status) => status.type === SESSION_STATUS_ENUM.UNASSIGNED
@@ -69,6 +76,7 @@ const AssignedSessionFilter = ({
           {
             icon: "warning-square-o",
             label: "Chậm xử lý",
+            key: TAG_ENUM.SLOW_PROCESSING,
             count:
               summary?.tagCounts?.find(
                 (status) => status.type === TAG_ENUM.SLOW_PROCESSING
@@ -82,6 +90,7 @@ const AssignedSessionFilter = ({
           {
             icon: "time-circle-o",
             label: "Chờ xử lý",
+            key: SESSION_STATUS_ENUM.WAITING_PROCESS,
             count:
               summary?.sessionStatuses?.find(
                 (status) => status.type === SESSION_STATUS_ENUM.WAITING_PROCESS
@@ -95,6 +104,7 @@ const AssignedSessionFilter = ({
           {
             icon: "arrow-reply-o",
             label: "Chưa trả lời",
+            key: TAG_ENUM.AWAITING_REPLY,
             count:
               summary?.tagCounts?.find(
                 (status) => status.type === TAG_ENUM.AWAITING_REPLY
@@ -108,6 +118,7 @@ const AssignedSessionFilter = ({
           {
             icon: "play-b",
             label: "Đang xử lý",
+            key: SESSION_STATUS_ENUM.IN_PROCESS,
             count:
               summary?.sessionStatuses?.find(
                 (status) => status.type === SESSION_STATUS_ENUM.IN_PROCESS
@@ -121,6 +132,7 @@ const AssignedSessionFilter = ({
           {
             icon: "pause-b",
             label: "Tạm chờ",
+            key: TAG_ENUM.TEMPORARILY_PAUSED,
             count:
               summary?.sessionStatuses?.find(
                 (status) => status.type === TAG_ENUM.TEMPORARILY_PAUSED
@@ -136,6 +148,7 @@ const AssignedSessionFilter = ({
       {
         icon: "check-b",
         label: "Đã đóng",
+        key: SESSION_STATUS_ENUM.COMPLETED,
         count:
           summary?.sessionStatuses?.find(
             (status) => status.type === SESSION_STATUS_ENUM.COMPLETED
@@ -210,7 +223,7 @@ const AssignedSessionFilter = ({
                   }
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group ${
-                  selectedFilter === category.label && !category.subCategories
+                  selectedFilter === category.key && !category.subCategories
                     ? "bg-blue-50 border-r-2 border-blue-500"
                     : ""
                 }`}
@@ -250,10 +263,10 @@ const AssignedSessionFilter = ({
                     <li key={subIndex}>
                       <button
                         onClick={() =>
-                          handleFilterSelect(category.label, subCategory.label)
+                          handleFilterSelect(category.key, subCategory.key)
                         }
                         className={`w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 transition-colors group ${
-                          selectedFilter === subCategory.label
+                          selectedFilter === subCategory.key
                             ? "bg-blue-50 border-r-2 border-blue-500"
                             : ""
                         }`}

@@ -50,11 +50,13 @@ interface ConversationStore {
   selectedConversationId: string;
   selectedSourceId: string;
   setSelectedConversationId: (threadId: string) => void;
+
   summary: ISessionSummary | null;
   setSummary: (summary: ISessionSummary | null) => void;
-
   filterSummary: IFilterSummary;
   setFilterSummary: (filter: IFilterSummary) => void;
+  assignedSessionList: ISessionByStatus[];
+  setAssignedSessionList: (list: ISessionByStatus[]) => void;
 
   conversationList: ConversationItem[];
   currentConversation?: ConversationItem;

@@ -26,14 +26,14 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     const token = window.localStorage.getItem("user_token") || "";
 
     if (!token && pathname !== "/login") {
-      router.replace("/login");
+      router.push("/login");
       return;
     }
 
     if (token && (pathname === "/login" || pathname === "/")) {
-      router.replace("/chat");
+      router.push("/chat");
     }
-  }, [pathname, router, setToken]);
+  }, [pathname, router, setToken, token]);
 
   useEffect(() => {
     const chatToken = window.localStorage.getItem("chat_token") || "";
