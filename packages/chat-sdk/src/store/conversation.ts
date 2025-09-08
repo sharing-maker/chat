@@ -73,7 +73,9 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
 
     if (idx > -1) {
       get().updateCurrentConversation(list[idx]);
-      markConversationMessageAsRead(list[idx].conversationID);
+      if (type === "filter" && list[idx].unreadCount > 0) {
+        markConversationMessageAsRead(list[idx].conversationID);
+      }
     }
 
     if (type === "filter") {

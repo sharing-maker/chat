@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Input, Avatar, Badge, Empty } from "antd";
 import { ConversationItem } from "@openim/wasm-client-sdk";
-import { markConversationMessageAsRead } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
@@ -168,12 +167,6 @@ const DeskConversationList = ({
       router.replace(`${pathname}?${newSearchParams.toString()}`);
     }
   }, [searchParams, conversations.length]);
-
-  useEffect(() => {
-    if (!!selectedConversationId) {
-      markConversationMessageAsRead(selectedConversationId);
-    }
-  }, [selectedConversationId]);
 
   return (
     <div
