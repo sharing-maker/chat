@@ -52,7 +52,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }, [currentUser, setUser, token]);
 
   useEffect(() => {
-    if (chatToken) {
+    if (!!chatToken) {
       initStore();
     }
   }, [chatToken]);

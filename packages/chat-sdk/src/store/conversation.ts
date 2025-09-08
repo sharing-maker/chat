@@ -10,6 +10,7 @@ import { ConversationStore, IFilterSummary, ISessionSummary } from "./type";
 import { conversationSort, isGroupSession } from "../utils/imCommon";
 import useUserStore from "./user";
 import { markConversationMessageAsRead } from "../hooks/conversation/useConversation";
+import { SESSION_STATUS_ENUM } from "../constants";
 
 const CONVERSATION_SPLIT_COUNT = 500;
 
@@ -32,7 +33,7 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
   summary: null,
   setSummary: (summary: ISessionSummary | null) => set({ summary }),
   filterSummary: {
-    status: undefined,
+    status: SESSION_STATUS_ENUM.UNASSIGNED,
     tag: undefined,
   },
   setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),
@@ -157,10 +158,6 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
     set(() => ({
       currentMemberInGroup: memberInfo ? { ...memberInfo } : undefined,
     }));
-  },
-
-  markConversationMessageAsRead: (conversationId: string) => {
-    DChatSDK.markConversationMessageAsRead(conversationId);
   },
 }));
 

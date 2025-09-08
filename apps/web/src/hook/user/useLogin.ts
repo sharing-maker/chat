@@ -69,8 +69,8 @@ export async function handleLogin({
       isClosable: false,
     });
 
-    // router.push(ROUTES.CHAT);
     window.location.href = ROUTES.CHAT;
+
     return true;
   } else {
     toast.show({
