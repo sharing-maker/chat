@@ -1,10 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
-import { ChatProvider } from "@droppii-org/chat-sdk";
+import { ChatProvider, initStore } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
@@ -25,6 +25,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const setToken = useUserStore((state) => state.setAccessToken);
   const setChatToken = useUserStore((state) => state.setChatToken);
   const token = useUserStore((state) => state.accessToken);
+  const chatToken = useUserStore((state) => state.chatToken);
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
   const { mutate: refetchChatToken } = useRefetchChatToken();
@@ -51,13 +52,22 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }, [currentUser, setUser, token]);
 
   useEffect(() => {
+    if (chatToken) {
+      initStore();
+    }
+  }, [chatToken]);
+
+  useEffect(() => {
     setMounted(true);
     document.documentElement.classList.add("hydrated");
   }, []);
 
   const pagesWithoutSidebar = ["/login"];
 
-  const shouldShowSidebar = !pagesWithoutSidebar.includes(pathname);
+  const shouldShowSidebar = useMemo(
+    () => !pagesWithoutSidebar.includes(pathname),
+    [pathname]
+  );
 
   if (!mounted) {
     return <MainLayoutSkeleton showSidebar={shouldShowSidebar} />;

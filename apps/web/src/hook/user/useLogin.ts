@@ -1,9 +1,8 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { apiInstance } from "@web/services/api";
-import { ENDPOINTS } from "@web/services/routes";
+import { ENDPOINTS, ROUTES } from "@web/services/routes";
 import { BaseResponse } from "@web/types/common";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
 
 interface useFetchTokenProps {
   username: string;
@@ -69,7 +68,9 @@ export async function handleLogin({
       position: "topRight",
       isClosable: false,
     });
-    router.push("/chat");
+
+    // router.push(ROUTES.CHAT);
+    window.location.href = ROUTES.CHAT;
     return true;
   } else {
     toast.show({

@@ -36,6 +36,8 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
     tag: undefined,
   },
   setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),
+  assignedSessionList: [],
+  setAssignedSessionList: (list) => set({ assignedSessionList: list }),
 
   // conversation
   conversationList: [],
@@ -155,6 +157,10 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
     set(() => ({
       currentMemberInGroup: memberInfo ? { ...memberInfo } : undefined,
     }));
+  },
+
+  markConversationMessageAsRead: (conversationId: string) => {
+    DChatSDK.markConversationMessageAsRead(conversationId);
   },
 }));
 

@@ -12,7 +12,7 @@ export const useFetchSessionByStatus = ({
 }: {
   status?: string;
   tag?: string;
-}): UseQueryResult<BaseResponse<ISessionByStatus>, unknown> => {
+}): UseQueryResult<ISessionByStatus[]> => {
   return useQuery({
     queryKey: [GET_SESSION_BY_STATUS_KEY, status, tag],
     queryFn: async () => {

@@ -9,6 +9,7 @@ import {
 import { Icon } from "./components/icon";
 import useUserStore from "./store/user";
 import useConversationStore from "./store/conversation";
+import { initStore } from "./utils/imCommon";
 
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
@@ -20,7 +21,7 @@ export { DChatDeskMessage, DChatBubble, Icon };
 export { useDChatAuth } from "./hooks/user/useAuth";
 
 //Store
-export { useUserStore, useConversationStore };
+export { useUserStore, useConversationStore, initStore };
 
 // export * from "./types/sdk";
 

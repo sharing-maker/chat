@@ -126,6 +126,7 @@ const DeskConversationList = ({
     (state) => state.conversationList
   );
 
+  console.log({ conversationList });
   // Transform real conversation data from the API
   const conversations = transformConversationData(
     conversationList || [],

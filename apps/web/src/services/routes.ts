@@ -11,3 +11,8 @@ export const ENDPOINTS = {
     getCurrentUserInfo: "/user-service/v1/app/user",
   },
 };
+
+export const ROUTES = {
+  CHAT: "/chat",
+  LOGIN: "/login",
+};
