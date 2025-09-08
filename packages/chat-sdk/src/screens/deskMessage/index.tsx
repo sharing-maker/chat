@@ -9,9 +9,6 @@ import { ConnectStatus } from "../../types/chat";
 import useConversationStore from "../../store/conversation";
 
 const DChatDeskMessage = () => {
-  const conversationData = useConversationStore(
-    (state) => state.conversationData
-  );
   const selectedConversationId = useConversationStore(
     (state) => state.selectedConversationId
   );
@@ -23,10 +20,7 @@ const DChatDeskMessage = () => {
         <div className="flex flex-1 flex-row h-screen bg-gray-50">
           <AssignedSessionFilter />
           <DeskConversationList />
-          <MessageList
-            conversationId={selectedConversationId}
-            conversationData={conversationData}
-          />
+          <MessageList conversationId={selectedConversationId} />
         </div>
       ) : (
         <div className="flex flex-1 flex-row h-screen bg-gray-50">

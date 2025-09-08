@@ -6,6 +6,7 @@ import {
   ChatContextType,
   ChatProviderProps,
   ConnectStatus,
+  SyncStatus,
 } from "../types/chat";
 import { DChatSDK } from "../constants/sdk";
 import MainLayout from "../layout";
@@ -13,6 +14,10 @@ import MainLayout from "../layout";
 export const ChatContext = createContext<ChatContextType>({
   user: null,
   connectStatus: ConnectStatus.Disconnected,
+  syncStatus: SyncStatus.Success,
+  userTokenHandler: () => {},
+  updateConnectStatus: () => {},
+  updateSyncStatus: () => {},
 });
 
 export const useChatContext = () => useContext(ChatContext);
@@ -25,6 +30,7 @@ export const ChatProvider = ({
   const [connectStatus, setConnectStatus] = useState<ConnectStatus>(
     ConnectStatus.Disconnected
   );
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(SyncStatus.Success);
   const [user, setUser] = useState<SelfUserInfo | null>(null);
 
   const getUserInfo = () => {
@@ -33,7 +39,7 @@ export const ChatProvider = ({
         setUser(data);
       })
       .catch(({ errCode, errMsg }) => {
-        console.log("getSelfUserInfo", errCode, errMsg);
+        console.error("getSelfUserInfo", errCode, errMsg);
       });
   };
 
@@ -47,9 +53,25 @@ export const ChatProvider = ({
           getUserInfo();
         })
         .catch(({ errCode, errMsg }) => {
-          console.log("handleLogin", errCode, errMsg);
+          console.error("handleLogin", errCode, errMsg);
         });
     }
+  };
+
+  const userTokenHandler = () => {
+    refetchToken().then((token) => {
+      if (!!token) {
+        handleLogin(token);
+      }
+    });
+  };
+
+  const updateConnectStatus = (status: ConnectStatus) => {
+    setConnectStatus(status);
+  };
+
+  const updateSyncStatus = (status: SyncStatus) => {
+    setSyncStatus(status);
   };
 
   useEffect(() => {
@@ -58,43 +80,17 @@ export const ChatProvider = ({
     }
   }, [config]);
 
-  useEffect(() => {
-    DChatSDK.on(CbEvents.OnUserTokenExpired, () => {
-      console.log("OnUserTokenExpired");
-      refetchToken().then((token) => {
-        if (!!token) {
-          handleLogin(token);
-        }
-      });
-    });
-    DChatSDK.on(CbEvents.OnUserTokenInvalid, () => {
-      console.log("OnUserTokenInvalid");
-      refetchToken().then((token) => {
-        if (!!token) {
-          handleLogin(token);
-        }
-      });
-    });
-    DChatSDK.on(CbEvents.OnConnectSuccess, () => {
-      setConnectStatus(ConnectStatus.Connected);
-    });
-    DChatSDK.on(CbEvents.OnConnecting, () => {
-      setConnectStatus(ConnectStatus.Connecting);
-    });
-    DChatSDK.on(CbEvents.OnConnectFailed, () => {
-      setConnectStatus(ConnectStatus.Disconnected);
-    });
-    return () => {
-      DChatSDK.off(CbEvents.OnUserTokenExpired, () => {});
-      DChatSDK.off(CbEvents.OnUserTokenInvalid, () => {});
-      DChatSDK.off(CbEvents.OnConnectSuccess, () => {});
-      DChatSDK.off(CbEvents.OnConnectFailed, () => {});
-      DChatSDK.off(CbEvents.OnConnecting, () => {});
-    };
-  }, [refetchToken]);
-
   return (
-    <ChatContext.Provider value={{ user, connectStatus }}>
+    <ChatContext.Provider
+      value={{
+        user,
+        connectStatus,
+        syncStatus,
+        userTokenHandler,
+        updateConnectStatus,
+        updateSyncStatus,
+      }}
+    >
       <MainLayout>{children}</MainLayout>
     </ChatContext.Provider>
   );

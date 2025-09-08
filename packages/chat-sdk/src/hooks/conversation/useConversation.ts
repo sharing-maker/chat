@@ -1,74 +1,18 @@
-import {
-  ConversationItem,
-  SessionType,
-  CbEvents,
-} from "@openim/wasm-client-sdk";
-import { useCallback, useEffect, useState } from "react";
+import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DChatSDK } from "../../constants/sdk";
+import useUsersInfoStore from "../../store/usersInfo";
+import { extractUserIdsFromConversations } from "../user/useUsersInfo";
+import { ExtendConversationInfo, ExtendPublicUserInfo } from "../../types/chat";
+import { useChatContext } from "../../context/ChatContext";
 
-export const useConversationList = (selectedConversationId?: string) => {
-  const [conversationList, setConversationList] = useState<ConversationItem[]>(
-    []
-  );
-
-  const getAllConversationList = useCallback(async () => {
-    DChatSDK.getAllConversationList()
-      .then(({ data }) => {
-        setConversationList(data);
-      })
-      .catch((err) => {
-        console.log("getAllConversationList", err);
-      });
-  }, []);
-
-  const markConversationMessageAsRead = useCallback(
-    (conversationId: string) => {
-      if (!conversationId) return;
-      DChatSDK.markConversationMessageAsRead(conversationId)
-        .then()
-        .catch(({ errCode, errMsg }) => {
-          // Failed call
-        });
-    },
-    []
-  );
-
-  useEffect(() => {
-    getAllConversationList();
-  }, [getAllConversationList]);
-
-  useEffect(() => {
-    const handler = ({ data }: { data: ConversationItem[] }) => {
-      setConversationList((prev) => {
-        // Tạo map để cập nhật
-        const map = new Map(prev.map((c) => [c.conversationID, c]));
-
-        data.forEach((changed) => {
-          map.set(changed.conversationID, changed);
-        });
-
-        return Array.from(map.values());
-      });
-    };
-
-    DChatSDK.on(CbEvents.OnConversationChanged, handler);
-
-    return () => {
-      DChatSDK.off(CbEvents.OnConversationChanged, handler);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (selectedConversationId) {
-      markConversationMessageAsRead(selectedConversationId);
-    }
-  }, [selectedConversationId, markConversationMessageAsRead]);
-
-  return {
-    conversationList,
-    getAllConversationList,
-    markConversationMessageAsRead,
-  };
+export const markConversationMessageAsRead = (conversationId: string) => {
+  if (!conversationId) return;
+  DChatSDK.markConversationMessageAsRead(conversationId)
+    .then()
+    .catch(({ errCode, errMsg }) => {
+      console.error("markConversationMessageAsRead", errCode, errMsg);
+    });
 };
 
 export const useConversationDetail = ({
@@ -89,7 +33,7 @@ export const useConversationDetail = ({
         setConversationDetail(data);
       })
       .catch((err) => {
-        console.log("getOneConversation", err);
+        console.error("getOneConversation", err);
       });
   }, [sourceID, sessionType]);
 
@@ -99,5 +43,52 @@ export const useConversationDetail = ({
 
   return {
     conversationDetail,
+  };
+};
+
+export const useConversationDisplayData = (
+  conversation: ConversationItem | null
+) => {
+  const { user } = useChatContext();
+  const usersInfo = useUsersInfoStore((state) => state.usersInfo);
+
+  const userInfo = useMemo(() => {
+    if (!conversation) return null;
+    const userId = extractUserIdsFromConversations([conversation])?.[0];
+    return usersInfo?.[userId];
+  }, [conversation, usersInfo]);
+
+  const conversationDisplayData = useMemo(() => {
+    if (!conversation) return null;
+    const exConversationInfo = JSON.parse(
+      conversation.ex || "{}"
+    ) as ExtendConversationInfo;
+    const sessionInfo = exConversationInfo?.sessionInfo;
+    const isSupportGroup =
+      conversation.conversationType === SessionType.Group &&
+      !!sessionInfo?.data;
+    const isOwnerGroup =
+      isSupportGroup && sessionInfo?.data?.ownerId === user?.userID;
+
+    const exUserInfo = JSON.parse(userInfo?.ex || "{}") as ExtendPublicUserInfo;
+
+    return {
+      avatar:
+        isSupportGroup && !isOwnerGroup
+          ? userInfo?.faceURL
+          : conversation?.faceURL,
+      displayName:
+        isSupportGroup && !isOwnerGroup
+          ? `${userInfo?.nickname}${
+              exUserInfo?.userInfo?.data?.username
+                ? ` (${exUserInfo?.userInfo?.data?.username})`
+                : ""
+            }`
+          : conversation?.showName,
+    };
+  }, [conversation, userInfo]);
+
+  return {
+    ...conversationDisplayData,
   };
 };

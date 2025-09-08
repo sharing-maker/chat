@@ -11,9 +11,6 @@ interface ChatBubbleProps {
 
 const ChatBubble = ({ className }: ChatBubbleProps) => {
   const [isMobile, setIsMobile] = useState(false);
-  const conversationDetail = useConversationStore(
-    (state) => state.conversationData
-  );
 
   const selectedConversationId = useConversationStore(
     (state) => state.selectedConversationId
@@ -62,7 +59,6 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
         >
           <MessageList
             conversationId={selectedConversationId}
-            conversationData={conversationDetail}
             className="flex-1"
             onClose={() => setIsOpen(false)}
           />
@@ -79,7 +75,6 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
         <div style={{ width: 400, height: 640 }}>
           <MessageList
             conversationId={selectedConversationId}
-            conversationData={conversationDetail}
             className="flex-1"
             onClose={() => setIsOpen(false)}
           />

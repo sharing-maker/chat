@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Input, Avatar, Badge, Empty } from "antd";
-import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
-import { useConversationList } from "../../hooks/conversation/useConversation";
+import { ConversationItem } from "@openim/wasm-client-sdk";
+import { markConversationMessageAsRead } from "../../hooks/conversation/useConversation";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
@@ -122,11 +122,10 @@ const DeskConversationList = ({
   const setSelectedConversationId = useConversationStore(
     (state) => state.setSelectedConversationId
   );
-  const setSelectedSourceId = useConversationStore(
-    (state) => state.setSelectedSourceId
+
+  const conversationList = useConversationStore(
+    (state) => state.conversationList
   );
-  const { conversationList, markConversationMessageAsRead } =
-    useConversationList(selectedConversationId);
 
   // Transform real conversation data from the API
   const conversations = transformConversationData(
@@ -151,20 +150,6 @@ const DeskConversationList = ({
     onConversationSelect?.(conversation.id, conversation.id);
   };
 
-  const onSetSelectedSourceId = useCallback(() => {
-    const selectedConversation = conversations.findIndex(
-      (conv: DChatConversationItem) => conv.id === selectedConversationId
-    );
-    if (selectedConversation !== -1) {
-      const conversation = conversations[selectedConversation];
-      const sourceId =
-        conversation.conversationType === SessionType.Group
-          ? conversation.groupID
-          : conversation.userID;
-      setSelectedSourceId(sourceId);
-    }
-  }, [conversationList, selectedConversationId]);
-
   useEffect(() => {
     const threadId = searchParams.get("threadId");
     if (threadId) {
@@ -187,9 +172,8 @@ const DeskConversationList = ({
   useEffect(() => {
     if (!!selectedConversationId) {
       markConversationMessageAsRead(selectedConversationId);
-      onSetSelectedSourceId();
     }
-  }, [selectedConversationId, onSetSelectedSourceId]);
+  }, [selectedConversationId]);
 
   return (
     <div
