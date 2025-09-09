@@ -99,7 +99,7 @@ const FilePreview = () => {
           >
             {documentIcon}
             <span className="text-xs text-gray-500">
-              {shortenFileName(file.name)}
+              {shortenFileName(file?.originFileObj?.name || "")}
             </span>
             <Button
               className="absolute top-[-8px] right-[-8px] w-5 h-5 rounded-full p-0 bg-gray-500 hover:bg-gray-600"
