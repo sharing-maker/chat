@@ -31,19 +31,9 @@ export default function ChatPage() {
     }
   }, [summary, setSummary]);
 
-  console.log(conversationList?.map((item) => item.conversationID));
-
   useEffect(() => {
     if (listSessionQuery) {
       setAssignedSessionList(listSessionQuery);
-      const conversationIds = listSessionQuery.map(
-        (session) => session.conversationId
-      );
-      console.log({ conversationIds });
-      DChatSDK.getMultipleConversation(conversationIds).then(({ data }) => {
-        console.log("nanana", data);
-        updateConversationList(data, "filter");
-      });
     }
   }, [listSessionQuery, setAssignedSessionList]);
 

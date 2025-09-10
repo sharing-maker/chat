@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Input, Empty } from "antd";
 import { ConversationItem, MessageType } from "@openim/wasm-client-sdk";
@@ -8,6 +8,7 @@ import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
 import { DChatConversationItem } from "./type";
 import ConversationItemList from "./ConversationItemList";
+import { DChatSDK } from "../../constants/sdk";
 
 const parseLatestMessage = (
   latestMsg: string,
@@ -101,6 +102,9 @@ const transformConversationData = (
 
 const DeskConversationList = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [conversationIdFromSession, setConversationIdFromSession] = useState<
+    string[]
+  >([]);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -114,16 +118,33 @@ const DeskConversationList = () => {
   const setSelectedConversationId = useConversationStore(
     (state) => state.setSelectedConversationId
   );
-
   const conversationList = useConversationStore(
     (state) => state.conversationList
   );
+  const assignedSessionList = useConversationStore(
+    (state) => state.assignedSessionList
+  );
 
   // Transform real conversation data from the API
-  const conversations = transformConversationData(
-    conversationList || [],
-    user?.userID
-  );
+  const conversations = useMemo(() => {
+    const filteredConversation = conversationList.filter((conv) =>
+      conversationIdFromSession.includes(conv.conversationID)
+    );
+    return transformConversationData(filteredConversation || [], user?.userID);
+  }, [conversationList, conversationIdFromSession, user?.userID]);
+
+  useEffect(() => {
+    const conversationIds = assignedSessionList.map(
+      (session) => session.conversationId
+    );
+
+    DChatSDK.getMultipleConversation(conversationIds).then(({ data }) => {
+      const extractConversationIDs = data.map((conv) => conv.conversationID);
+      setConversationIdFromSession(extractConversationIDs);
+    });
+  }, [assignedSessionList]);
+
+  console.log({ assignedSessionList });
 
   useEffect(() => {
     const threadId = searchParams.get("threadId");
