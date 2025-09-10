@@ -40,7 +40,7 @@ const AssignedSessionFilter = ({
   const [selectedFilter, setSelectedFilter] = useState<string>(
     SESSION_STATUS_ENUM.UNASSIGNED
   );
-  console.log({ selectedFilter });
+
   const summary = useConversationStore((state) => state.summary);
   const setFilterSummary = useConversationStore(
     (state) => state.setFilterSummary
@@ -172,17 +172,17 @@ const AssignedSessionFilter = ({
     setExpandedCategories(newExpanded);
   };
 
-  const handleFilterSelect = (categoryId: string, subCategoryId?: string) => {
-    const filterId = subCategoryId || categoryId;
-    setSelectedFilter(filterId);
+  const handleFilterSelect = (categoryKey: string, subCategoryKey?: string) => {
+    const filterKey = subCategoryKey || categoryKey;
+    setSelectedFilter(filterKey);
 
-    // Find the selected category and subcategory
-    const category = messageCategories.find((cat) => cat.label === categoryId);
+    // Find the selected category and subcategory by key
+    const category = messageCategories.find((cat) => cat.key === categoryKey);
     let query;
     if (category) {
-      if (subCategoryId && category.subCategories) {
+      if (subCategoryKey && category.subCategories) {
         const subCategory = category.subCategories.find(
-          (sub) => sub.label === subCategoryId
+          (sub) => sub.key === subCategoryKey
         );
         query = subCategory?.query;
       } else {
@@ -194,7 +194,7 @@ const AssignedSessionFilter = ({
       setFilterSummary(query);
     }
 
-    onFilterChange?.(categoryId, subCategoryId);
+    onFilterChange?.(categoryKey, subCategoryKey);
   };
 
   return (
@@ -219,7 +219,7 @@ const AssignedSessionFilter = ({
                   if (category.subCategories) {
                     toggleCategory(index);
                   } else {
-                    handleFilterSelect(category.label);
+                    handleFilterSelect(category.key);
                   }
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group ${
