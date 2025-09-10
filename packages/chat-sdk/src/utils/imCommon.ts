@@ -1,15 +1,8 @@
 import { ConversationItem, SessionType } from "@openim/wasm-client-sdk";
 import { GroupSessionTypes } from "../constants/im";
-import useConversationStore from "../store/conversation";
 
 export const isGroupSession = (sessionType?: SessionType) =>
   sessionType ? GroupSessionTypes.includes(sessionType) : false;
-
-export const initStore = () => {
-  const { getConversationListByReq } = useConversationStore.getState();
-
-  getConversationListByReq();
-};
 
 export const conversationSort = (
   conversationList: ConversationItem[],

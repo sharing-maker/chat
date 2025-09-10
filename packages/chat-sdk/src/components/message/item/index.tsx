@@ -112,7 +112,7 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
                 <div
                   className={clsx(
                     "px-3 py-2 rounded-2xl max-w-full break-words flex flex-col flex-1 text-gray-900 gap-1",
-                    isMine ? "bg-blue-100" : "bg-gray-100"
+                    isMine ? "bg-blue-100" : "bg-white"
                   )}
                 >
                   {message?.contentType === MessageType.MergeMessage ? (

@@ -56,6 +56,7 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
           classNames={{
             wrapper: "!z-[9999]",
           }}
+          width={"100%"}
         >
           <MessageList
             conversationId={selectedConversationId}
@@ -71,8 +72,10 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
     <Popover
       placement="topLeft"
       trigger="click"
+      open={isOpen}
+      onOpenChange={setIsOpen}
       content={
-        <div style={{ width: 400, height: 640 }}>
+        <div className="w-[400px] h-[600px]">
           <MessageList
             conversationId={selectedConversationId}
             className="flex-1"
@@ -91,7 +94,6 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
           width: 60,
           height: 60,
         }}
-        onClick={toggleChat}
         className={className}
       />
     </Popover>

@@ -1,8 +1,9 @@
 import ChatBubble from "../../components/chatBubble/ChatBubble";
 import { useChatContext } from "../../context/ChatContext";
-import { ConnectStatus } from "../../types/chat";
+import { ConnectStatus, SyncStatus } from "../../types/chat";
 import { useEffect } from "react";
 import useConversationStore from "../../store/conversation";
+import { Spin } from "antd";
 
 interface DChatBubbleProps {
   conversationID: string;
@@ -12,7 +13,7 @@ interface DChatBubbleProps {
 const DChatBubble = (props: DChatBubbleProps) => {
   const { conversationID, className } = props;
 
-  const { connectStatus } = useChatContext();
+  const { connectStatus, syncStatus } = useChatContext();
   if (connectStatus !== ConnectStatus.Connected) return null;
   const conversationList = useConversationStore(
     (state) => state.conversationList
@@ -36,7 +37,11 @@ const DChatBubble = (props: DChatBubbleProps) => {
     setConversationData(conversation);
   }, [conversationList, conversationID]);
 
-  return <ChatBubble className={className} />;
+  return (
+    <Spin spinning={syncStatus === SyncStatus.Loading}>
+      <ChatBubble className={className} />
+    </Spin>
+  );
 };
 
 export default DChatBubble;

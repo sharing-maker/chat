@@ -4,6 +4,7 @@ import {
   ConversationItem,
   PublicUserItem,
 } from "@openim/wasm-client-sdk";
+import { DChatPlatform } from "..";
 
 export type ConversationListUpdateType = "push" | "filter";
 
@@ -96,4 +97,30 @@ interface UserStore {
 interface UsersInfoStore {
   usersInfo: Record<string, PublicUserItem>;
   upsertUsers: (data: PublicUserItem[]) => void;
+}
+
+interface AuthStore {
+  accessToken: string;
+  chatToken: string;
+  apiAddress: string;
+  wsAddress: string;
+  platformID: DChatPlatform;
+  userID: string;
+  setAccessToken: (token: string) => void;
+  setChatToken: (token: string) => void;
+  initAuthStore: ({
+    accessToken,
+    chatToken,
+    apiAddress,
+    wsAddress,
+    platformID,
+    userID,
+  }: {
+    accessToken?: string;
+    chatToken?: string;
+    apiAddress?: string;
+    wsAddress?: string;
+    platformID?: DChatPlatform;
+    userID?: string;
+  }) => void;
 }

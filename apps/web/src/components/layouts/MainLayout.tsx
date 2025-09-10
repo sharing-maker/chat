@@ -4,58 +4,39 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
-import { ChatProvider, initStore } from "@droppii-org/chat-sdk";
+import { ChatProvider } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
-import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { chatConfigProps, onRefetchChatToken } = useChatSdkSetup();
+  const { chatConfigProps } = useChatSdkSetup();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const { logout } = useDChatAuth();
   const setUser = useUserStore((state) => state.setUser);
   const setToken = useUserStore((state) => state.setAccessToken);
-  const setChatToken = useUserStore((state) => state.setChatToken);
   const token = useUserStore((state) => state.accessToken);
-  const chatToken = useUserStore((state) => state.chatToken);
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
-  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
-    const chatToken = window.localStorage.getItem("chat_token") || "";
     setToken(token);
-    setChatToken(chatToken);
   }, []);
 
   useEffect(() => {
     if (token && currentUser?.data) {
       setUser(currentUser?.data);
       getSelfInfo(currentUser?.data);
-      refetchChatToken(undefined, {
-        onSuccess: (data) => {
-          window.localStorage.setItem("chat_token", data?.data?.token);
-          setChatToken(data?.data?.token);
-        },
-        onError: () => {},
-      });
     }
   }, [currentUser, setUser, token]);
-
-  useEffect(() => {
-    if (!!chatToken) {
-      initStore();
-    }
-  }, [chatToken]);
 
   useEffect(() => {
     setMounted(true);
@@ -74,7 +55,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }
 
   return (
-    <ChatProvider config={chatConfigProps} refetchToken={onRefetchChatToken}>
+    <ChatProvider config={chatConfigProps}>
       <div className="flex bg-white">
         {shouldShowSidebar && <Sidebar onLogout={logout} />}
         <div className="flex-1 bg-white">{children}</div>

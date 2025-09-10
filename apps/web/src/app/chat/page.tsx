@@ -1,6 +1,10 @@
 "use client";
 
-import { DChatDeskMessage, useConversationStore } from "@droppii-org/chat-sdk";
+import {
+  DChatBubble,
+  DChatDeskMessage,
+  useConversationStore,
+} from "@droppii-org/chat-sdk";
 import { useFetchSessionByStatus } from "@web/hook/chat/useFetchSessionsByStatus";
 import { useFetchSessionSummary } from "@web/hook/chat/useFetchSessionSummary";
 import { useEffect } from "react";

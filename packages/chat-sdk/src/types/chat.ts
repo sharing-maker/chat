@@ -1,8 +1,8 @@
 import {
   FileMsgParamsByURL,
   ImageMsgParamsByURL,
-  InitAndLoginConfig,
   MessageItem,
+  Platform,
   SelfUserInfo,
   VideoMsgParamsByURL,
 } from "@openim/wasm-client-sdk";
@@ -32,15 +32,14 @@ export interface ChatContextType {
   user: SelfUserInfo | null;
   connectStatus: ConnectStatus;
   syncStatus: SyncStatus;
-  userTokenHandler: () => void;
+  getSelfUserInfo: () => void;
   updateConnectStatus: (status: ConnectStatus) => void;
   updateSyncStatus: (status: SyncStatus) => void;
 }
 
 export interface ChatProviderProps {
   children: React.ReactNode;
-  config: InitAndLoginConfig | null;
-  refetchToken: () => Promise<string>;
+  config: DChatInitAndLoginConfig | null;
 }
 
 export interface GroupMessageItem
@@ -113,4 +112,12 @@ export interface ExtendPublicUserInfo {
       username?: string;
     };
   };
+}
+
+export interface DChatInitAndLoginConfig {
+  platformID: Platform;
+  apiAddr: string;
+  wsAddr: string;
+  accessToken: string;
+  userID: string;
 }

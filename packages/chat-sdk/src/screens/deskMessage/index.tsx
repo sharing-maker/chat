@@ -5,7 +5,7 @@ import DeskConversationList from "../../components/conversation/DeskConversation
 import AssignedSessionFilter from "../../components/session/AssignedSessionFilter";
 import { useChatContext } from "../../context/ChatContext";
 import { Spin } from "antd";
-import { ConnectStatus } from "../../types/chat";
+import { ConnectStatus, SyncStatus } from "../../types/chat";
 import useConversationStore from "../../store/conversation";
 
 const DChatDeskMessage = () => {
@@ -13,15 +13,17 @@ const DChatDeskMessage = () => {
     (state) => state.selectedConversationId
   );
 
-  const { connectStatus } = useChatContext();
+  const { connectStatus, syncStatus } = useChatContext();
   return (
     <>
       {connectStatus === ConnectStatus.Connected ? (
-        <div className="flex flex-1 flex-row h-screen bg-gray-50">
-          <AssignedSessionFilter />
-          <DeskConversationList />
-          <MessageList conversationId={selectedConversationId} />
-        </div>
+        <Spin spinning={syncStatus === SyncStatus.Loading}>
+          <div className="flex flex-1 flex-row h-screen bg-gray-50">
+            <AssignedSessionFilter />
+            <DeskConversationList />
+            <MessageList conversationId={selectedConversationId} />
+          </div>
+        </Spin>
       ) : (
         <div className="flex flex-1 flex-row h-screen bg-gray-50">
           {connectStatus === ConnectStatus.Connecting && <Spin fullscreen />}
