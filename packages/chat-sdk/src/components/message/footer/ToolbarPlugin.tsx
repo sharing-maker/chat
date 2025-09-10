@@ -256,7 +256,7 @@ export const ToolbarPlugin = () => {
   }, [editor]);
 
   return (
-    <div className="flex items-center gap-2 px-4">
+    <div className="flex items-center gap-2 px-4 pt-1">
       {formatTextButtons.map((button) => {
         const { icon, onPress, key, isActive } = button;
         return (

@@ -16,5 +16,10 @@
     "jsx": "react-jsx",
     "skipLibCheck": true
   },
-  "include": ["src", "src/assets/droppiiFontSelection.json"]
+  "include": [
+    "src",
+    "src/assets/droppiiFontSelection.json",
+    "src/types",
+    "src/locales/vi/common.json"
+  ]
 }

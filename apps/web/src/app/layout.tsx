@@ -19,7 +19,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const setToken = useUserStore((state) => state.setAccessToken);
   const token = useUserStore((state) => state.accessToken);
-  const setChatToken = useUserStore((state) => state.setChatToken);
   const { mutate: refetchChatToken } = useRefetchChatToken();
 
   useEffect(() => {
@@ -34,19 +33,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       router.push("/chat");
     }
   }, [pathname, router, setToken, token]);
-
-  useEffect(() => {
-    const chatToken = window.localStorage.getItem("chat_token") || "";
-    if (token && !chatToken) {
-      refetchChatToken(undefined, {
-        onSuccess: (data) => {
-          setChatToken(data?.data?.token);
-        },
-      });
-    } else {
-      setChatToken(chatToken);
-    }
-  }, [token]);
 
   return <>{children}</>;
 }

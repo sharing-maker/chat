@@ -5,8 +5,6 @@ interface UserStore {
   accessToken: string;
   setAccessToken: (accessToken: string) => void;
   setUser: (user: any) => void;
-  chatToken: string;
-  setChatToken: (chatToken: string) => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
@@ -14,10 +12,6 @@ const useUserStore = create<UserStore>((set) => ({
   accessToken: "",
   setAccessToken: (accessToken) => set({ accessToken }),
   setUser: (user) => set({ user }),
-  chatToken: "",
-  setChatToken: (chatToken) => {
-    set({ chatToken });
-  },
 }));
 
 export default useUserStore;

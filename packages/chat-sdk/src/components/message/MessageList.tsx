@@ -1,5 +1,4 @@
 "use client";
-import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useMessage } from "../../hooks/message/useMessage";
 import { Spin } from "antd";
 import { useEffect, useMemo, useRef } from "react";
@@ -10,6 +9,7 @@ import MessageItem from "./item";
 import InfiniteScroll from "react-infinite-scroll-component";
 import MessageHeader from "./MessageHeader";
 import MessageFooter from "./footer";
+import { images } from "../../constants/images";
 
 dayjs.extend(isToday);
 
@@ -52,7 +52,14 @@ const MessageList = (props: MessageListProps) => {
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 relative h-full bg-white">
+    <div
+      className="flex flex-col flex-1 relative h-full"
+      style={{
+        backgroundImage: `url(${images.conversationBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <MessageHeader onClose={onClose} />
       <div
         id="scrollableDiv"

@@ -89,7 +89,7 @@ const MessageFooterProvider = (props: IMessageFooterProviderProps) => {
       value={{ onSendMessage, listUploadFiles, setListUploadFiles }}
     >
       <LexicalComposer initialConfig={initialConfig}>
-        <div className="border-t pb-2 flex flex-col gap-1">
+        <div className="border-t pb-2 flex flex-col gap-1 bg-white">
           {listUploadFiles.length > 0 && <FilePreview />}
           <ToolbarPlugin />
           <div className="relative px-4">

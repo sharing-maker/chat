@@ -8,23 +8,32 @@ import {
   RevokedInfo,
   SessionType,
   WSEvent,
+  WsResponse,
 } from "@openim/wasm-client-sdk";
 import { ConnectStatus, CustomType, SyncStatus } from "../../types/chat";
 import { pushNewMessage, updateOneMessage } from "../message/useMessage";
 import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
+import useAuthStore from "../../store/auth";
+import { useRefetchChatToken } from "../../hooks/init/useChatToken";
 
 const notPushType = [MessageType.TypingMessage, MessageType.RevokeMessage];
 
 export const useGlobalEvent = () => {
   const { user } = useChatContext();
-  const { updateConnectStatus, updateSyncStatus } = useChatContext();
+  const { updateConnectStatus, updateSyncStatus, getSelfUserInfo } =
+    useChatContext();
   const updateConversationList = useConversationStore(
     (state) => state.updateConversationList
   );
   const getConversationListByReq = useConversationStore(
     (state) => state.getConversationListByReq
   );
+
+  const { mutate: refetchChatToken } = useRefetchChatToken();
+
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const chatToken = useAuthStore((state) => state.chatToken);
 
   const revokedMessageHandler = ({ data }: WSEvent<RevokedInfo>) => {
     updateOneMessage({
@@ -76,8 +85,50 @@ export const useGlobalEvent = () => {
     data.map((message) => handleNewMessage(message));
   };
 
+  const userTokenHandler = () => {
+    refetchChatToken(undefined, {
+      onSettled(data) {
+        if (data) {
+          useAuthStore.getState().setChatToken(data?.data?.token);
+        }
+      },
+    });
+  };
+
+  const initStore = () => {
+    getSelfUserInfo();
+    getConversationListByReq(false);
+  };
+
+  const tryLogin = async () => {
+    const { userID, chatToken, platformID, apiAddress, wsAddress } =
+      useAuthStore.getState();
+    try {
+      await DChatSDK.login({
+        userID,
+        token: chatToken,
+        platformID,
+        apiAddr: `${apiAddress}/chat-service`,
+        wsAddr: `${wsAddress}/chat-service/ws`,
+      });
+
+      initStore();
+    } catch (error) {
+      console.error(error);
+      if ((error as WsResponse).errCode !== 10102) {
+        //user has logged in
+      }
+    }
+  };
+
   const loginCheck = async () => {
-    // check openIM token and user info
+    const chatToken = useAuthStore.getState().chatToken;
+    const userID = useAuthStore.getState().userID;
+    if (!chatToken || !userID) {
+      return;
+    }
+
+    tryLogin();
   };
 
   const connectingHandler = () => {
@@ -90,10 +141,6 @@ export const useGlobalEvent = () => {
 
   const connectFailedHandler = () => {
     updateConnectStatus(ConnectStatus.Disconnected);
-  };
-
-  const userTokenHandler = () => {
-    useChatContext().userTokenHandler();
   };
 
   const syncStartHandler = ({ data }: WSEvent<boolean>) => {
@@ -166,7 +213,6 @@ export const useGlobalEvent = () => {
 
   /** LIFE CYCLE */
   useEffect(() => {
-    loginCheck();
     setIMListener();
 
     window.addEventListener("online", () => {
@@ -179,4 +225,16 @@ export const useGlobalEvent = () => {
       disposeIMListener();
     };
   }, []);
+
+  useEffect(() => {
+    if (!!accessToken) {
+      userTokenHandler();
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (!!chatToken) {
+      loginCheck();
+    }
+  }, [chatToken]);
 };

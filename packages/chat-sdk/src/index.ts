@@ -1,3 +1,5 @@
+import "./locales/i18n";
+
 import DChatDeskMessage from "./screens/deskMessage";
 import DChatBubble from "./screens/chatBubble";
 import {
@@ -9,7 +11,7 @@ import {
 import { Icon } from "./components/icon";
 import useUserStore from "./store/user";
 import useConversationStore from "./store/conversation";
-import { initStore } from "./utils/imCommon";
+import { DChatInitAndLoginConfig } from "./types/chat";
 
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
@@ -21,7 +23,7 @@ export { DChatDeskMessage, DChatBubble, Icon };
 export { useDChatAuth } from "./hooks/user/useAuth";
 
 //Store
-export { useUserStore, useConversationStore, initStore };
+export { useUserStore, useConversationStore };
 
 // export * from "./types/sdk";
 
@@ -31,4 +33,4 @@ export {
   SessionType as DChatSessionType,
 };
 
-export type { InitAndLoginConfig as DChatInitAndLoginConfig };
+export type { DChatInitAndLoginConfig };

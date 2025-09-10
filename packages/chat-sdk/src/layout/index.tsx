@@ -18,16 +18,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   useGlobalEvent();
   useSyncUsersInfo();
 
-  return (
-    <Spin
-      spinning={
-        syncStatus === SyncStatus.Loading &&
-        connectStatus === ConnectStatus.Connected
-      }
-    >
-      {children}
-    </Spin>
-  );
+  return <>{children}</>;
 };
 
 export default MainLayout;
