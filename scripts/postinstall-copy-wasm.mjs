@@ -30,7 +30,8 @@ async function run() {
       "packages",
       "chat-sdk",
       "src",
-      "assets"
+      "assets",
+      "sdk"
     );
 
     console.log(`Source assets directory: ${sourceDir}`);

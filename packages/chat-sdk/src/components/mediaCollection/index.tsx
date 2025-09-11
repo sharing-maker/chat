@@ -4,6 +4,12 @@ import { useBoolean } from "ahooks";
 import { Button, Drawer, Tabs, TabsProps } from "antd";
 import { Icon } from "../icon";
 import { useTranslation } from "react-i18next";
+import ImageCollection from "./ImageCollection";
+import VideoCollection from "./VideoCollection";
+import { useIsMobile } from "../../hooks/common/useIsMobile";
+import { useMemo } from "react";
+import FileCollection from "./FileCollection";
+import LinkCollection from "./LinkCollection";
 
 export enum TabKey {
   Image = "image",
@@ -15,29 +21,32 @@ export enum TabKey {
 const MediaCollection = () => {
   const { t } = useTranslation();
   const [isOpen, { toggle }] = useBoolean(false);
+  const isMobile = useIsMobile();
 
-  const items: TabsProps["items"] = [
-    {
-      key: TabKey.Image,
-      label: "Ảnh",
-      children: "Content of Tab Pane 1",
-    },
-    {
-      key: TabKey.Video,
-      label: "Video",
-      children: "Content of Tab Pane 2",
-    },
-    {
-      key: TabKey.File,
-      label: "Tập tin",
-      children: "Content of Tab Pane 3",
-    },
-    {
-      key: TabKey.Link,
-      label: "Liên kết",
-      children: "Content of Tab Pane 3",
-    },
-  ];
+  const items: TabsProps["items"] = useMemo(() => {
+    return [
+      {
+        key: TabKey.Image,
+        label: "Ảnh",
+        children: <ImageCollection />,
+      },
+      {
+        key: TabKey.Video,
+        label: "Video",
+        children: <VideoCollection />,
+      },
+      {
+        key: TabKey.File,
+        label: "Tập tin",
+        children: <FileCollection />,
+      },
+      {
+        key: TabKey.Link,
+        label: "Liên kết",
+        children: <LinkCollection />,
+      },
+    ];
+  }, []);
 
   return (
     <>
@@ -60,6 +69,7 @@ const MediaCollection = () => {
           },
         }}
         getContainer={false}
+        width={isMobile ? "100%" : 360}
       >
         <div>
           <div className="flex items-center justify-between p-3">

@@ -205,7 +205,14 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
               ex: JSON.stringify(extendMessageInfo) || "{}",
             });
           } else if (isVideo) {
-            const videoBaseInfo = await createVideoBaseInfoFromFile(file);
+            const videoBaseInfo = await createVideoInfoWithThumbnail(file);
+            const thumbFile = new File(
+              [videoBaseInfo.thumbnail],
+              file.name + "-thumb.jpg",
+              {
+                type: "image/jpeg",
+              }
+            );
             const videoMessage = await createVideoMessageByFile({
               videoPath: "",
               duration: videoBaseInfo.duration,
@@ -221,7 +228,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
               snapshotHeight: videoBaseInfo.height,
               snapShotType: file.type,
               videoFile: file,
-              snapshotFile: file,
+              snapshotFile: thumbFile,
             });
             if (!videoMessage) continue;
 
@@ -339,30 +346,53 @@ const createPicBaseInfoFromFile = (file: File): Promise<HTMLImageElement> =>
     img.src = _URL.createObjectURL(file);
   });
 
-function createVideoBaseInfoFromFile(file: File): Promise<{
+function createVideoInfoWithThumbnail(file: File): Promise<{
   duration: number;
   width: number;
   height: number;
+  thumbnail: Blob; // thumbnail dạng blob
 }> {
   return new Promise((resolve, reject) => {
     try {
       const video = document.createElement("video");
       video.preload = "metadata";
+      video.src = URL.createObjectURL(file);
 
       video.onloadedmetadata = () => {
-        URL.revokeObjectURL(video.src);
-        resolve({
-          duration: Math.floor(video.duration * 1000), // ms
-          width: video.videoWidth,
-          height: video.videoHeight,
-        });
+        const duration = Math.floor(video.duration * 1000);
+        const width = video.videoWidth;
+        const height = video.videoHeight;
+
+        // Seek tới giây 1 (nếu video dài hơn 1s) để lấy frame đẹp hơn
+        video.currentTime = Math.min(1, video.duration / 2);
       };
 
-      video.onerror = (err) => {
-        reject(err);
+      video.onseeked = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject("Canvas not supported");
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject("Thumbnail capture failed");
+
+            resolve({
+              duration: Math.floor(video.duration * 1000),
+              width: video.videoWidth,
+              height: video.videoHeight,
+              thumbnail: blob,
+            });
+          },
+          "image/jpeg",
+          0.85
+        );
       };
 
-      video.src = URL.createObjectURL(file);
+      video.onerror = (err) => reject(err);
     } catch (e) {
       reject(e);
     }

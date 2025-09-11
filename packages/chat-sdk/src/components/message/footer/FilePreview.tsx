@@ -3,51 +3,13 @@ import { useCallback } from "react";
 import { useMessageFooterContext } from ".";
 import { Button, UploadFile } from "antd";
 import { Icon } from "../../icon";
+import { documentIcon } from "../../../assets/svg";
 
 const documentTypes = [
   "application/pdf",
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
-
-export const documentIcon = (
-  <svg
-    width="40"
-    height="40"
-    viewBox="0 0 40 40"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M10.1923 5.83301L23.4363 5.83301L34.1656 14.2054V29.8639C34.1656 31.8997 32.5286 34.1663 29.8068 34.1663C27.0849 34.1663 10.1923 34.1663 10.1923 34.1663C7.4704 34.1663 5.8335 31.8997 5.8335 29.8639V10.0305C5.8335 7.99475 7.4704 5.83301 10.1923 5.83301Z"
-      fill="#24B0FF"
-    ></path>
-    <path
-      d="M10.8335 28.1394V20.833H16.0309V22.4222H12.7026V23.5916H15.3612V25.1708H12.7026V28.1394H10.8335Z"
-      fill="#edf6ff"
-    ></path>
-    <path
-      d="M19.0073 28.0885V20.833H20.8613V26.5118H24.0146V28.0885L19.0073 28.0885Z"
-      fill="#edf6ff"
-    ></path>
-    <path
-      d="M16.5918 28.1001V20.833H18.4485V28.1001H16.5918Z"
-      fill="#edf6ff"
-    ></path>
-    <path
-      d="M24.5737 20.833V28.1393H29.7723V26.5573H26.439L26.4422 25.1708H29.1017V23.5916H26.4422V22.4222H29.7723V20.833H24.5737Z"
-      fill="#edf6ff"
-    ></path>
-    <path
-      opacity="0.302"
-      fill-rule="evenodd"
-      clip-rule="evenodd"
-      d="M23.2686 5.83301V14.2281H34.1655L23.2686 5.83301Z"
-      fill="#edf6ff"
-    ></path>
-  </svg>
-);
-
 interface ShortenOptions {
   maxLength?: number;
   keepStart?: number;

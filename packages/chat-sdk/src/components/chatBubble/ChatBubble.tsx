@@ -1,16 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FloatButton, Drawer, Popover } from "antd";
 import { MessageOutlined, CloseOutlined } from "@ant-design/icons";
 import MessageList from "../message/MessageList";
 import useConversationStore from "../../store/conversation";
+import { useIsMobile } from "../../hooks/common/useIsMobile";
 
 interface ChatBubbleProps {
   className?: string;
 }
 
 const ChatBubble = ({ className }: ChatBubbleProps) => {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
 
   const selectedConversationId = useConversationStore(
     (state) => state.selectedConversationId
@@ -21,13 +22,6 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   if (isMobile) {
     return (
