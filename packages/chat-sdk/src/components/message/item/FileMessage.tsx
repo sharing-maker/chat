@@ -1,5 +1,6 @@
 import { MessageItem } from "@openim/wasm-client-sdk";
-import { documentIcon, shortenFileName } from "../footer/FilePreview";
+import { shortenFileName } from "../footer/FilePreview";
+import { documentIcon } from "../../../assets/svg";
 
 interface ImageMessageItemProps {
   message: MessageItem;

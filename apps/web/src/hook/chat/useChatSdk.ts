@@ -1,10 +1,8 @@
 import { DChatInitAndLoginConfig, DChatPlatform } from "@droppii-org/chat-sdk";
 import { useMemo } from "react";
-import { useRefetchChatToken } from "./useChatToken";
 import useUserStore from "../user/useUserStore";
 
 export const useChatSdkSetup = () => {
-  const { mutate: refetchChatToken } = useRefetchChatToken();
   const accessToken = useUserStore((state) => state.accessToken);
   const user = useUserStore((state) => state.user);
 

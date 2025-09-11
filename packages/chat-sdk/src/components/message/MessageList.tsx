@@ -1,6 +1,6 @@
 "use client";
 import { useMessage } from "../../hooks/message/useMessage";
-import { Spin } from "antd";
+import { Empty, Spin } from "antd";
 import { useEffect, useMemo, useRef } from "react";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
@@ -10,6 +10,8 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import MessageHeader from "./MessageHeader";
 import MessageFooter from "./footer";
 import { images } from "../../constants/images";
+import { useTranslation } from "react-i18next";
+import useConversationStore from "../../store/conversation";
 
 dayjs.extend(isToday);
 
@@ -20,10 +22,14 @@ interface MessageListProps {
 }
 
 const MessageList = (props: MessageListProps) => {
+  const { t } = useTranslation();
   const { onClose, conversationId } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
   const { getMoreOldMessages, moreOldLoading, loadState, latestLoadState } =
     useMessage(conversationId);
+  const conversationData = useConversationStore(
+    (state) => state.conversationData
+  );
 
   const lastMessage = useMemo(() => {
     const messageList = latestLoadState.current?.messageList;
@@ -50,6 +56,14 @@ const MessageList = (props: MessageListProps) => {
       emitter.off("CHAT_LIST_SCROLL_TO_BOTTOM", scrollToBottom);
     };
   }, []);
+
+  if (!conversationData) {
+    return (
+      <div className="flex flex-1 items-center justify-center h-full">
+        <Empty description={t("no_conversation_data")} />
+      </div>
+    );
+  }
 
   return (
     <div

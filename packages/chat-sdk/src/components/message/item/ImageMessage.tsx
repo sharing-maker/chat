@@ -18,8 +18,8 @@ const ImageMessageItem = (props: ImageMessageItemProps) => {
   const adaptedWidth = min(imageWidth, 200) + 10;
 
   const sourceUrl =
-    message.pictureElem!.snapshotPicture?.url ||
-    message.pictureElem!.sourcePicture.url;
+    message.pictureElem!.sourcePicture?.url ||
+    message.pictureElem!.snapshotPicture?.url;
   const isSending = message.status === MessageStatus.Sending;
   const minStyle = {
     minHeight: `${adaptedHight}px`,

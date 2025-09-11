@@ -8,7 +8,6 @@ import { AntdToastProvider } from "@droppii-org/ui";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import useUserStore from "@web/hook/user/useUserStore";
-import { useRefetchChatToken } from "@web/hook/chat/useChatToken";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +18,6 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const setToken = useUserStore((state) => state.setAccessToken);
   const token = useUserStore((state) => state.accessToken);
-  const { mutate: refetchChatToken } = useRefetchChatToken();
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";

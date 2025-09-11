@@ -12,6 +12,9 @@ import {
 import { DChatSDK } from "../constants/sdk";
 import MainLayout from "../layout";
 import useAuthStore from "../store/auth";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export const ChatContext = createContext<ChatContextType>({
   user: null,
@@ -73,7 +76,9 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
         updateSyncStatus,
       }}
     >
-      <MainLayout>{children}</MainLayout>
+      <QueryClientProvider client={queryClient}>
+        <MainLayout>{children}</MainLayout>
+      </QueryClientProvider>
     </ChatContext.Provider>
   );
 };
