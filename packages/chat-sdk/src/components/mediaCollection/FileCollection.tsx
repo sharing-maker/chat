@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { documentIcon } from "../../assets/svg";
 import { shortenFileName } from "../message/footer/FilePreview";
 import { renderFileSize } from "../../utils/common";
+import { TOP_OFFSET } from ".";
 
 const FileCollection = () => {
   const { t } = useTranslation();
@@ -46,7 +47,7 @@ const FileCollection = () => {
       return (
         <div key={date} className="px-3">
           <span className="text-sm font-medium text-gray-500">
-            {dayjs(date).format("DD MMM, YYYY")}
+            {dayjs(date).format("DD MMMM, YYYY")}
           </span>
           <div className="flex flex-col gap-1 mt-2">
             {items.map((item) => {
@@ -99,10 +100,8 @@ const FileCollection = () => {
   return (
     <div
       id="scrollableFileDiv"
-      style={{
-        height: "100%",
-        overflow: "auto",
-      }}
+      className="h-full overflow-auto"
+      style={{ maxHeight: `calc(100vh - ${TOP_OFFSET}px)` }}
     >
       <InfiniteScroll
         dataLength={Object.keys(groupedData).length}

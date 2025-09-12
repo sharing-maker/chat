@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Input, Empty } from "antd";
+import { Input, Empty, Drawer, Button, InputRef } from "antd";
 import { ConversationItem, MessageType } from "@openim/wasm-client-sdk";
 import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
@@ -9,6 +9,9 @@ import useConversationStore from "../../store/conversation";
 import { DChatConversationItem } from "./type";
 import ConversationItemList from "./ConversationItemList";
 import { DChatSDK } from "../../constants/sdk";
+import { useTranslation } from "react-i18next";
+import { useBoolean, useDebounceFn } from "ahooks";
+import SearchConversation from "../searchConversation";
 
 const parseLatestMessage = (
   latestMsg: string,
@@ -31,7 +34,7 @@ const parseLatestMessage = (
       case MessageType.PictureMessage:
         return (
           <span>
-            {sender}: <Icon icon="image-b" size={16} className="mr-1" />
+            {sender}: <Icon icon="image-o" size={16} className="mr-1" />
             Hình ảnh
           </span>
         ) as any;
@@ -101,7 +104,13 @@ const transformConversationData = (
 };
 
 const DeskConversationList = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<InputRef>(null);
+  const { t } = useTranslation();
+  const [search, setSearch] = useState("");
+  const [
+    showSearch,
+    { setTrue: setShowSearchTrue, setFalse: setShowSearchFalse },
+  ] = useBoolean(false);
   const [conversationIdFromSession, setConversationIdFromSession] = useState<
     string[]
   >([]);
@@ -133,6 +142,13 @@ const DeskConversationList = () => {
     return transformConversationData(filteredConversation || [], user?.userID);
   }, [conversationList, conversationIdFromSession, user?.userID]);
 
+  const { run: deboundSearch } = useDebounceFn(
+    (value: string) => {
+      setSearch(value);
+    },
+    { wait: 500 }
+  );
+
   useEffect(() => {
     const conversationIds = assignedSessionList.map(
       (session) => session.conversationId
@@ -143,8 +159,6 @@ const DeskConversationList = () => {
       setConversationIdFromSession(extractConversationIDs);
     });
   }, [assignedSessionList]);
-
-  console.log({ assignedSessionList });
 
   useEffect(() => {
     const threadId = searchParams.get("threadId");
@@ -163,23 +177,39 @@ const DeskConversationList = () => {
       newSearchParams.set("threadId", conversations[0].conversationID);
       router.replace(`${pathname}?${newSearchParams.toString()}`);
     }
-  }, [searchParams, conversations.length]);
+  }, [searchParams, conversations]);
 
   return (
     <div
       className={`flex flex-col h-full bg-white border-r border-gray-200 w-[320px]`}
     >
-      <div className="p-3 border-b border-gray-200">
-        <Input
-          placeholder="Tìm kiếm"
-          prefix={<Icon icon="search-o" size={18} className="text-gray-400" />}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="rounded-lg"
-        />
+      <div className="p-3 border-b border-gray-100">
+        <div className="flex items-center gap-2">
+          <Input
+            ref={searchInputRef}
+            placeholder={t("search")}
+            prefix={
+              <Icon icon="search-o" size={18} className="text-gray-400" />
+            }
+            onChange={(e) => deboundSearch(e.target.value)}
+            className="rounded-lg text-sm flex-1 h-[36px]"
+            size="large"
+            allowClear
+            onClick={setShowSearchTrue}
+          />
+          {showSearch && (
+            <Button
+              onClick={setShowSearchFalse}
+              variant="outlined"
+              className="p-0 w-[36px] h-[36px] text-gray-500"
+            >
+              <Icon icon="close-b" size={22} />
+            </Button>
+          )}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto relative">
         {conversations.map((conversation: DChatConversationItem) => (
           <ConversationItemList
             key={conversation.conversationID}
@@ -195,25 +225,28 @@ const DeskConversationList = () => {
               image={
                 <Icon
                   icon="chat-square-b"
-                  size={48}
+                  size={80}
                   className="text-gray-300"
                 />
               }
-              description={
-                <div>
-                  <p className="text-lg font-medium mb-2 text-gray-500">
-                    Không tìm thấy cuộc trò chuyện
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    {searchQuery
-                      ? "Thử tìm kiếm với từ khóa khác"
-                      : "Chưa có cuộc trò chuyện nào"}
-                  </p>
-                </div>
-              }
+              description={"Không tìm thấy cuộc trò chuyện"}
             />
           </div>
         )}
+        <Drawer
+          open={showSearch}
+          mask={false}
+          closeIcon={false}
+          styles={{
+            body: {
+              padding: 0,
+            },
+          }}
+          getContainer={false}
+          width={"100%"}
+        >
+          <SearchConversation />
+        </Drawer>
       </div>
     </div>
   );

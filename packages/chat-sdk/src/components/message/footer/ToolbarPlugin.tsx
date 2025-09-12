@@ -58,34 +58,6 @@ const quoteIcon = (
   </svg>
 );
 
-const codeIcon = (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
-      d="M6.41925 6.07724C6.74925 6.40268 6.74925 6.93031 6.41925 7.25575L3.63676 9.99983L6.41925 12.7439C6.74925 13.0693 6.74925 13.597 6.41925 13.9224C6.08926 14.2479 5.55424 14.2479 5.22424 13.9224L1.96374 10.7069C1.56775 10.3164 1.56775 9.68325 1.96374 9.29272L5.22424 6.07724C5.55424 5.7518 6.08926 5.7518 6.41925 6.07724Z"
-      fill="currentColor"
-    ></path>
-    <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
-      d="M13.5809 6.07724C13.2509 6.40268 13.2509 6.93031 13.5809 7.25575L16.3634 9.99983L13.5809 12.7439C13.2509 13.0693 13.2509 13.597 13.5809 13.9224C13.9109 14.2479 14.4459 14.2479 14.7759 13.9224L18.0364 10.7069C18.4324 10.3164 18.4324 9.68325 18.0364 9.29272L14.7759 6.07724C14.4459 5.7518 13.9109 5.7518 13.5809 6.07724Z"
-      fill="currentColor"
-    ></path>
-    <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
-      d="M11.8957 3.36522C12.3382 3.49166 12.5945 3.9529 12.468 4.39543L9.13468 16.0621C9.00825 16.5046 8.54701 16.7609 8.10448 16.6344C7.66195 16.508 7.40571 16.0468 7.53214 15.6042L10.8655 3.93756C10.9919 3.49503 11.4532 3.23879 11.8957 3.36522Z"
-      fill="currentColor"
-    ></path>
-  </svg>
-);
 export const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();
   const [activeMarks, setActiveMarks] = useState<string[]>([]);
@@ -212,8 +184,7 @@ export const ToolbarPlugin = () => {
           // inline
           if (selection.hasFormat("bold")) marks.push("bold");
           if (selection.hasFormat("italic")) marks.push("italic");
-          if (selection.hasFormat("underline")) marks.push("underline");
-          if (selection.hasFormat("code")) marks.push("code");
+          if (selection.hasFormat("strikethrough")) marks.push("strikethrough");
 
           // block
           const anchorNode = selection.anchor.getNode();

@@ -11,12 +11,14 @@ import { useMemo } from "react";
 import FileCollection from "./FileCollection";
 import LinkCollection from "./LinkCollection";
 
-export enum TabKey {
+export enum MediaCollectionTabKey {
   Image = "image",
   Video = "video",
   File = "file",
   Link = "link",
 }
+
+export const TOP_OFFSET = 128; /// HEADER + TAB HEIGHT
 
 const MediaCollection = () => {
   const { t } = useTranslation();
@@ -24,29 +26,30 @@ const MediaCollection = () => {
   const isMobile = useIsMobile();
 
   const items: TabsProps["items"] = useMemo(() => {
+    if (!isOpen) return [];
     return [
       {
-        key: TabKey.Image,
+        key: MediaCollectionTabKey.Image,
         label: "Ảnh",
         children: <ImageCollection />,
       },
       {
-        key: TabKey.Video,
+        key: MediaCollectionTabKey.Video,
         label: "Video",
         children: <VideoCollection />,
       },
       {
-        key: TabKey.File,
+        key: MediaCollectionTabKey.File,
         label: "Tập tin",
         children: <FileCollection />,
       },
       {
-        key: TabKey.Link,
+        key: MediaCollectionTabKey.Link,
         label: "Liên kết",
         children: <LinkCollection />,
       },
     ];
-  }, []);
+  }, [isOpen]);
 
   return (
     <>
@@ -66,12 +69,13 @@ const MediaCollection = () => {
         styles={{
           body: {
             padding: 0,
+            height: "100%",
           },
         }}
         getContainer={false}
         width={isMobile ? "100%" : 360}
       >
-        <div>
+        <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-3">
             <span className="text-lg font-medium">{t("library")}</span>
             <Button
@@ -83,7 +87,13 @@ const MediaCollection = () => {
               <Icon icon="close-b" size={22} />
             </Button>
           </div>
-          <Tabs defaultActiveKey={TabKey.Image} items={items} />
+          <div className="flex-1 overflow-hidden">
+            <Tabs
+              defaultActiveKey={MediaCollectionTabKey.Image}
+              items={items}
+              className="h-full"
+            />
+          </div>
         </div>
       </Drawer>
     </>

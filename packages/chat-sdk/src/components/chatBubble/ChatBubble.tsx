@@ -51,6 +51,7 @@ const ChatBubble = ({ className }: ChatBubbleProps) => {
             wrapper: "!z-[9999]",
           }}
           width={"100%"}
+          push={false}
         >
           <MessageList
             conversationId={selectedConversationId}

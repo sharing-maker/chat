@@ -1,13 +1,15 @@
 import { MessageType, PictureElem } from "@openim/wasm-client-sdk";
 import { useMediaCollection } from "../../hooks/collection/useMediaCollection";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Empty, Image, Spin } from "antd";
+import { Button, Empty, Image, Space, Spin } from "antd";
 import { useCallback } from "react";
 import { MediaCollectionItem } from "../../types/dto";
 import dayjs from "dayjs";
 import useConversationStore from "../../store/conversation";
 import { images } from "../../constants/images";
 import { useTranslation } from "react-i18next";
+import { TOP_OFFSET } from ".";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const ImageCollection = () => {
   const { t } = useTranslation();
@@ -20,12 +22,22 @@ const ImageCollection = () => {
       contentType: MessageType.PictureMessage,
     });
 
+  const handleDownload = (imageUrl?: string) => {
+    if (!imageUrl) return;
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderItem = useCallback(
     (date: string, items: MediaCollectionItem[]) => {
       return (
         <div key={date} className="mb-2">
           <span className="text-sm font-medium text-gray-500 px-3">
-            {dayjs(date).format("DD MMM, YYYY")}
+            {dayjs(date).format("DD MMMM, YYYY")}
           </span>
           <div className="grid grid-cols-3 justify-start gap-px py-2">
             {items.map((item) => {
@@ -72,15 +84,33 @@ const ImageCollection = () => {
   return (
     <div
       id="scrollableImageDiv"
-      style={{
-        height: "100%",
-        overflow: "auto",
-        display: "flex",
-      }}
+      className="h-full overflow-auto"
+      style={{ maxHeight: `calc(100vh - ${TOP_OFFSET}px)` }}
     >
-      <Image.PreviewGroup>
+      <Image.PreviewGroup
+        preview={{
+          toolbarRender: (originalNode, info) => {
+            const imageUrl = info?.image?.url;
+            return (
+              <div className="flex flex-col justify-center gap-2">
+                {originalNode}
+                {imageUrl && (
+                  <Button
+                    type="primary"
+                    icon={<DownloadOutlined />}
+                    className="self-center"
+                    onClick={() => handleDownload(imageUrl)}
+                  >
+                    {t("download")}
+                  </Button>
+                )}
+              </div>
+            );
+          },
+        }}
+      >
         <InfiniteScroll
-          dataLength={Object.keys(groupedData).length}
+          dataLength={dataFlatten.length}
           next={fetchNextPage}
           hasMore={hasNextPage}
           loader={

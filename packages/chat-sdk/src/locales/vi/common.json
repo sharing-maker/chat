@@ -5,5 +5,11 @@
   "file": "Tập tin",
   "link": "Liên kết",
   "no_conversation_data": "Vui lòng chọn một cuộc trò chuyện",
-  "no_media_files": "Không có tập tin phương tiện"
+  "no_media_files": "Không có tập tin phương tiện",
+  "search": "Tìm kiếm",
+  "all": "Tất cả",
+  "users": "Người dùng",
+  "messages": "Tin nhắn",
+  "no_conversation": "Không tìm thấy cuộc trò chuyện",
+  "download": "Tải xuống"
 }
