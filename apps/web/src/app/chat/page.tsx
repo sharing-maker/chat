@@ -8,7 +8,6 @@ import {
 import { useFetchSessionByStatus } from "@web/hook/chat/useFetchSessionsByStatus";
 import { useFetchSessionSummary } from "@web/hook/chat/useFetchSessionSummary";
 import { useEffect } from "react";
-import { DChatSDK } from "../../../../../packages/chat-sdk/src/constants/sdk";
 
 export default function ChatPage() {
   const filterSummary = useConversationStore((state) => state.filterSummary);
@@ -44,6 +43,7 @@ export default function ChatPage() {
   return (
     <div className="h-full">
       <DChatDeskMessage />
+      <DChatBubble conversationID="sg_bot_25620a9f-b251-4861-9c03-77dc3906dc69_cda72626-3946-49f9-88df-43930533e681" />
     </div>
   );
 }

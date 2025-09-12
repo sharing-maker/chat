@@ -33,7 +33,7 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
   summary: null,
   setSummary: (summary: ISessionSummary | null) => set({ summary }),
   filterSummary: {
-    status: SESSION_STATUS_ENUM.UNASSIGNED,
+    status: SESSION_STATUS_ENUM.IN_PROCESS,
     tag: undefined,
   },
   setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),
