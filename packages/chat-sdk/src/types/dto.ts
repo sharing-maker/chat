@@ -1,4 +1,12 @@
 import { MessageType, SessionType } from "@openim/wasm-client-sdk";
+import { SessionStatus, SessionStatusItem, Tag, TagItem } from "../store/type";
+
+export interface BaseResponse<T> {
+  statusCode: number;
+  message: any;
+  data: T;
+  pageable?: Pageable;
+}
 
 export interface Pageable {
   pageNumber: number;
@@ -35,4 +43,19 @@ export interface MediaCollectionItem {
 export interface MediaCollectionResponse {
   data: MediaCollectionItem[];
   pageable: Pageable;
+}
+
+export interface ISessionSummaryResponse {
+  activeSessionCount: number;
+  completedSessionCount: number;
+  sessionStatuses: SessionStatusItem[];
+  tagCounts: TagItem[];
+}
+
+export interface SessionByTagOrStatusRequest {
+  applicationType: "OBEFE";
+  tag?: Tag;
+  status?: SessionStatus;
+  page: number;
+  pageSize: number;
 }

@@ -2,11 +2,11 @@
 
 import MessageList from "../../components/message/MessageList";
 import DeskConversationList from "../../components/conversation/DeskConversationList";
-import AssignedSessionFilter from "../../components/session/AssignedSessionFilter";
 import { useChatContext } from "../../context/ChatContext";
 import { Spin } from "antd";
 import { ConnectStatus, SyncStatus } from "../../types/chat";
 import useConversationStore from "../../store/conversation";
+import DeskAssignedSession from "../../components/session/DeskAssignedSession";
 
 const DChatDeskMessage = () => {
   const selectedConversationId = useConversationStore(
@@ -19,7 +19,7 @@ const DChatDeskMessage = () => {
       {connectStatus === ConnectStatus.Connected ? (
         <Spin spinning={syncStatus === SyncStatus.Loading}>
           <div className="flex flex-1 flex-row h-screen bg-gray-50">
-            <AssignedSessionFilter />
+            <DeskAssignedSession />
             <DeskConversationList />
             <MessageList conversationId={selectedConversationId} />
           </div>

@@ -84,7 +84,7 @@ export const useConversationDisplayData = (
                 ? ` (${exUserInfo?.userInfo?.data?.username})`
                 : ""
             }`
-          : conversation?.showName,
+          : conversation?.showName || "",
     };
   }, [conversation, userInfo]);
 

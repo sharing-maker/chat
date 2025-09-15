@@ -11,5 +11,14 @@
   "users": "Người dùng",
   "messages": "Tin nhắn",
   "no_conversation": "Không tìm thấy cuộc trò chuyện",
-  "download": "Tải xuống"
+  "download": "Tải xuống",
+  "active_sessions": "Đang mở",
+  "closed_sessions": "Đã đóng",
+  "unassigned": "Chưa phân công",
+  "waiting_process": "Chờ xử lý",
+  "in_process": "Đang xử lý",
+  "completed": "Đã đóng",
+  "awaiting_reply": "Chưa trả lời",
+  "slow_processing": "Chậm xử lý",
+  "temporarily_paused": "Tạm chờ"
 }
