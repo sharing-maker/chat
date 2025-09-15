@@ -6,11 +6,10 @@ import {
 } from "@openim/wasm-client-sdk";
 import { create } from "zustand";
 import { DChatSDK } from "../constants/sdk";
-import { ConversationStore, IFilterSummary, ISessionSummary } from "./type";
+import { ConversationStore } from "./type";
 import { conversationSort, isGroupSession } from "../utils/imCommon";
 import useUserStore from "./user";
 import { markConversationMessageAsRead } from "../hooks/conversation/useConversation";
-import { SESSION_STATUS_ENUM } from "../constants";
 
 const CONVERSATION_SPLIT_COUNT = 500;
 
@@ -28,17 +27,6 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
   setSelectedConversationId: (threadId) =>
     set({ selectedConversationId: threadId }),
   selectedSourceId: "",
-
-  // assigned session
-  summary: null,
-  setSummary: (summary: ISessionSummary | null) => set({ summary }),
-  filterSummary: {
-    status: SESSION_STATUS_ENUM.IN_PROCESS,
-    tag: undefined,
-  },
-  setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),
-  assignedSessionList: [],
-  setAssignedSessionList: (list) => set({ assignedSessionList: list }),
 
   // conversation
   conversationList: [],
@@ -158,6 +146,18 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
     set(() => ({
       currentMemberInGroup: memberInfo ? { ...memberInfo } : undefined,
     }));
+  },
+  resetConversationStore: () => {
+    set({
+      conversationData: null,
+      selectedConversationId: "",
+      selectedSourceId: "",
+      conversationList: [],
+      currentConversation: undefined,
+      unreadCount: 0,
+      currentGroupInfo: undefined,
+      currentMemberInGroup: undefined,
+    });
   },
 }));
 

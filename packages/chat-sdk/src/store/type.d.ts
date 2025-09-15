@@ -52,13 +52,6 @@ interface ConversationStore {
   selectedSourceId: string;
   setSelectedConversationId: (threadId: string) => void;
 
-  summary: ISessionSummary | null;
-  setSummary: (summary: ISessionSummary | null) => void;
-  filterSummary: IFilterSummary;
-  setFilterSummary: (filter: IFilterSummary) => void;
-  assignedSessionList: ISessionByStatus[];
-  setAssignedSessionList: (list: ISessionByStatus[]) => void;
-
   conversationList: ConversationItem[];
   currentConversation?: ConversationItem;
   unreadCount: number;
@@ -72,6 +65,7 @@ interface ConversationStore {
   updateCurrentConversation: (conversation?: ConversationItem) => Promise<void>;
   getCurrentGroupInfoByReq: (groupID: string) => Promise<void>;
   getCurrentMemberInGroupByReq: (groupID: string) => Promise<void>;
+  resetConversationStore: () => void;
 }
 
 interface IPersonalInfo {

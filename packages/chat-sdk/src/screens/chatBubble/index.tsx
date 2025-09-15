@@ -4,6 +4,7 @@ import { ConnectStatus, SyncStatus } from "../../types/chat";
 import { useEffect } from "react";
 import useConversationStore from "../../store/conversation";
 import { Spin } from "antd";
+import { DChatSDK } from "../../constants/sdk";
 
 interface DChatBubbleProps {
   conversationID: string;
@@ -25,16 +26,27 @@ const DChatBubble = (props: DChatBubbleProps) => {
   const setConversationData = useConversationStore(
     (state) => state.setConversationData
   );
+  const updateConversationList = useConversationStore(
+    (state) => state.updateConversationList
+  );
 
   useEffect(() => {
-    if (!conversationList) return;
-    const conversation = conversationList.find(
+    const conversation = conversationList?.find(
       (item) => item.conversationID === conversationID
     );
 
-    if (!conversation) return;
-    setSelectedConversationId(conversation.conversationID);
-    setConversationData(conversation);
+    if (conversation) {
+      setSelectedConversationId(conversation.conversationID);
+      setConversationData(conversation);
+    } else {
+      DChatSDK.getMultipleConversation([conversationID]).then((res) => {
+        if (res.data.length > 0) {
+          setSelectedConversationId(conversationID);
+          setConversationData(res.data[0]);
+          updateConversationList(res.data, "filter");
+        }
+      });
+    }
   }, [conversationList, conversationID]);
 
   return (

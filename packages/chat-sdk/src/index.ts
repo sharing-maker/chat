@@ -2,15 +2,9 @@ import "./locales/i18n";
 
 import DChatDeskMessage from "./screens/deskMessage";
 import DChatBubble from "./screens/chatBubble";
-import {
-  Platform,
-  LogLevel,
-  SessionType,
-  InitAndLoginConfig,
-} from "@openim/wasm-client-sdk";
+import { Platform, LogLevel, SessionType } from "@openim/wasm-client-sdk";
 import { Icon } from "./components/icon";
 import useUserStore from "./store/user";
-import useConversationStore from "./store/conversation";
 import { DChatInitAndLoginConfig } from "./types/chat";
 
 // Main exports for the SDK
@@ -23,7 +17,7 @@ export { DChatDeskMessage, DChatBubble, Icon };
 export { useDChatAuth } from "./hooks/user/useAuth";
 
 //Store
-export { useUserStore, useConversationStore };
+export { useUserStore };
 
 // export * from "./types/sdk";
 
