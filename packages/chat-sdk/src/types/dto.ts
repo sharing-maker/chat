@@ -22,6 +22,7 @@ export interface SearchMessageRequest {
   contentType: MessageType;
   page?: number;
   pageSize?: number;
+  applicationType: DChatApplicationType;
 }
 
 export interface SearchMessageItem {

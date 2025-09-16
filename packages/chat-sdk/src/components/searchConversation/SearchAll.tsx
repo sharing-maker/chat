@@ -18,13 +18,13 @@ const SearchConversationAll = ({
 }: SearchConversationAllProps) => {
   const { t } = useTranslation();
   const { dataFlatten: messages, isLoading: isLoadingMessage } =
-    useSearchMessage(
-      {
+    useSearchMessage({
+      payload: {
         searchTerm: searchTerm.trim(),
         contentType: MessageType.TextMessage,
       },
-      { pageSize: 5 }
-    );
+      options: { pageSize: 5 },
+    });
   const { dataFlatten: sessions, isLoading: isLoadingSession } = useGetSession(
     {
       searchTerm: searchTerm.trim(),

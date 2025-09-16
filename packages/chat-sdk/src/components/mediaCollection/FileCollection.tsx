@@ -19,8 +19,10 @@ const FileCollection = () => {
   );
   const { groupedData, fetchNextPage, hasNextPage, dataFlatten, isLoading } =
     useSearchMessage({
-      recvID: selectedSourceId,
-      contentType: MessageType.FileMessage,
+      payload: {
+        recvID: selectedSourceId,
+        contentType: MessageType.FileMessage,
+      },
     });
 
   const handleDownload = (url: string, fileName: string) => {

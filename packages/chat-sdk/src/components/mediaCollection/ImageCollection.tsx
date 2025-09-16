@@ -18,8 +18,10 @@ const ImageCollection = () => {
   );
   const { groupedData, fetchNextPage, hasNextPage, dataFlatten, isLoading } =
     useSearchMessage({
-      recvID: selectedSourceId,
-      contentType: MessageType.PictureMessage,
+      payload: {
+        recvID: selectedSourceId,
+        contentType: MessageType.PictureMessage,
+      },
     });
 
   const handleDownload = (imageUrl?: string) => {

@@ -19,8 +19,10 @@ const VideoCollection = () => {
   );
   const { groupedData, fetchNextPage, hasNextPage, dataFlatten, isLoading } =
     useSearchMessage({
-      recvID: selectedSourceId,
-      contentType: MessageType.VideoMessage,
+      payload: {
+        recvID: selectedSourceId,
+        contentType: MessageType.VideoMessage,
+      },
     });
 
   const [open, { setTrue, setFalse }] = useBoolean(false);
