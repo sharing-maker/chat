@@ -9,8 +9,12 @@ import { IFilterSummary, ISessionByStatus } from "../../store/type";
 import { useMemo } from "react";
 import useConversationStore from "../../store/conversation";
 import { DChatSDK } from "../../constants/sdk";
+import useAuthStore from "../../store/auth";
 
-export const useGetSessionByTagOrStatus = (filter: IFilterSummary) => {
+export const useGetSession = (
+  filter: IFilterSummary,
+  options?: { pageSize?: number }
+) => {
   const {
     data,
     fetchNextPage,
@@ -20,14 +24,15 @@ export const useGetSessionByTagOrStatus = (filter: IFilterSummary) => {
     ...rest
   } = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: [QUERY_KEYS.GET_SESSION_BY_TAG_OR_STATUS, filter],
+    queryKey: [QUERY_KEYS.GET_SESSION_BY_TAG_OR_STATUS, filter, options],
     queryFn: async ({ pageParam = 1 }) => {
       const params: SessionByTagOrStatusRequest = {
-        applicationType: "OBEFE",
+        applicationType: useAuthStore.getState().applicationType,
         tag: filter.tag,
         status: filter.status,
         page: pageParam,
-        pageSize: 100,
+        pageSize: options?.pageSize || 100,
+        searchTerm: filter.searchTerm,
       };
       const res = await apiInstance.post<BaseResponse<ISessionByStatus[]>>(
         ENDPOINTS.chatService.getSessionsByTagOrStatus,
@@ -51,15 +56,14 @@ export const useGetSessionByTagOrStatus = (filter: IFilterSummary) => {
             .updateConversationList(res.data, "filter");
         });
       }
-
       return res.data;
     },
     getNextPageParam: (lastPage) => {
       const currentPage = lastPage?.pageable?.pageNumber || 1;
       const totalPages = lastPage?.pageable?.totalPages || 1;
-      return currentPage + 1 < totalPages ? currentPage + 1 : undefined;
+      return currentPage + 1 <= totalPages ? currentPage + 1 : undefined;
     },
-    enabled: !!filter.tag || !!filter.status,
+    enabled: hasValidFilter(filter),
   });
 
   const { dataFlatten } = useMemo(() => {
@@ -85,3 +89,10 @@ export const useGetSessionByTagOrStatus = (filter: IFilterSummary) => {
     ...rest,
   };
 };
+
+function hasValidFilter(filter: IFilterSummary): boolean {
+  return Object.values(filter).some((v) => {
+    if (typeof v === "string") return v.trim() !== "";
+    return v !== undefined && v !== null;
+  });
+}

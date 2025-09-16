@@ -1,9 +1,9 @@
 import { FileElem, MessageType } from "@openim/wasm-client-sdk";
-import { useMediaCollection } from "../../hooks/collection/useMediaCollection";
+import { useSearchMessage } from "../../hooks/search/useSearchMessage";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Empty, Spin } from "antd";
 import { useCallback } from "react";
-import { MediaCollectionItem } from "../../types/dto";
+import { SearchMessageItem } from "../../types/dto";
 import dayjs from "dayjs";
 import useConversationStore from "../../store/conversation";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,7 @@ const FileCollection = () => {
     (state) => state.selectedSourceId
   );
   const { groupedData, fetchNextPage, hasNextPage, dataFlatten, isLoading } =
-    useMediaCollection({
+    useSearchMessage({
       recvID: selectedSourceId,
       contentType: MessageType.FileMessage,
     });
@@ -42,53 +42,48 @@ const FileCollection = () => {
     link.remove();
   };
 
-  const renderItem = useCallback(
-    (date: string, items: MediaCollectionItem[]) => {
-      return (
-        <div key={date} className="px-3">
-          <span className="text-sm font-medium text-gray-500">
-            {dayjs(date).format("DD MMMM, YYYY")}
-          </span>
-          <div className="flex flex-col gap-1 mt-2">
-            {items.map((item) => {
-              const fileContent = JSON.parse(
-                item?.chatLog?.content || "{}"
-              ) as FileElem;
-              return (
-                <div
-                  key={item.chatLog?.clientMsgID}
-                  className="relative flex flex-row items-center gap-2 align-center bg-gray-100 rounded-md p-2 cursor-pointer"
-                  onClick={() =>
-                    handleDownload(
-                      fileContent?.sourceUrl || "",
-                      fileContent?.fileName || ""
-                    )
-                  }
-                >
-                  {documentIcon}
-                  <div className="flex flex-col flex-1">
-                    <span className="text-sm font-medium">
-                      {shortenFileName(fileContent?.fileName || "", {
-                        maxLength: 32,
-                      })}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {`${renderFileSize(
-                        fileContent.fileSize || 0
-                      )}  -  ${dayjs(item?.chatLog?.sendTime || 0).format(
-                        "HH:mm"
-                      )}`}
-                    </span>
-                  </div>
+  const renderItem = useCallback((date: string, items: SearchMessageItem[]) => {
+    return (
+      <div key={date} className="px-3">
+        <span className="text-sm font-medium text-gray-500">
+          {dayjs(date).format("DD MMMM, YYYY")}
+        </span>
+        <div className="flex flex-col gap-1 mt-2">
+          {items.map((item) => {
+            const fileContent = JSON.parse(
+              item?.chatLog?.content || "{}"
+            ) as FileElem;
+            return (
+              <div
+                key={item.chatLog?.clientMsgID}
+                className="relative flex flex-row items-center gap-2 align-center bg-gray-100 rounded-md p-2 cursor-pointer"
+                onClick={() =>
+                  handleDownload(
+                    fileContent?.sourceUrl || "",
+                    fileContent?.fileName || ""
+                  )
+                }
+              >
+                {documentIcon}
+                <div className="flex flex-col flex-1">
+                  <span className="text-sm font-medium">
+                    {shortenFileName(fileContent?.fileName || "", {
+                      maxLength: 32,
+                    })}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {`${renderFileSize(fileContent.fileSize || 0)}  -  ${dayjs(
+                      item?.chatLog?.sendTime || 0
+                    ).format("HH:mm")}`}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
-      );
-    },
-    []
-  );
+      </div>
+    );
+  }, []);
   if (dataFlatten.length === 0 && !isLoading)
     return <Empty description={t("no_media_files")} />;
   if (isLoading)
@@ -98,11 +93,7 @@ const FileCollection = () => {
       </div>
     );
   return (
-    <div
-      id="scrollableFileDiv"
-      className="h-full overflow-auto"
-      style={{ maxHeight: `calc(100vh - ${TOP_OFFSET}px)` }}
-    >
+    <div id="scrollableFileDiv" className="h-full overflow-auto">
       <InfiniteScroll
         dataLength={Object.keys(groupedData).length}
         next={fetchNextPage}

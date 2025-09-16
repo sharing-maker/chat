@@ -30,26 +30,26 @@ const MediaCollection = () => {
     return [
       {
         key: MediaCollectionTabKey.Image,
-        label: "Ảnh",
+        label: t("image"),
         children: <ImageCollection />,
       },
       {
         key: MediaCollectionTabKey.Video,
-        label: "Video",
+        label: t("video"),
         children: <VideoCollection />,
       },
       {
         key: MediaCollectionTabKey.File,
-        label: "Tập tin",
+        label: t("file"),
         children: <FileCollection />,
       },
       {
         key: MediaCollectionTabKey.Link,
-        label: "Liên kết",
+        label: t("link"),
         children: <LinkCollection />,
       },
     ];
-  }, [isOpen]);
+  }, [isOpen, t]);
 
   return (
     <>

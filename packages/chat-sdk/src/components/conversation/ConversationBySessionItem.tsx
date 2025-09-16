@@ -1,13 +1,13 @@
 "use client";
-import { ConversationItem, MessageType } from "@openim/wasm-client-sdk";
+import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useTranslation } from "react-i18next";
 import { ISessionByStatus } from "../../store/type";
 import useConversationStore from "../../store/conversation";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Avatar, Badge } from "antd";
-import { Icon } from "../icon";
 import { useChatContext } from "../../context/ChatContext";
 import { useConversationDisplayData } from "../../hooks/conversation/useConversation";
+import { formatTimestamp, parseLatestMessage } from "../../utils/common";
 
 interface ConversationBySessionItemProps {
   sessionItem: ISessionByStatus;
@@ -53,7 +53,7 @@ const ConversationBySessionItem = ({
     <div
       key={conversation.conversationID}
       onClick={() => handleConversationClick(conversation)}
-      className={`relative p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+      className={`relative p-3 border-b border-gray-100 hover:bg-gray-100 cursor-pointer transition-colors ${
         isSelected ? "bg-blue-50" : "bg-white"
       }`}
     >
@@ -106,74 +106,3 @@ const ConversationBySessionItem = ({
 };
 
 export default ConversationBySessionItem;
-
-const parseLatestMessage = (
-  latestMsg: string,
-  currentUserId?: string
-): string => {
-  if (!latestMsg) return "";
-
-  try {
-    const msgData = JSON.parse(latestMsg);
-    const contentType = msgData?.contentType;
-    const isMe = currentUserId && msgData.sendID === currentUserId;
-    const sender = isMe ? "Me" : msgData?.senderNickname || msgData.sendID;
-
-    switch (contentType) {
-      case MessageType.TextMessage:
-        if (msgData.textElem?.content) {
-          return `${sender}: ${msgData.textElem.content}`;
-        }
-        break;
-      case MessageType.PictureMessage:
-        return (
-          <span>
-            {sender}: <Icon icon="image-o" size={16} className="mr-1" />
-            Hình ảnh
-          </span>
-        ) as any;
-      case MessageType.VoiceMessage:
-        return `${sender}: [Tin nhắn thoại]`;
-      case MessageType.VideoMessage:
-        return `${sender}: [Video]`;
-      case MessageType.FileMessage:
-        return `${sender}: [File đính kèm]`;
-      default:
-        return "Tin nhắn không khả dụng";
-    }
-    return "Tin nhắn không khả dụng";
-  } catch (error) {
-    console.error("Error parsing latest message:", error);
-    return "";
-  }
-};
-
-const formatTimestamp = (timestamp: number): string => {
-  if (!timestamp) return "";
-
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  if (diffInDays === 0) {
-    // Today - show time
-    return date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } else if (diffInDays === 1) {
-    // Yesterday
-    return "Hôm qua";
-  } else if (diffInDays < 7) {
-    // This week - show day name
-    return date.toLocaleDateString("vi-VN", { weekday: "long" });
-  } else {
-    // Older - show date
-    return date.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-  }
-};

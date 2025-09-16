@@ -1,4 +1,8 @@
-import { DChatInitAndLoginConfig, DChatPlatform } from "@droppii-org/chat-sdk";
+import {
+  DChatApplicationType,
+  DChatInitAndLoginConfig,
+  DChatPlatform,
+} from "@droppii-org/chat-sdk";
 import { useMemo } from "react";
 import useUserStore from "../user/useUserStore";
 
@@ -14,6 +18,7 @@ export const useChatSdkSetup = () => {
         wsAddr: "wss://apistg.droppii.com",
         accessToken,
         userID: user?.id,
+        applicationType: DChatApplicationType.OBEFE,
       };
     } else {
       return null;

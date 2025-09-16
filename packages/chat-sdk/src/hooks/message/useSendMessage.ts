@@ -20,6 +20,7 @@ import { emit } from "../../utils/events";
 import { UploadFile } from "antd";
 import { RcFile } from "antd/es/upload";
 import useConversationStore from "../../store/conversation";
+import useAuthStore from "../../store/auth";
 
 export const createTextMessage = async (text: string) => {
   let textMessage = await DChatSDK.createTextMessage(
@@ -332,7 +333,7 @@ export const generateExtendMessageInfo = ({
         content: richText || "",
       },
     },
-    applicationType: "OBEFE", // TODO: Only support for cx chat - remove later
+    applicationType: useAuthStore.getState().applicationType,
   } as ExtendMessageInfo;
 };
 

@@ -5,13 +5,13 @@ import { Input, Empty, Drawer, Button, InputRef, Spin } from "antd";
 import { Icon } from "../icon";
 import useConversationStore from "../../store/conversation";
 import { useTranslation } from "react-i18next";
-import { useBoolean, useDebounceFn } from "ahooks";
+import { useBoolean, useDebounce } from "ahooks";
 import SearchConversation from "../searchConversation";
 import useSessionStore from "../../store/session";
-import { useGetSessionByTagOrStatus } from "../../hooks/session/useGetSessionByTagOrStatus";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ConversationBySessionItem from "./ConversationBySessionItem";
 import { ConversationItem } from "@openim/wasm-client-sdk";
+import { useGetSession } from "../../hooks/session/useGetSession";
 
 const DeskConversationList = () => {
   const searchInputRef = useRef<InputRef>(null);
@@ -39,19 +39,27 @@ const DeskConversationList = () => {
 
   const {
     dataFlatten: sessions,
-    isLoading,
-    error,
     hasNextPage,
     fetchNextPage,
-    isFetchingNextPage,
-  } = useGetSessionByTagOrStatus(filterSummary);
+  } = useGetSession(filterSummary);
 
-  const { run: deboundSearch } = useDebounceFn(
-    (value: string) => {
-      setSearch(value);
-    },
-    { wait: 500 }
-  );
+  const debouncedSearch = useDebounce(search, { wait: 500 });
+
+  const onCloseSearch = () => {
+    setSearch("");
+    setShowSearchFalse();
+    setTimeout(() => {
+      searchInputRef.current?.blur();
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (showSearch) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [showSearch]);
 
   useEffect(() => {
     const threadId = searchParams.get("threadId");
@@ -84,15 +92,18 @@ const DeskConversationList = () => {
             prefix={
               <Icon icon="search-o" size={18} className="text-gray-400" />
             }
-            onChange={(e) => deboundSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="rounded-lg text-sm flex-1 h-[36px]"
             size="large"
             allowClear
             onClick={setShowSearchTrue}
+            value={search}
+            autoFocus={false}
+            onClear={onCloseSearch}
           />
           {showSearch && (
             <Button
-              onClick={setShowSearchFalse}
+              onClick={onCloseSearch}
               variant="outlined"
               className="p-0 w-[36px] h-[36px] text-gray-500"
             >
@@ -107,6 +118,7 @@ const DeskConversationList = () => {
         style={{
           height: "100%",
           overflow: "auto",
+          position: "relative",
         }}
       >
         <InfiniteScroll
@@ -120,7 +132,7 @@ const DeskConversationList = () => {
           }
           scrollableTarget="scrollableDiv"
         >
-          {sessions?.length === 0 && (
+          {sessions?.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <Empty
                 image={
@@ -133,30 +145,30 @@ const DeskConversationList = () => {
                 description={t("no_conversation")}
               />
             </div>
+          ) : (
+            sessions?.map?.((session) => (
+              <ConversationBySessionItem
+                key={session.conversationId}
+                sessionItem={session}
+              />
+            ))
           )}
-          {sessions?.map((session) => (
-            <ConversationBySessionItem
-              key={session.conversationId}
-              sessionItem={session}
-            />
-          ))}
         </InfiniteScroll>
+        <Drawer
+          open={showSearch}
+          mask={false}
+          closeIcon={false}
+          styles={{
+            body: {
+              padding: 0,
+            },
+          }}
+          getContainer={false}
+          width={"100%"}
+        >
+          <SearchConversation searchTerm={debouncedSearch} />
+        </Drawer>
       </div>
-
-      <Drawer
-        open={showSearch}
-        mask={false}
-        closeIcon={false}
-        styles={{
-          body: {
-            padding: 0,
-          },
-        }}
-        getContainer={false}
-        width={"100%"}
-      >
-        <SearchConversation />
-      </Drawer>
     </div>
   );
 };

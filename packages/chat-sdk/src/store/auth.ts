@@ -18,8 +18,17 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     wsAddress,
     platformID,
     userID,
+    applicationType,
   }) => {
-    set({ accessToken, chatToken, apiAddress, wsAddress, platformID, userID });
+    set({
+      accessToken,
+      chatToken,
+      apiAddress,
+      wsAddress,
+      platformID,
+      userID,
+      applicationType,
+    });
   },
 }));
 

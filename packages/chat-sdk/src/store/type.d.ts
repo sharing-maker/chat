@@ -5,6 +5,7 @@ import {
   PublicUserItem,
 } from "@openim/wasm-client-sdk";
 import { DChatPlatform } from "..";
+import { DChatApplicationType } from "../types/chat";
 
 export type ConversationListUpdateType = "push" | "filter";
 
@@ -37,12 +38,19 @@ interface ISessionByStatus {
   conversationId: string;
   status: SessionStatus;
   tag: Tag;
-  applicationType: string;
+  applicationType: DChatApplicationType;
+  owner?: {
+    id: string;
+    avatar: string | null;
+    fullName: string;
+    username: string;
+  };
 }
 
 interface IFilterSummary {
   status?: SessionStatus;
   tag?: Tag;
+  searchTerm?: string;
 }
 
 interface ConversationStore {
@@ -100,6 +108,7 @@ interface AuthStore {
   wsAddress: string;
   platformID: DChatPlatform;
   userID: string;
+  applicationType: DChatApplicationType;
   setAccessToken: (token: string) => void;
   setChatToken: (token: string) => void;
   initAuthStore: ({
@@ -109,6 +118,7 @@ interface AuthStore {
     wsAddress,
     platformID,
     userID,
+    applicationType,
   }: {
     accessToken?: string;
     chatToken?: string;
@@ -116,5 +126,6 @@ interface AuthStore {
     wsAddress?: string;
     platformID?: DChatPlatform;
     userID?: string;
+    applicationType: DChatApplicationType | "";
   }) => void;
 }

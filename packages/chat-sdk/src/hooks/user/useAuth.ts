@@ -18,6 +18,7 @@ export const useDChatAuth = () => {
       wsAddress: "",
       platformID: Platform.Web,
       userID: "",
+      applicationType: "",
     });
     return res;
   };

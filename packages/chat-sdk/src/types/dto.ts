@@ -1,5 +1,6 @@
-import { MessageType, SessionType } from "@openim/wasm-client-sdk";
+import { MessageItem, MessageType, SessionType } from "@openim/wasm-client-sdk";
 import { SessionStatus, SessionStatusItem, Tag, TagItem } from "../store/type";
+import { DChatApplicationType } from "./chat";
 
 export interface BaseResponse<T> {
   statusCode: number;
@@ -15,33 +16,21 @@ export interface Pageable {
   totalPages: number;
 }
 
-export interface MediaCollectionRequest {
-  recvID: string;
+export interface SearchMessageRequest {
+  recvID?: string;
+  searchTerm?: string;
   contentType: MessageType;
-  page: number;
-  pageSize: number;
+  page?: number;
+  pageSize?: number;
 }
 
-export interface MediaCollectionItem {
-  chatLog: {
-    sendID: string;
-    recvID: string;
-    msgFrom: string;
-    contentType: MessageType;
-    content: string;
-    sendTime: number;
-    createTime: number;
-    sessionType: SessionType;
-    isRead: boolean;
-    isRevoked: boolean;
-    clientMsgID: string;
-    serverMsgID: string;
-  };
+export interface SearchMessageItem {
+  chatLog: MessageItem;
   isRevoked: boolean;
 }
 
-export interface MediaCollectionResponse {
-  data: MediaCollectionItem[];
+export interface SearchMessageResponse {
+  data: SearchMessageItem[];
   pageable: Pageable;
 }
 
@@ -53,9 +42,10 @@ export interface ISessionSummaryResponse {
 }
 
 export interface SessionByTagOrStatusRequest {
-  applicationType: "OBEFE";
+  applicationType: DChatApplicationType;
   tag?: Tag;
   status?: SessionStatus;
   page: number;
   pageSize: number;
+  searchTerm?: string;
 }
