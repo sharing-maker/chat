@@ -15,8 +15,10 @@ const SearchConversationAsMessages = (
   const { t } = useTranslation();
   const { dataFlatten, hasNextPage, fetchNextPage, isLoading } =
     useSearchMessage({
-      searchTerm: searchTerm.trim(),
-      contentType: MessageType.TextMessage,
+      payload: {
+        searchTerm: searchTerm.trim(),
+        contentType: MessageType.TextMessage,
+      },
     });
 
   if ((dataFlatten.length === 0 && !isLoading) || searchTerm.trim() === "")

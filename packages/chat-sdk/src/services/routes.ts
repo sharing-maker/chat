@@ -3,7 +3,7 @@ export const ENDPOINTS = {
     getChatToken: "/chat-service/v1/auth/token",
     getSessionSummary: "chat-service/v1/crm/sessions/assigned/summary",
     getSessionsByTagOrStatus: "chat-service/v1/crm/sessions/assigned/query",
-    getMediaCollection: "chat-service/v1/messages/search/media",
+    searchMessage: "chat-service/v1/messages/search",
   },
   identityService: {
     getToken: "/identity-service/v1/identity/get-token",

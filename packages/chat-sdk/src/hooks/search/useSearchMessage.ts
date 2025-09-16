@@ -9,11 +9,20 @@ import {
 } from "../../types/dto";
 import { useMemo } from "react";
 import dayjs from "dayjs";
+import useAuthStore from "../../store/auth";
 
-export const useSearchMessage = (
-  payload: SearchMessageRequest,
-  options?: { pageSize?: number }
-) => {
+interface UseSearchMessagePayload {
+  payload: Pick<
+    SearchMessageRequest,
+    "contentType" | "pageSize" | "recvID" | "searchTerm"
+  >;
+  options?: { pageSize?: number };
+}
+
+export const useSearchMessage = ({
+  payload,
+  options,
+}: UseSearchMessagePayload) => {
   const {
     data,
     fetchNextPage,
@@ -23,15 +32,16 @@ export const useSearchMessage = (
     ...rest
   } = useInfiniteQuery({
     initialPageParam: 1,
-    queryKey: [QUERY_KEYS.GET_IMAGE_COLLECTION, payload, options],
+    queryKey: [QUERY_KEYS.SEARCH_MESSAGE, payload, options],
     queryFn: async ({ pageParam = 1 }) => {
       const params: SearchMessageRequest = {
         pageSize: options?.pageSize || 50,
         ...payload,
         page: pageParam,
+        applicationType: useAuthStore.getState().applicationType,
       };
       const res = await apiInstance.post<SearchMessageResponse>(
-        ENDPOINTS.chatService.getMediaCollection,
+        ENDPOINTS.chatService.searchMessage,
         params
       );
       return res.data;
@@ -80,7 +90,9 @@ export const useSearchMessage = (
   };
 };
 
-const hasValidFilter = (filter: SearchMessageRequest): boolean => {
+const hasValidFilter = (
+  filter: UseSearchMessagePayload["payload"]
+): boolean => {
   return Object.values(filter).some((v) => {
     if (typeof v === "string") return v.trim() !== "";
     return v !== undefined && v !== null;
