@@ -8,6 +8,10 @@ import {
 } from "@openim/wasm-client-sdk";
 import { UploadFile } from "antd";
 
+export enum DChatApplicationType {
+  OBEFE = "OBEFE",
+}
+
 export enum ConnectStatus {
   Disconnected = 0,
   Connected = 1,
@@ -61,10 +65,10 @@ export interface ExtendMessageInfo {
     type: "SESSION_INFO";
     data: {
       sessionId: string;
-      applicationType: "OBEFE";
+      applicationType: DChatApplicationType;
     };
   };
-  applicationType?: "OBEFE";
+  applicationType: DChatApplicationType;
 }
 
 export interface MessageFooterContextType {
@@ -120,4 +124,5 @@ export interface DChatInitAndLoginConfig {
   wsAddr: string;
   accessToken: string;
   userID: string;
+  applicationType: DChatApplicationType;
 }
