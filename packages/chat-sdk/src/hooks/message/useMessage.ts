@@ -1,85 +1,66 @@
 import { useEffect, useState } from "react";
-import { ViewType, MessageItem } from "@openim/wasm-client-sdk";
+import { ViewType, MessageItem, MessageType } from "@openim/wasm-client-sdk";
 import { DChatSDK } from "../../constants/sdk";
-import { ExtendMessageInfo, GroupMessageItem } from "../../types/chat";
-import { v4 as uuidv4 } from "uuid";
 import { useLatest, useRequest } from "ahooks";
 import emitter, { emit } from "../../utils/events";
+import isEmpty from "lodash/isEmpty";
 
 const PAGE_SIZE = 50;
 
-export const useMessage = (conversationId: string) => {
+export const visibleTypeMessage = [
+  MessageType.TextMessage,
+  MessageType.PictureMessage,
+  MessageType.VoiceMessage,
+  MessageType.VideoMessage,
+  MessageType.FileMessage,
+  MessageType.AtTextMessage,
+  MessageType.MergeMessage,
+  MessageType.CardMessage,
+  MessageType.LocationMessage,
+  MessageType.CustomMessage,
+  MessageType.QuoteMessage,
+  MessageType.FaceMessage,
+];
+
+export const useMessage = (
+  conversationId: string,
+  searchClientMsgID?: string
+) => {
   const [loadState, setLoadState] = useState({
     initLoading: true,
     hasMoreOld: true,
+    hasMoreNew: false,
     messageList: [] as MessageItem[],
-    groupMessageList: [] as GroupMessageItem[],
   });
 
   const latestLoadState = useLatest(loadState);
 
-  const parseGroupMessageList = (messageList: MessageItem[]) => {
-    if (!messageList) return [];
-    const mGroupMessages: GroupMessageItem[] = messageList?.reduce(
-      (acc: GroupMessageItem[], cur) => {
-        const extendMessageInfo: ExtendMessageInfo = JSON.parse(
-          cur?.ex || "{}"
-        );
-        if (extendMessageInfo?.groupMessageID) {
-          const findGroupMessageIndex = acc.findIndex(
-            (item) => item.groupMessageID === extendMessageInfo?.groupMessageID
-          );
-          if (findGroupMessageIndex === -1) {
-            acc.push({
-              groupMessageID: extendMessageInfo.groupMessageID,
-              messages: [cur],
-              sendID: cur.sendID,
-              sendTime: cur.sendTime,
-            });
-          } else {
-            acc[findGroupMessageIndex].messages.push(cur);
-          }
-        } else {
-          acc.push({
-            groupMessageID: uuidv4(),
-            messages: [cur],
-            sendID: cur.sendID,
-            sendTime: cur.sendTime,
-          });
-        }
-        return acc;
-      },
-      []
-    );
-
-    return mGroupMessages;
-  };
-
   const { loading: moreOldLoading, runAsync: getMoreOldMessages } = useRequest(
     async (loadMore = true) => {
       const reqConversationID = conversationId;
-      const { data } = await DChatSDK.getAdvancedHistoryMessageList({
+      const params = {
         count: PAGE_SIZE,
         startClientMsgID: loadMore
-          ? latestLoadState.current?.messageList[0]?.clientMsgID || ""
+          ? latestLoadState.current?.messageList?.[
+              latestLoadState.current?.messageList?.length - 1
+            ]?.clientMsgID || ""
           : "",
         conversationID: conversationId ?? "",
         viewType: ViewType.History,
-      });
+      };
+      const { data } = await DChatSDK.getAdvancedHistoryMessageList(params);
       if (conversationId !== reqConversationID) return;
       setTimeout(() =>
         setLoadState((preState) => {
           const messageList = [
-            ...data.messageList,
             ...(loadMore ? preState.messageList : []),
+            ...data.messageList.toReversed(),
           ];
-          const groupMessageList = parseGroupMessageList(messageList);
           return {
             ...preState,
             initLoading: false,
             hasMoreOld: !data.isEnd,
             messageList,
-            groupMessageList,
           };
         })
       );
@@ -89,7 +70,93 @@ export const useMessage = (conversationId: string) => {
     }
   );
 
-  const loadHistoryMessages = () => getMoreOldMessages(false);
+  const { loading: moreNewLoading, runAsync: getMoreNewMessages } = useRequest(
+    async (loadMore = true) => {
+      const reqConversationID = conversationId;
+      const { data } = await DChatSDK.getAdvancedHistoryMessageListReverse({
+        count: PAGE_SIZE,
+        startClientMsgID: loadMore
+          ? latestLoadState.current?.messageList[0]?.clientMsgID || ""
+          : "",
+        conversationID: conversationId ?? "",
+        viewType: ViewType.Search,
+      });
+      if (conversationId !== reqConversationID) return;
+      setTimeout(() =>
+        setLoadState((preState) => {
+          const messageList = [
+            ...data.messageList.toReversed(),
+            ...(loadMore ? preState.messageList : []),
+          ];
+          return {
+            ...preState,
+            initLoading: false,
+            hasMoreNew: !data.isEnd,
+            messageList,
+          };
+        })
+      );
+    },
+    {
+      manual: true,
+    }
+  );
+
+  const { runAsync: searchMessages } = useRequest(
+    async () => {
+      if (!searchClientMsgID || !conversationId) return;
+      const reqConversationID = conversationId;
+
+      const { data: dataPrev } = await DChatSDK.getAdvancedHistoryMessageList({
+        count: 10,
+        startClientMsgID: searchClientMsgID,
+        conversationID: conversationId ?? "",
+        viewType: ViewType.History,
+      });
+      const { data: dataNext } =
+        await DChatSDK.getAdvancedHistoryMessageListReverse({
+          count: 10,
+          startClientMsgID: searchClientMsgID,
+          conversationID: conversationId ?? "",
+          viewType: ViewType.Search,
+        });
+
+      const { data: dataCurrent } = await DChatSDK.findMessageList([
+        {
+          conversationID: conversationId ?? "",
+          clientMsgIDList: [searchClientMsgID ?? ""],
+        },
+      ]);
+      const currentMessages =
+        dataCurrent?.findResultItems?.find(
+          (item) => item.conversationID === conversationId
+        )?.messageList || [];
+
+      if (conversationId !== reqConversationID) return;
+      setTimeout(() => {
+        setLoadState((preState) => {
+          const messageList = [
+            ...dataNext.messageList.toReversed(),
+            ...currentMessages,
+            ...dataPrev.messageList.toReversed(),
+          ];
+          return {
+            ...preState,
+            initLoading: false,
+            hasMoreOld: !dataPrev.isEnd,
+            hasMoreNew: !dataNext.isEnd,
+            messageList,
+          };
+        });
+      });
+      setTimeout(() => {
+        emit("CHAT_LIST_SCROLL_TO_MESSAGE", searchClientMsgID);
+      }, 200);
+    },
+    {
+      manual: true,
+    }
+  );
 
   useEffect(() => {
     const pushNewMessage = (message: MessageItem) => {
@@ -101,12 +168,10 @@ export const useMessage = (conversationId: string) => {
         return;
       }
       setLoadState((preState) => {
-        const messageList = [...preState.messageList, message];
-        const groupMessageList = parseGroupMessageList(messageList);
+        const messageList = [message, ...preState.messageList];
         return {
           ...preState,
           messageList,
-          groupMessageList,
         };
       });
     };
@@ -121,11 +186,9 @@ export const useMessage = (conversationId: string) => {
         }
 
         tmpList[idx] = { ...tmpList[idx], ...message };
-        const groupMessageList = parseGroupMessageList(tmpList);
         return {
           ...preState,
           messageList: tmpList,
-          groupMessageList,
         };
       });
     };
@@ -138,22 +201,29 @@ export const useMessage = (conversationId: string) => {
   }, []);
 
   useEffect(() => {
-    loadHistoryMessages();
+    if (!conversationId) return;
+    if (!isEmpty(searchClientMsgID)) {
+      searchMessages();
+    } else {
+      getMoreOldMessages(false);
+    }
     return () => {
       setLoadState(() => ({
         initLoading: true,
         hasMoreOld: true,
+        hasMoreNew: false,
         messageList: [] as MessageItem[],
-        groupMessageList: [] as GroupMessageItem[],
       }));
     };
-  }, [conversationId]);
+  }, [conversationId, searchClientMsgID]);
 
   return {
     loadState,
     latestLoadState,
     moreOldLoading,
     getMoreOldMessages,
+    moreNewLoading,
+    getMoreNewMessages,
   };
 };
 
@@ -161,3 +231,26 @@ export const pushNewMessage = (message: MessageItem) =>
   emit("PUSH_NEW_MSG", message);
 export const updateOneMessage = (message: MessageItem) =>
   emit("UPDATE_ONE_MSG", message);
+
+export const getVisibleNeighbor = (
+  allMessages: MessageItem[],
+  current: MessageItem,
+  direction: "prev" | "next"
+): MessageItem | undefined => {
+  const currentIndex = allMessages.findIndex(
+    (m) => m.clientMsgID === current.clientMsgID
+  );
+  if (currentIndex === -1) return undefined;
+
+  let index = direction === "prev" ? currentIndex + 1 : currentIndex - 1;
+
+  while (index >= 0 && index < allMessages.length) {
+    const candidate = allMessages[index];
+    if (visibleTypeMessage.includes(candidate.contentType)) {
+      return candidate;
+    }
+    index = direction === "prev" ? index - 1 : index + 1;
+  }
+
+  return undefined;
+};

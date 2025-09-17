@@ -21,5 +21,6 @@
   "awaiting_reply": "Chưa trả lời",
   "slow_processing": "Chậm xử lý",
   "temporarily_paused": "Tạm chờ",
-  "see_more": "Xem thêm"
+  "see_more": "Xem thêm",
+  "err_get_conversation": "Lỗi khi lấy thông tin cuộc trò chuyện"
 }

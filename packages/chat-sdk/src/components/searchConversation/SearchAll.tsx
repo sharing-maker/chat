@@ -17,15 +17,22 @@ const SearchConversationAll = ({
   setActiveKey,
 }: SearchConversationAllProps) => {
   const { t } = useTranslation();
-  const { dataFlatten: messages, isLoading: isLoadingMessage } =
-    useSearchMessage({
-      payload: {
-        searchTerm: searchTerm.trim(),
-        contentType: MessageType.TextMessage,
-      },
-      options: { pageSize: 5 },
-    });
-  const { dataFlatten: sessions, isLoading: isLoadingSession } = useGetSession(
+  const {
+    dataFlatten: messages,
+    isLoading: isLoadingMessage,
+    hasNextPage: hasNextPageMessage,
+  } = useSearchMessage({
+    payload: {
+      searchTerm: searchTerm.trim(),
+      contentType: MessageType.TextMessage,
+    },
+    options: { pageSize: 5 },
+  });
+  const {
+    dataFlatten: sessions,
+    isLoading: isLoadingSession,
+    hasNextPage: hasNextPageSession,
+  } = useGetSession(
     {
       searchTerm: searchTerm.trim(),
     },
@@ -59,21 +66,23 @@ const SearchConversationAll = ({
             <span className="text-xs font-medium uppercase flex-1 text-gray-600">
               {t("users")}
             </span>
-            <Button
-              type="link"
-              icon={
-                <Icon
-                  icon="angle-right-o"
-                  size={18}
-                  className="!align-[-4px]"
-                />
-              }
-              iconPosition="end"
-              className="p-0 gap-1"
-              onClick={() => setActiveKey?.(SearchConversationTabKey.Users)}
-            >
-              {t("see_more")}
-            </Button>
+            {hasNextPageMessage && (
+              <Button
+                type="link"
+                icon={
+                  <Icon
+                    icon="angle-right-o"
+                    size={18}
+                    className="!align-[-4px]"
+                  />
+                }
+                iconPosition="end"
+                className="p-0 gap-1"
+                onClick={() => setActiveKey?.(SearchConversationTabKey.Users)}
+              >
+                {t("see_more")}
+              </Button>
+            )}
           </div>
           <div>
             {sessions.map((session) => (
@@ -88,21 +97,25 @@ const SearchConversationAll = ({
             <span className="text-xs font-medium uppercase flex-1 text-gray-600">
               {t("messages")}
             </span>
-            <Button
-              type="link"
-              icon={
-                <Icon
-                  icon="angle-right-o"
-                  size={18}
-                  className="!align-[-4px]"
-                />
-              }
-              iconPosition="end"
-              className="p-0 gap-1"
-              onClick={() => setActiveKey?.(SearchConversationTabKey.Messages)}
-            >
-              {t("see_more")}
-            </Button>
+            {hasNextPageSession && (
+              <Button
+                type="link"
+                icon={
+                  <Icon
+                    icon="angle-right-o"
+                    size={18}
+                    className="!align-[-4px]"
+                  />
+                }
+                iconPosition="end"
+                className="p-0 gap-1"
+                onClick={() =>
+                  setActiveKey?.(SearchConversationTabKey.Messages)
+                }
+              >
+                {t("see_more")}
+              </Button>
+            )}
           </div>
           <div>
             {messages.map((message) => (

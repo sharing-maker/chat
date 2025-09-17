@@ -21,3 +21,24 @@
 .ant-tabs-tabpane {
   height: 100%;
 }
+
+.zoom-in-out-element {
+  animation: zoom-in-zoom-out 1s ease none;
+}
+@keyframes zoom-in-zoom-out {
+  0% {
+    scale: 100%;
+  }
+  25% {
+    scale: 125%;
+  }
+  50% {
+    scale: 100%;
+  }
+  75% {
+    scale: 125%;
+  }
+  100% {
+    scale: 100%;
+  }
+}

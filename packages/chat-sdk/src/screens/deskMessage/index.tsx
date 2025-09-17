@@ -12,6 +12,9 @@ const DChatDeskMessage = () => {
   const selectedConversationId = useConversationStore(
     (state) => state.selectedConversationId
   );
+  const searchClientMsgID = useConversationStore(
+    (state) => state.searchClientMsgID
+  );
 
   const { connectStatus, syncStatus } = useChatContext();
   return (
@@ -21,7 +24,10 @@ const DChatDeskMessage = () => {
           <div className="flex flex-1 flex-row h-screen bg-gray-50">
             <DeskAssignedSession />
             <DeskConversationList />
-            <MessageList conversationId={selectedConversationId} />
+            <MessageList
+              conversationId={selectedConversationId}
+              searchClientMsgID={searchClientMsgID}
+            />
           </div>
         </Spin>
       ) : (

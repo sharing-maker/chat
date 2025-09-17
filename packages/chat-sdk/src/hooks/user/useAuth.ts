@@ -9,17 +9,20 @@ export const useDChatAuth = () => {
     (state) => state.resetConversationStore
   );
   const logout = async () => {
+    await Promise.resolve(resetConversationStore());
+    await Promise.resolve(
+      initAuthStore({
+        chatToken: "",
+        accessToken: "",
+        apiAddress: "",
+        wsAddress: "",
+        platformID: Platform.Web,
+        userID: "",
+        applicationType: "",
+      })
+    );
     const res = await DChatSDK.logout();
-    resetConversationStore();
-    initAuthStore({
-      chatToken: "",
-      accessToken: "",
-      apiAddress: "",
-      wsAddress: "",
-      platformID: Platform.Web,
-      userID: "",
-      applicationType: "",
-    });
+
     return res;
   };
 

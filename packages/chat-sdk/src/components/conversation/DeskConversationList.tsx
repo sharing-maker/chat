@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Input, Empty, Drawer, Button, InputRef, Spin } from "antd";
 import { Icon } from "../icon";
 import useConversationStore from "../../store/conversation";
@@ -12,6 +12,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import ConversationBySessionItem from "./ConversationBySessionItem";
 import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useGetSession } from "../../hooks/session/useGetSession";
+import { DChatSDK } from "../../constants/sdk";
 
 const DeskConversationList = () => {
   const searchInputRef = useRef<InputRef>(null);
@@ -22,8 +23,6 @@ const DeskConversationList = () => {
     { setTrue: setShowSearchTrue, setFalse: setShowSearchFalse },
   ] = useBoolean(false);
 
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const setConversationData = useConversationStore(
     (state) => state.setConversationData
@@ -33,6 +32,9 @@ const DeskConversationList = () => {
   );
   const conversationList = useConversationStore(
     (state) => state.conversationList
+  );
+  const updateConversationList = useConversationStore(
+    (state) => state.updateConversationList
   );
 
   const filterSummary = useSessionStore((state) => state.filterSummary);
@@ -70,13 +72,14 @@ const DeskConversationList = () => {
       );
       if (selectedConversation) {
         setConversationData(selectedConversation);
+      } else {
+        DChatSDK.getMultipleConversation([threadId]).then((res) => {
+          if (res.data.length > 0) {
+            setConversationData(res.data[0]);
+            updateConversationList(res.data, "filter");
+          }
+        });
       }
-    } else if (conversationList.length > 0) {
-      setSelectedConversationId(conversationList[0].conversationID);
-      setConversationData(conversationList[0]);
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.set("threadId", conversationList[0].conversationID);
-      router.replace(`${pathname}?${newSearchParams.toString()}`);
     }
   }, [searchParams, conversationList]);
 
@@ -92,7 +95,12 @@ const DeskConversationList = () => {
             prefix={
               <Icon icon="search-o" size={18} className="text-gray-400" />
             }
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              if (!showSearch && e.target.value) {
+                setShowSearchTrue();
+              }
+              setSearch(e.target.value);
+            }}
             className="rounded-lg text-sm flex-1 h-[36px]"
             size="large"
             allowClear
@@ -114,7 +122,7 @@ const DeskConversationList = () => {
       </div>
 
       <div
-        id="scrollableDiv"
+        id="scrollableConversationsDiv"
         style={{
           height: "100%",
           overflow: "auto",
@@ -130,7 +138,7 @@ const DeskConversationList = () => {
               <Spin />
             </div>
           }
-          scrollableTarget="scrollableDiv"
+          scrollableTarget="scrollableConversationsDiv"
         >
           {sessions?.length === 0 ? (
             <div className="flex items-center justify-center py-12">

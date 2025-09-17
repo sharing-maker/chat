@@ -14,3 +14,8 @@ export const TAG_ENUM = {
   SLOW_PROCESSING: "SLOW_PROCESSING",
   TEMPORARILY_PAUSED: "TEMPORARILY_PAUSED",
 };
+
+export const PAGE_SIZE = 50;
+
+export const MSG_ITEM_PREFIX = "msg-item-";
+export const MSG_ITEM_CONTENT_PREFIX = "msg-item-content-";

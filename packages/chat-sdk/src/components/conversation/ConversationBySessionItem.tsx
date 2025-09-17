@@ -45,9 +45,11 @@ const ConversationBySessionItem = ({
 
     setSelectedConversationId(conversation.conversationID);
   };
+  const { avatar, displayName = "" } = useConversationDisplayData(
+    conversation || null
+  );
 
   if (!conversation) return null;
-  const { avatar, displayName = "" } = useConversationDisplayData(conversation);
 
   return (
     <div
