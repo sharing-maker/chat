@@ -12,21 +12,32 @@ import MessageFooter from "./footer";
 import { images } from "../../constants/images";
 import { useTranslation } from "react-i18next";
 import useConversationStore from "../../store/conversation";
+import { isNumber } from "lodash";
+import { useDebounceFn } from "ahooks";
+import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../constants";
 
 dayjs.extend(isToday);
 
 interface MessageListProps {
   conversationId: string;
+  searchClientMsgID?: string;
   className?: string;
   onClose?: () => void;
 }
 
+const BOTTOM_THRESHOLD = -5;
 const MessageList = (props: MessageListProps) => {
   const { t } = useTranslation();
-  const { onClose, conversationId } = props;
+  const { onClose, conversationId, searchClientMsgID } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { getMoreOldMessages, moreOldLoading, loadState, latestLoadState } =
-    useMessage(conversationId);
+  const {
+    getMoreOldMessages,
+    moreOldLoading,
+    loadState,
+    latestLoadState,
+    getMoreNewMessages,
+    moreNewLoading,
+  } = useMessage(conversationId, searchClientMsgID);
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
@@ -38,6 +49,12 @@ const MessageList = (props: MessageListProps) => {
 
   const scrollToBottom = () => {
     setTimeout(() => {
+      if (
+        isNumber(scrollRef.current?.scrollTop) &&
+        scrollRef.current?.scrollTop >= BOTTOM_THRESHOLD
+      ) {
+        return;
+      }
       scrollRef.current?.scrollTo({
         top: scrollRef.current?.scrollHeight,
         behavior: "smooth",
@@ -45,15 +62,62 @@ const MessageList = (props: MessageListProps) => {
     });
   };
 
-  const loadMoreMessage = () => {
+  const scrollToMessage = (clientMsgID: string) => {
+    setTimeout(() => {
+      const targetElement = document.getElementById(
+        `${MSG_ITEM_PREFIX}${clientMsgID}`
+      );
+      targetElement?.scrollIntoView({
+        behavior: "auto",
+        block: "center",
+      });
+
+      setTimeout(() => {
+        const targetContentElement = document.getElementById(
+          `${MSG_ITEM_CONTENT_PREFIX}${clientMsgID}`
+        );
+        targetContentElement?.classList.add(
+          "zoom-in-out-element",
+          "border-blue-500",
+          "border"
+        );
+
+        // Khi animation kết thúc thì remove element
+        const onEnd = () => {
+          targetContentElement?.classList.remove(
+            "zoom-in-out-element",
+            "border-blue-500",
+            "border"
+          );
+          targetContentElement?.removeEventListener("animationend", onEnd);
+        };
+
+        targetContentElement?.addEventListener("animationend", onEnd, {
+          once: true,
+        });
+      }, 500);
+    }, 200);
+  };
+
+  const loadMoreOldMessage = () => {
     if (!loadState.hasMoreOld || moreOldLoading) return;
     getMoreOldMessages();
   };
 
+  const { run: loadMoreNewMessage } = useDebounceFn(
+    () => {
+      if (!loadState.hasMoreNew || moreNewLoading) return;
+      getMoreNewMessages();
+    },
+    { wait: 200 }
+  );
+
   useEffect(() => {
     emitter.on("CHAT_LIST_SCROLL_TO_BOTTOM", scrollToBottom);
+    emitter.on("CHAT_LIST_SCROLL_TO_MESSAGE", scrollToMessage);
     return () => {
       emitter.off("CHAT_LIST_SCROLL_TO_BOTTOM", scrollToBottom);
+      emitter.off("CHAT_LIST_SCROLL_TO_MESSAGE", scrollToMessage);
     };
   }, []);
 
@@ -76,7 +140,8 @@ const MessageList = (props: MessageListProps) => {
     >
       <MessageHeader onClose={onClose} />
       <div
-        id="scrollableDiv"
+        id="scrollableMessagesDiv"
+        ref={scrollRef}
         style={{
           height: "100%",
           overflow: "auto",
@@ -85,8 +150,8 @@ const MessageList = (props: MessageListProps) => {
         }}
       >
         <InfiniteScroll
-          dataLength={loadState.groupMessageList?.length || 0}
-          next={loadMoreMessage}
+          dataLength={loadState.messageList?.length || 0}
+          next={loadMoreOldMessage}
           style={{ display: "flex", flexDirection: "column-reverse" }}
           inverse={true}
           hasMore={loadState.hasMoreOld}
@@ -95,16 +160,21 @@ const MessageList = (props: MessageListProps) => {
               <Spin />
             </div>
           }
-          scrollableTarget="scrollableDiv"
+          scrollableTarget="scrollableMessagesDiv"
+          onScroll={(e) => {
+            const target = e.target as HTMLDivElement;
+            if (target.scrollTop > BOTTOM_THRESHOLD) {
+              loadMoreNewMessage();
+            }
+          }}
         >
-          {loadState.groupMessageList
-            ?.toReversed()
-            .map((message) => (
-              <MessageItem
-                key={message.groupMessageID}
-                groupMessage={message}
-              />
-            ))}
+          {loadState.messageList.map((message, _, array) => (
+            <MessageItem
+              key={message.clientMsgID}
+              message={message}
+              allMessages={array}
+            />
+          ))}
         </InfiniteScroll>
       </div>
 

@@ -15,13 +15,14 @@ const CONVERSATION_SPLIT_COUNT = 500;
 
 const useConversationStore = create<ConversationStore>((set, get) => ({
   conversationData: null,
-  setConversationData: (data) =>
+  setConversationData: (data, dataSearchClientMsgID) =>
     set({
       conversationData: data,
       selectedSourceId:
         data?.conversationType === SessionType.Group
           ? data?.groupID
           : data?.userID,
+      searchClientMsgID: dataSearchClientMsgID,
     }),
   selectedConversationId: "",
   setSelectedConversationId: (threadId) =>
@@ -158,6 +159,11 @@ const useConversationStore = create<ConversationStore>((set, get) => ({
       currentGroupInfo: undefined,
       currentMemberInGroup: undefined,
     });
+  },
+  //search
+  searchClientMsgID: "",
+  setSearchClientMsgID: (clientMsgID: string) => {
+    set({ searchClientMsgID: clientMsgID });
   },
 }));
 

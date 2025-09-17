@@ -26,7 +26,11 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
+export default function Sidebar({
+  onLogout,
+}: {
+  onLogout?: () => Promise<any>;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -133,10 +137,10 @@ export default function Sidebar({ onLogout }: { onLogout?: () => void }) {
         </div>
 
         <button
-          onClick={() => {
+          onClick={async () => {
             window.localStorage.removeItem("user_token");
             window.localStorage.removeItem("chat_token");
-            onLogout?.();
+            await onLogout?.();
             router.push("/login");
           }}
           className={`w-full flex items-center py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group`}

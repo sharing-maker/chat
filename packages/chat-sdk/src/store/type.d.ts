@@ -55,7 +55,10 @@ interface IFilterSummary {
 
 interface ConversationStore {
   conversationData: ConversationItem | null;
-  setConversationData: (data: ConversationItem) => void;
+  setConversationData: (
+    data: ConversationItem,
+    searchClientMsgID?: string
+  ) => void;
   selectedConversationId: string;
   selectedSourceId: string;
   setSelectedConversationId: (threadId: string) => void;
@@ -74,6 +77,9 @@ interface ConversationStore {
   getCurrentGroupInfoByReq: (groupID: string) => Promise<void>;
   getCurrentMemberInGroupByReq: (groupID: string) => Promise<void>;
   resetConversationStore: () => void;
+  //search
+  searchClientMsgID: string;
+  setSearchClientMsgID: (clientMsgID: string) => void;
 }
 
 interface IPersonalInfo {

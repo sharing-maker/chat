@@ -10,6 +10,7 @@ import { useMemo } from "react";
 import useConversationStore from "../../store/conversation";
 import { DChatSDK } from "../../constants/sdk";
 import useAuthStore from "../../store/auth";
+import { PAGE_SIZE } from "../../constants";
 
 export const useGetSession = (
   filter: IFilterSummary,
@@ -31,7 +32,7 @@ export const useGetSession = (
         tag: filter.tag,
         status: filter.status,
         page: pageParam,
-        pageSize: options?.pageSize || 100,
+        pageSize: options?.pageSize || PAGE_SIZE,
         searchTerm: filter.searchTerm,
       };
       const res = await apiInstance.post<BaseResponse<ISessionByStatus[]>>(
@@ -59,9 +60,10 @@ export const useGetSession = (
       return res.data;
     },
     getNextPageParam: (lastPage) => {
+      const pageSize = options?.pageSize || PAGE_SIZE;
+      const dataLength = lastPage?.data?.length || 0;
       const currentPage = lastPage?.pageable?.pageNumber || 1;
-      const totalPages = lastPage?.pageable?.totalPages || 1;
-      return currentPage + 1 <= totalPages ? currentPage + 1 : undefined;
+      return dataLength < pageSize ? undefined : currentPage + 1;
     },
     enabled: hasValidFilter(filter),
   });

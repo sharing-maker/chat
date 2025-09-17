@@ -1,7 +1,12 @@
 "use client";
-import { MessageItem } from "@openim/wasm-client-sdk";
+import { MessageItem, SessionType } from "@openim/wasm-client-sdk";
 import { Avatar } from "antd";
 import { formatTimestamp, highlightSearch } from "../../../utils/common";
+import { DChatSDK } from "../../../constants/sdk";
+import { useChatContext } from "../../../context/ChatContext";
+import { message as antdMessage } from "antd";
+import { useTranslation } from "react-i18next";
+import useConversationStore from "../../../store/conversation";
 
 interface SearchItemAsMessageProps {
   message: MessageItem;
@@ -9,7 +14,30 @@ interface SearchItemAsMessageProps {
 }
 
 const SearchItemAsMessage = (props: SearchItemAsMessageProps) => {
+  const { t } = useTranslation();
   const { message, searchTerm = "" } = props;
+  const { user } = useChatContext();
+
+  const onPressItem = async () => {
+    const { data } = await DChatSDK.getOneConversation({
+      sourceID:
+        message.sessionType === SessionType.Group
+          ? message.groupID
+          : user?.userID !== message.sendID
+          ? message.sendID
+          : message.recvID,
+      sessionType: message.sessionType,
+    });
+    if (!data) {
+      return antdMessage.error(t("err_get_conversation"));
+    }
+    useConversationStore
+      .getState()
+      .setConversationData(data, message.clientMsgID);
+    useConversationStore
+      .getState()
+      .setSelectedConversationId(data.conversationID);
+  };
 
   let msgContent = "";
   try {
@@ -24,6 +52,7 @@ const SearchItemAsMessage = (props: SearchItemAsMessageProps) => {
     <div
       key={message.clientMsgID}
       className="py-3 px-2 flex items-center gap-3 hover:bg-gray-100 hover:rounded-sm cursor-pointer border-b mx-1"
+      onClick={onPressItem}
     >
       <div>
         <Avatar

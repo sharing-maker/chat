@@ -1,4 +1,3 @@
-import { GroupMessageItem } from "../../../types/chat";
 import dayjs from "dayjs";
 import clsx from "clsx";
 import { Avatar } from "antd";
@@ -7,42 +6,31 @@ import { useChatContext } from "../../../context/ChatContext";
 import {
   MessageItem as MessageItemType,
   MessageType,
-  SessionType,
 } from "@openim/wasm-client-sdk";
 import TextMessageItem from "./TextMessage";
 import ImageMessageItem from "./ImageMessage";
 import FileMessageItem from "./FileMessage";
 import VideoMessageItem from "./VideoMessage";
+import {
+  getVisibleNeighbor,
+  visibleTypeMessage,
+} from "../../../hooks/message/useMessage";
+import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../../constants";
 
 dayjs.extend(isToday);
 
 interface MessageItemProps {
-  groupMessage: GroupMessageItem;
+  message: MessageItemType;
+  allMessages: MessageItemType[];
 }
 
-const visibleTypeMessage = [
-  MessageType.TextMessage,
-  MessageType.PictureMessage,
-  MessageType.VoiceMessage,
-  MessageType.VideoMessage,
-  MessageType.FileMessage,
-  MessageType.AtTextMessage,
-  MessageType.MergeMessage,
-  MessageType.CardMessage,
-  MessageType.LocationMessage,
-  MessageType.CustomMessage,
-  MessageType.QuoteMessage,
-  MessageType.FaceMessage,
-];
+const BREAK_TIME = 5;
 
-const MessageItem = ({ groupMessage }: MessageItemProps) => {
+const MessageItem = ({ message, allMessages }: MessageItemProps) => {
   const { user } = useChatContext();
 
-  const messagesInGroup = groupMessage?.messages || [];
-  const isToday = dayjs(groupMessage?.sendTime).isToday();
-  const isVisibleGroup = messagesInGroup?.some((message) =>
-    visibleTypeMessage.includes(message?.contentType)
-  );
+  const isToday = dayjs(message?.sendTime).isToday();
+  const isVisibleGroup = visibleTypeMessage.includes(message?.contentType);
 
   const renderMessageByType = (message: MessageItemType) => {
     switch (message?.contentType) {
@@ -60,86 +48,97 @@ const MessageItem = ({ groupMessage }: MessageItemProps) => {
   };
   if (!isVisibleGroup) return null;
 
+  const isMine = message?.sendID === user?.userID;
+
+  const previousMessage = getVisibleNeighbor(allMessages, message, "prev");
+  const nextMessage = getVisibleNeighbor(allMessages, message, "next");
+  const prevSameUser = previousMessage?.sendID === message?.sendID;
+  const nextSameUser = nextMessage?.sendID === message?.sendID;
+
+  const prevTimeBreak =
+    !previousMessage ||
+    dayjs(message.sendTime).diff(previousMessage.sendTime, "minute") >
+      BREAK_TIME;
+
+  const nextTimeBreak =
+    !nextMessage ||
+    dayjs(nextMessage.sendTime).diff(message.sendTime, "minute") > BREAK_TIME;
+
+  const showTimeBreak = prevTimeBreak;
+  const isFirstInGroup = prevTimeBreak || !prevSameUser;
+  const isLastInGroup = nextTimeBreak || !nextSameUser;
+
   return (
     <div
-      className="flex flex-col gap-2 my-4 mx-3 sm:mx-4"
-      key={groupMessage?.groupMessageID}
+      className="flex flex-col gap-2 py-1 px-3 sm:p x-4"
+      key={message?.clientMsgID}
+      id={`${MSG_ITEM_PREFIX}${message?.clientMsgID}`}
     >
-      <div className="flex justify-center">
-        <span className="text-xs text-gray-600 text-center bg-neutral-100 px-2 py-1 rounded-full">
-          {dayjs(groupMessage?.sendTime).format(
-            isToday ? "HH:mm" : "HH:mm, DD MMMM"
+      {showTimeBreak && (
+        <div className="flex justify-center">
+          <span className="text-xs text-gray-600 text-center bg-neutral-100 px-2 py-1 rounded-full">
+            {dayjs(message?.sendTime).format(
+              isToday ? "HH:mm" : "HH:mm, DD MMMM"
+            )}
+          </span>
+        </div>
+      )}
+      <div
+        className={clsx("flex", isMine ? "justify-end" : "justify-start")}
+        key={message?.clientMsgID}
+      >
+        <div
+          className={clsx(
+            "flex flex-1 items-end gap-2",
+            isMine ? "justify-end" : "justify-start"
           )}
-        </span>
-      </div>
-      {messagesInGroup?.map((message, messageIndex) => {
-        if (!visibleTypeMessage.includes(message?.contentType)) return null;
-        const isMine = message?.sendID === user?.userID;
-        const showAvatar = messageIndex === messagesInGroup.length - 1;
-        const showSenderName =
-          messageIndex === 0 && message?.sessionType === SessionType.Group;
-        return (
+        >
+          {!isMine && (
+            <div className="flex items-center justify-center w-[32px] h-[32px]">
+              {isLastInGroup && (
+                <Avatar>{message?.senderNickname?.charAt?.(0) || "A"}</Avatar>
+              )}
+            </div>
+          )}
           <div
-            className={clsx("flex", isMine ? "justify-end" : "justify-start")}
-            key={message?.clientMsgID}
+            className={clsx(
+              "flex flex-col flex-[0.8]",
+              isMine ? "items-end" : "items-start"
+            )}
           >
+            {isFirstInGroup && !isMine && (
+              <span className="text-xs text-gray-500 mb-1 px-3">
+                {message?.senderNickname}
+              </span>
+            )}
             <div
               className={clsx(
-                "flex flex-1 items-end gap-2",
-                isMine ? "justify-end" : "justify-start"
+                "px-3 py-2 rounded-2xl max-w-full break-words flex flex-col flex-1 text-gray-900 gap-1",
+                isMine ? "bg-blue-100" : "bg-white"
               )}
+              id={`${MSG_ITEM_CONTENT_PREFIX}${message?.clientMsgID}`}
             >
-              {!isMine && (
-                <div className="flex items-center justify-center w-[32px] h-[32px]">
-                  {showAvatar && (
-                    <Avatar>
-                      {message?.senderNickname?.charAt?.(0) || "A"}
-                    </Avatar>
-                  )}
+              {message?.contentType === MessageType.MergeMessage ? (
+                <div>
+                  {message?.mergeElem?.multiMessage?.map((item) => {
+                    return renderMessageByType(item);
+                  })}
+                  {message?.textElem && <TextMessageItem message={message} />}
                 </div>
+              ) : (
+                renderMessageByType(message)
               )}
-              <div
+              <span
                 className={clsx(
-                  "flex flex-col flex-[0.8]",
-                  isMine ? "items-end" : "items-start"
+                  "text-xs text-gray-500 text-right text-gray-500"
                 )}
               >
-                {!isMine && showSenderName && (
-                  <span className="text-xs text-gray-500 mb-1 px-3">
-                    {message?.senderNickname}
-                  </span>
-                )}
-                <div
-                  className={clsx(
-                    "px-3 py-2 rounded-2xl max-w-full break-words flex flex-col flex-1 text-gray-900 gap-1",
-                    isMine ? "bg-blue-100" : "bg-white"
-                  )}
-                >
-                  {message?.contentType === MessageType.MergeMessage ? (
-                    <div>
-                      {message?.mergeElem?.multiMessage?.map((item) => {
-                        return renderMessageByType(item);
-                      })}
-                      {message?.textElem && (
-                        <TextMessageItem message={message} />
-                      )}
-                    </div>
-                  ) : (
-                    renderMessageByType(message)
-                  )}
-                  <span
-                    className={clsx(
-                      "text-xs text-gray-500 text-right text-gray-500"
-                    )}
-                  >
-                    {dayjs(message?.sendTime).format("HH:mm")}
-                  </span>
-                </div>
-              </div>
+                {dayjs(message?.sendTime).format("HH:mm")}
+              </span>
             </div>
           </div>
-        );
-      })}
+        </div>
+      </div>
     </div>
   );
 };
