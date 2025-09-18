@@ -13,14 +13,10 @@ import { createContext, useCallback, useContext, useState } from "react";
 import EnterHandler from "./EnterHandler";
 import ActionBar from "./ActionBar";
 import { MessageFooterContextType } from "../../../types/chat";
-import { MessageItem } from "@openim/wasm-client-sdk";
 import { useSendMessage } from "../../../hooks/message/useSendMessage";
 import { UploadFile } from "antd";
 import FilePreview from "./FilePreview";
-
-interface IMessageFooterProviderProps {
-  lastMessage?: MessageItem;
-}
+import { useTranslation } from "react-i18next";
 
 const theme = {
   text: {
@@ -59,9 +55,9 @@ export const MessageFooterContext = createContext<MessageFooterContextType>({
 
 export const useMessageFooterContext = () => useContext(MessageFooterContext);
 
-const MessageFooterProvider = (props: IMessageFooterProviderProps) => {
-  const { lastMessage } = props;
-  const { sendTextMessage, sendMergeMessage } = useSendMessage(lastMessage);
+const MessageFooterProvider = () => {
+  const { t } = useTranslation();
+  const { sendTextMessage, sendMergeMessage } = useSendMessage();
   const [listUploadFiles, setListUploadFiles] = useState<UploadFile[]>([]);
 
   const onSendMessage = useCallback(
@@ -98,10 +94,10 @@ const MessageFooterProvider = (props: IMessageFooterProviderProps) => {
                 <ContentEditable className="border border-indigo-500 rounded-md bg-blue-100 min-h-[64px] max-h-[140px] overflow-y-auto px-3 py-2 text-sm" />
               }
               ErrorBoundary={LexicalErrorBoundary}
-              aria-placeholder="Nhập tin nhắn"
+              aria-placeholder={t("enter_message")}
               placeholder={
                 <div className="absolute top-2 left-7 pointer-events-none">
-                  <p className="text-gray-500 text-sm">Nhập tin nhắn</p>
+                  <p className="text-gray-500 text-sm">{t("enter_message")}</p>
                 </div>
               }
             />

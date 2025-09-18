@@ -16,6 +16,9 @@ export const useGetSession = (
   filter: IFilterSummary,
   options?: { pageSize?: number }
 ) => {
+  const conversationList = useConversationStore(
+    (state) => state.conversationList
+  );
   const {
     data,
     fetchNextPage,
@@ -69,17 +72,30 @@ export const useGetSession = (
   });
 
   const { dataFlatten } = useMemo(() => {
-    if (!data)
-      return {
-        dataFlatten: [],
-      };
+    if (!data) {
+      return { dataFlatten: [] as ISessionByStatus[] };
+    }
 
     const allItems = data.pages.flatMap((page) => page.data);
 
-    return {
-      dataFlatten: allItems,
-    };
-  }, [data]);
+    // Map session theo conversationId
+    const sessionMap = new Map(
+      allItems.map((s) => [s.conversationId, s] as const)
+    );
+
+    const merged: ISessionByStatus[] = conversationList
+      .map((conv) => {
+        const session = sessionMap.get(conv.conversationID);
+        if (!session) return null;
+        return {
+          ...session,
+          conversation: conv, // gắn trực tiếp vào
+        };
+      })
+      .filter((x): x is ISessionByStatus => Boolean(x));
+
+    return { dataFlatten: merged };
+  }, [data, conversationList]);
 
   return {
     data,

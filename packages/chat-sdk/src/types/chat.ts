@@ -1,7 +1,6 @@
 import {
   FileMsgParamsByURL,
   ImageMsgParamsByURL,
-  MessageItem,
   Platform,
   SelfUserInfo,
   VideoMsgParamsByURL,
@@ -46,14 +45,7 @@ export interface ChatProviderProps {
   config: DChatInitAndLoginConfig | null;
 }
 
-export interface GroupMessageItem
-  extends Pick<MessageItem, "sendID" | "sendTime"> {
-  groupMessageID: string;
-  messages: MessageItem[];
-}
-
 export interface ExtendMessageInfo {
-  groupMessageID: string;
   messageInfo?: {
     type: "MESSAGE_INFO";
     data: {

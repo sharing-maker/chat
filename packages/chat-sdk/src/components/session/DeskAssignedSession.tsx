@@ -30,7 +30,7 @@ const DeskAssignedSession = () => {
             label: t("unassigned"),
             key: SESSION_STATUS_ENUM.UNASSIGNED,
             icon: (
-              <Icon icon="user-del-o" size={18} className="text-orange-500" />
+              <Icon icon="user-del-o" size={18} className="!text-amber-500" />
             ),
             onClick: () => {
               setFilterSummary({
@@ -53,7 +53,7 @@ const DeskAssignedSession = () => {
               <Icon
                 icon="warning-square-o"
                 size={18}
-                className="text-red-500"
+                className="!text-red-500"
               />
             ),
             onClick: () => {
@@ -64,7 +64,7 @@ const DeskAssignedSession = () => {
             },
             extra: (
               <span className="text-xs text-gray-500">
-                {sessionSummary?.sessionStatuses?.find(
+                {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.SLOW_PROCESSING
                 )?.count || ""}
               </span>
@@ -77,7 +77,7 @@ const DeskAssignedSession = () => {
               <Icon
                 icon="time-circle-o"
                 size={18}
-                className="text-orange-400"
+                className="!text-orange-400"
               />
             ),
             onClick: () => {
@@ -101,7 +101,7 @@ const DeskAssignedSession = () => {
               <Icon
                 icon="arrow-reply-o"
                 size={18}
-                className="text-purple-500"
+                className="!text-purple-500"
               />
             ),
             onClick: () => {
@@ -112,7 +112,7 @@ const DeskAssignedSession = () => {
             },
             extra: (
               <span className="text-xs text-gray-500">
-                {sessionSummary?.sessionStatuses?.find(
+                {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.AWAITING_REPLY
                 )?.count || ""}
               </span>
@@ -148,24 +148,32 @@ const DeskAssignedSession = () => {
             },
             extra: (
               <span className="text-xs text-gray-500">
-                {sessionSummary?.sessionStatuses?.find(
+                {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.TEMPORARILY_PAUSED
                 )?.count || ""}
               </span>
             ),
           },
         ],
-        expandIcon: undefined,
         extra: (
           <span className="text-xs text-gray-500">
             {sessionSummary?.sessionStatuses?.find(
               (s) => s.type === SESSION_STATUS_ENUM.IN_PROCESS
-            )?.count || ""}
+            )?.count || "100"}
           </span>
         ),
       },
       {
-        label: t("closed_sessions"),
+        label: (
+          <div className="flex items-center gap-2">
+            <span className="ant-menu-title-content ant-menu-title-content-with-extra flex-1">
+              {t("closed_sessions")}
+            </span>
+            <span className="text-xs text-gray-500">
+              {sessionSummary?.completedSessionCount || ""}
+            </span>
+          </div>
+        ),
         key: "CLOSED_SESSIONS",
         icon: <Icon icon="check-square-o" size={20} />,
         onClick: () => {
@@ -174,13 +182,6 @@ const DeskAssignedSession = () => {
             tag: undefined,
           });
         },
-        extra: (
-          <span className="text-xs text-gray-500">
-            {sessionSummary?.sessionStatuses?.find(
-              (s) => s.type === SESSION_STATUS_ENUM.COMPLETED
-            )?.count || ""}
-          </span>
-        ),
       },
     ] as MenuItem[];
   }, [sessionSummary]);
@@ -220,6 +221,11 @@ const DeskAssignedSession = () => {
         mode="inline"
         items={menuItems}
         inlineIndent={12}
+        expandIcon={
+          <span className="text-xs text-gray-500">
+            {sessionSummary?.activeSessionCount}
+          </span>
+        }
       />
     </Sider>
   );

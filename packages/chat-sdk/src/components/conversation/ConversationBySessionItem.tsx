@@ -18,14 +18,12 @@ const ConversationBySessionItem = ({
 }: ConversationBySessionItemProps) => {
   const { t } = useTranslation();
   const { user } = useChatContext();
-  const conversation = useConversationStore((state) =>
-    state.conversationList.find(
-      (conv) => conv.conversationID === sessionItem.conversationId
-    )
-  );
   const isSelected = useConversationStore(
-    (state) => state.selectedConversationId === sessionItem.conversationId
+    (state) =>
+      state.selectedConversationId === sessionItem?.conversation?.conversationID
   );
+
+  const conversation = sessionItem?.conversation;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -90,7 +88,9 @@ const ConversationBySessionItem = ({
             <div className="flex flex-col items-end gap-1 ml-2">
               {/* Timestamp */}
               <span className="text-xs text-gray-400">
-                {formatTimestamp(conversation.latestMsgSendTime)}
+                {formatTimestamp(conversation.latestMsgSendTime, {
+                  hasTime: false,
+                })}
               </span>
 
               {/* Unread count only */}

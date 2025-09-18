@@ -45,6 +45,7 @@ interface ISessionByStatus {
     fullName: string;
     username: string;
   };
+  conversation: ConversationItem;
 }
 
 interface IFilterSummary {
@@ -132,6 +133,6 @@ interface AuthStore {
     wsAddress?: string;
     platformID?: DChatPlatform;
     userID?: string;
-    applicationType: DChatApplicationType | "";
+    applicationType: DChatApplicationType;
   }) => void;
 }

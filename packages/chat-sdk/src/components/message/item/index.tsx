@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import clsx from "clsx";
 import { Avatar } from "antd";
-import isToday from "dayjs/plugin/isToday";
 import { useChatContext } from "../../../context/ChatContext";
 import {
   MessageItem as MessageItemType,
@@ -16,8 +15,7 @@ import {
   visibleTypeMessage,
 } from "../../../hooks/message/useMessage";
 import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../../constants";
-
-dayjs.extend(isToday);
+import { formatTimestamp } from "../../../utils/common";
 
 interface MessageItemProps {
   message: MessageItemType;
@@ -29,7 +27,6 @@ const BREAK_TIME = 5;
 const MessageItem = ({ message, allMessages }: MessageItemProps) => {
   const { user } = useChatContext();
 
-  const isToday = dayjs(message?.sendTime).isToday();
   const isVisibleGroup = visibleTypeMessage.includes(message?.contentType);
 
   const renderMessageByType = (message: MessageItemType) => {
@@ -77,9 +74,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
       {showTimeBreak && (
         <div className="flex justify-center">
           <span className="text-xs text-gray-600 text-center bg-neutral-100 px-2 py-1 rounded-full">
-            {dayjs(message?.sendTime).format(
-              isToday ? "HH:mm" : "HH:mm, DD MMMM"
-            )}
+            {formatTimestamp(message.sendTime)}
           </span>
         </div>
       )}

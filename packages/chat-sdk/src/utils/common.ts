@@ -1,4 +1,5 @@
 import { MessageType } from "@openim/wasm-client-sdk";
+import dayjs from "dayjs";
 
 export function renderFileSize(bytes: number): string {
   if (!bytes || bytes <= 0) return "0 B";
@@ -51,36 +52,6 @@ export const parseLatestMessage = (
   }
 };
 
-export const formatTimestamp = (timestamp: number): string => {
-  if (!timestamp) return "";
-
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-
-  if (diffInDays === 0) {
-    // Today - show time
-    return date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  } else if (diffInDays === 1) {
-    // Yesterday
-    return "Hôm qua";
-  } else if (diffInDays < 7) {
-    // This week - show day name
-    return date.toLocaleDateString("vi-VN", { weekday: "long" });
-  } else {
-    // Older - show date
-    return date.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-    });
-  }
-};
-
 export const highlightSearch = (
   text: string,
   keyword: string,
@@ -128,3 +99,29 @@ export const highlightSearch = (
 
   return `${displayedBefore}<mark>${match}</mark>${displayedAfter}`;
 };
+
+interface FormatOptions {
+  hasTime?: boolean;
+}
+
+export function formatTimestamp(
+  timestamp: number,
+  options?: FormatOptions
+): string {
+  const { hasTime = true } = options || {};
+  const date = dayjs(timestamp);
+  const now = dayjs();
+
+  if (date.isSame(now, "day")) {
+    // hôm nay
+    return date.format("HH:mm");
+  }
+
+  if (date.isSame(now, "year")) {
+    // cùng năm
+    return hasTime ? date.format(`HH:mm DD/MM`) : date.format("DD/MM");
+  }
+
+  // khác năm
+  return hasTime ? date.format(`HH:mm DD/MM YYYY`) : date.format("DD/MM YYYY");
+}

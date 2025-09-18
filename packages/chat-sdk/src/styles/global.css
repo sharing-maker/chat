@@ -23,7 +23,7 @@
 }
 
 .zoom-in-out-element {
-  animation: zoom-in-zoom-out 1s ease none;
+  animation: zoom-in-zoom-out 1.5s ease none;
 }
 @keyframes zoom-in-zoom-out {
   0% {
