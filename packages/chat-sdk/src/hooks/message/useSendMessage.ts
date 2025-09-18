@@ -97,7 +97,7 @@ export const createFileMessageByFile = async (file: FileMsgParamsByFile) => {
   return fileMessage;
 };
 
-export const useSendMessage = (lastMessage?: MessageItem) => {
+export const useSendMessage = () => {
   const { user } = useChatContext();
   const conversationData = useConversationStore(
     (state) => state.conversationData
@@ -139,8 +139,6 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
       if (!textMessage) return;
       const extendMessageInfo = generateExtendMessageInfo({
         richText,
-        currentUserID: user?.userID || "",
-        lastMessage,
       });
       const messageItem = {
         ...textMessage,
@@ -149,7 +147,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
 
       sendMessage(messageItem);
     },
-    [recvID, groupID, user, sendMessage, lastMessage]
+    [recvID, groupID, user, sendMessage]
   );
 
   const sendMergeMessage = useCallback(
@@ -193,18 +191,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
 
             if (!imageMessage) continue;
 
-            const extendMessageInfo = generateExtendMessageInfo({
-              currentUserID: user?.userID || "",
-              lastMessage:
-                messageList.length > 0
-                  ? messageList[messageList.length - 1]
-                  : lastMessage,
-            });
-
-            messageList.push({
-              ...imageMessage,
-              ex: JSON.stringify(extendMessageInfo) || "{}",
-            });
+            messageList.push(imageMessage);
           } else if (isVideo) {
             const videoBaseInfo = await createVideoInfoWithThumbnail(file);
             const thumbFile = new File(
@@ -233,18 +220,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
             });
             if (!videoMessage) continue;
 
-            const extendMessageInfo = generateExtendMessageInfo({
-              currentUserID: user?.userID || "",
-              lastMessage:
-                messageList.length > 0
-                  ? messageList[messageList.length - 1]
-                  : lastMessage,
-            });
-
-            messageList.push({
-              ...videoMessage,
-              ex: JSON.stringify(extendMessageInfo) || "{}",
-            });
+            messageList.push(videoMessage);
           } else if (isDocument) {
             const fileMessage = await createFileMessageByFile({
               filePath: "",
@@ -257,18 +233,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
             });
             if (!fileMessage) continue;
 
-            const extendMessageInfo = generateExtendMessageInfo({
-              currentUserID: user?.userID || "",
-              lastMessage:
-                messageList.length > 0
-                  ? messageList[messageList.length - 1]
-                  : lastMessage,
-            });
-
-            messageList.push({
-              ...fileMessage,
-              ex: JSON.stringify(extendMessageInfo) || "{}",
-            });
+            messageList.push(fileMessage);
           }
         } catch (err) {
           console.error("Lỗi xử lý tin nhắn:", err);
@@ -278,11 +243,6 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
       if (!!plainText && plainText.trim() !== "") {
         const extendMessageInfo = generateExtendMessageInfo({
           richText,
-          currentUserID: user?.userID || "",
-          lastMessage:
-            messageList.length > 0
-              ? messageList[messageList.length - 1]
-              : lastMessage,
         });
         const textMessage = await createTextMessage(plainText);
         if (!textMessage) return;
@@ -297,7 +257,7 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
         await sendMessage(message);
       }
     },
-    [recvID, groupID, lastMessage, sendMessage]
+    [recvID, groupID, sendMessage]
   );
 
   return {
@@ -308,24 +268,10 @@ export const useSendMessage = (lastMessage?: MessageItem) => {
 
 export const generateExtendMessageInfo = ({
   richText,
-  currentUserID,
-  lastMessage,
 }: {
   richText?: string;
-  currentUserID: string;
-  lastMessage?: MessageItem;
 }) => {
-  const diffSendTime = dayjs().diff(lastMessage?.sendTime, "minutes");
-  const isSameSender = lastMessage?.sendID === currentUserID;
-  const lastMessageExtendMessageInfo = JSON.parse(
-    lastMessage?.ex || "{}"
-  ) as ExtendMessageInfo;
-
   return {
-    groupMessageID:
-      isSameSender && diffSendTime <= 5
-        ? lastMessageExtendMessageInfo?.groupMessageID || uuidv4()
-        : uuidv4(),
     messageInfo: {
       type: "MESSAGE_INFO",
       data: {

@@ -15,6 +15,8 @@ import useConversationStore from "../../store/conversation";
 import { isNumber } from "lodash";
 import { useDebounceFn } from "ahooks";
 import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../constants";
+import { markConversationMessageAsRead } from "../../hooks/conversation/useConversation";
+import { useChatContext } from "../../context/ChatContext";
 
 dayjs.extend(isToday);
 
@@ -28,26 +30,35 @@ interface MessageListProps {
 const BOTTOM_THRESHOLD = -5;
 const MessageList = (props: MessageListProps) => {
   const { t } = useTranslation();
+  const { user } = useChatContext();
   const { onClose, conversationId, searchClientMsgID } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
   const {
     getMoreOldMessages,
     moreOldLoading,
     loadState,
-    latestLoadState,
     getMoreNewMessages,
     moreNewLoading,
+    latestLoadState,
   } = useMessage(conversationId, searchClientMsgID);
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
 
-  const lastMessage = useMemo(() => {
-    const messageList = latestLoadState.current?.messageList;
-    return messageList?.[messageList?.length - 1];
-  }, [latestLoadState?.current?.messageList]);
+  const handleMarkConversationMessageAsRead = () => {
+    const lastMessage = latestLoadState?.current?.messageList?.[0];
+    if (
+      !latestLoadState?.current?.hasMoreNew &&
+      !moreNewLoading &&
+      lastMessage?.isRead === false &&
+      lastMessage?.sendID !== user?.userID
+    ) {
+      markConversationMessageAsRead(conversationId);
+    }
+  };
 
   const scrollToBottom = () => {
+    handleMarkConversationMessageAsRead();
     setTimeout(() => {
       if (
         isNumber(scrollRef.current?.scrollTop) &&
@@ -147,6 +158,7 @@ const MessageList = (props: MessageListProps) => {
           overflow: "auto",
           display: "flex",
           flexDirection: "column-reverse",
+          paddingBottom: 12,
         }}
       >
         <InfiniteScroll
@@ -164,6 +176,7 @@ const MessageList = (props: MessageListProps) => {
           onScroll={(e) => {
             const target = e.target as HTMLDivElement;
             if (target.scrollTop > BOTTOM_THRESHOLD) {
+              handleMarkConversationMessageAsRead();
               loadMoreNewMessage();
             }
           }}
@@ -177,8 +190,12 @@ const MessageList = (props: MessageListProps) => {
           ))}
         </InfiniteScroll>
       </div>
-
-      <MessageFooter lastMessage={lastMessage} />
+      {moreNewLoading && (
+        <div className="flex items-center justify-center py-2">
+          <Spin />
+        </div>
+      )}
+      <MessageFooter />
     </div>
   );
 };

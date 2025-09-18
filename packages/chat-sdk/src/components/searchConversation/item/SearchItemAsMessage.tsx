@@ -69,7 +69,9 @@ const SearchItemAsMessage = (props: SearchItemAsMessageProps) => {
             {message.senderNickname}
           </span>
           <span className="text-xs text-gray-500">
-            {formatTimestamp(message.sendTime)}
+            {formatTimestamp(message.sendTime, {
+              hasTime: false,
+            })}
           </span>
         </div>
         <div className="flex flex-col flex-1 min-w-0">

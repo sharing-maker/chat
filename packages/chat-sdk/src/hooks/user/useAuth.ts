@@ -2,6 +2,7 @@ import { Platform } from "@openim/wasm-client-sdk";
 import { DChatSDK } from "../../constants/sdk";
 import useAuthStore from "../../store/auth";
 import useConversationStore from "../../store/conversation";
+import { DChatApplicationType } from "../../types/chat";
 
 export const useDChatAuth = () => {
   const initAuthStore = useAuthStore((state) => state.initAuthStore);
@@ -18,7 +19,7 @@ export const useDChatAuth = () => {
         wsAddress: "",
         platformID: Platform.Web,
         userID: "",
-        applicationType: "",
+        applicationType: DChatApplicationType.OBEFE,
       })
     );
     const res = await DChatSDK.logout();

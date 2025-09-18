@@ -66,7 +66,7 @@ const SearchConversationAll = ({
             <span className="text-xs font-medium uppercase flex-1 text-gray-600">
               {t("users")}
             </span>
-            {hasNextPageMessage && (
+            {hasNextPageSession && (
               <Button
                 type="link"
                 icon={
@@ -97,7 +97,7 @@ const SearchConversationAll = ({
             <span className="text-xs font-medium uppercase flex-1 text-gray-600">
               {t("messages")}
             </span>
-            {hasNextPageSession && (
+            {hasNextPageMessage && (
               <Button
                 type="link"
                 icon={
