@@ -52,10 +52,11 @@ export const useMessage = (
       if (conversationId !== reqConversationID) return;
       setTimeout(() =>
         setLoadState((preState) => {
-          const messageList = [
+          let messageList = [
             ...(loadMore ? preState.messageList : []),
             ...data.messageList.toReversed(),
           ];
+          messageList = removeDuplicateMessages(messageList);
           return {
             ...preState,
             initLoading: false,
@@ -84,10 +85,11 @@ export const useMessage = (
       if (conversationId !== reqConversationID) return;
       setTimeout(() =>
         setLoadState((preState) => {
-          const messageList = [
+          let messageList = [
             ...data.messageList.toReversed(),
             ...(loadMore ? preState.messageList : []),
           ];
+          messageList = removeDuplicateMessages(messageList);
           return {
             ...preState,
             initLoading: false,
@@ -135,11 +137,12 @@ export const useMessage = (
       if (conversationId !== reqConversationID) return;
       setTimeout(() => {
         setLoadState((preState) => {
-          const messageList = [
+          let messageList = [
             ...dataNext.messageList.toReversed(),
             ...currentMessages,
             ...dataPrev.messageList.toReversed(),
           ];
+          messageList = removeDuplicateMessages(messageList);
           return {
             ...preState,
             initLoading: false,
@@ -253,4 +256,15 @@ export const getVisibleNeighbor = (
   }
 
   return undefined;
+};
+
+const removeDuplicateMessages = (messages: MessageItem[]) => {
+  const seen = new Set<string>();
+  return messages.filter((msg) => {
+    if (seen.has(msg.clientMsgID)) {
+      return false;
+    }
+    seen.add(msg.clientMsgID);
+    return true;
+  });
 };
