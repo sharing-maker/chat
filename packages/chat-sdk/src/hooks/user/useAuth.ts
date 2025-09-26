@@ -10,9 +10,9 @@ export const useDChatAuth = () => {
     (state) => state.resetConversationStore
   );
   const logout = async () => {
-    await Promise.resolve(DChatSDK.deleteAllMsgFromLocal());
-    await Promise.resolve(resetConversationStore());
-    await Promise.resolve(
+    const results = await Promise.allSettled([
+      DChatSDK.deleteAllMsgFromLocal(),
+      resetConversationStore(),
       initAuthStore({
         chatToken: "",
         accessToken: "",
@@ -21,8 +21,8 @@ export const useDChatAuth = () => {
         platformID: Platform.Web,
         userID: "",
         applicationType: DChatApplicationType.OBEFE,
-      })
-    );
+      }),
+    ]);
     const res = await DChatSDK.logout();
 
     return res;

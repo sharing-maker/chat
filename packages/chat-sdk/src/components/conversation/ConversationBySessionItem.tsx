@@ -67,8 +67,8 @@ const ConversationBySessionItem = ({
         <div className="relative flex-shrink-0">
           {/* TODO: add status */}
           <Badge dot={true} status={"success"} offset={[-2, 36]}>
-            <Avatar size={48} src={avatar} alt={displayName}>
-              {displayName.charAt(0).toUpperCase()}
+            <Avatar size={48} src={avatar}>
+              {displayName?.charAt?.(0) || "A"}
             </Avatar>
           </Badge>
         </div>

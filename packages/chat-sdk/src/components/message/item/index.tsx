@@ -91,7 +91,9 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
           {!isMine && (
             <div className="flex items-center justify-center w-[32px] h-[32px]">
               {isLastInGroup && (
-                <Avatar>{message?.senderNickname?.charAt?.(0) || "A"}</Avatar>
+                <Avatar src={message?.senderFaceUrl}>
+                  {message?.senderNickname?.charAt?.(0) || "A"}
+                </Avatar>
               )}
             </div>
           )}

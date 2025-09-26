@@ -1,30 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@droppii-org/chat-sdk";
-import { useState } from "react";
-import useUserStore from "@web/hook/user/useUserStore";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Menu,
+  MenuProps,
+  Layout,
+  ConfigProvider,
+  Button,
+} from "@droppii-org/ui";
+import clsx from "clsx";
 
-interface MenuItem {
-  label: string;
-  href: string;
-  icon: string;
-}
+type MenuItem = Required<MenuProps>["items"][number];
 
-const menuItems: MenuItem[] = [
-  {
-    label: "Chat",
-    href: "/chat",
-    icon: "chat-square-b",
-  },
-  {
-    label: "Tài khoản",
-    href: "/account",
-    icon: "user-b",
-  },
-];
+const { Sider } = Layout;
 
 export default function Sidebar({
   onLogout,
@@ -33,128 +24,134 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const user = useUserStore((state) => state.user);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const handleLogout = useCallback(async () => {
+    window.localStorage.removeItem("user_token");
+    window.localStorage.removeItem("chat_token");
+    await onLogout?.();
+    router.push("/login");
+  }, [onLogout]);
+
+  const { defaultSelectedKeys, defaultOpenKeys } = useMemo(() => {
+    const path = pathname.split("/")[1];
+    switch (path) {
+      case "chat":
+        return {
+          defaultSelectedKeys: ["chat"],
+          defaultOpenKeys: ["account_menu"],
+        };
+      case "account":
+        return {
+          defaultSelectedKeys: [],
+          defaultOpenKeys: ["account_menu"],
+        };
+      default:
+        return {
+          defaultSelectedKeys: [],
+          defaultOpenKeys: ["account_menu"],
+        };
+    }
+  }, [pathname]);
+
+  const menuItems = useMemo(() => {
+    return [
+      {
+        label: "Tin nhắn",
+        key: "chat",
+        icon: <Icon icon="chat-dot-o" size={20} />,
+        onClick: () => {
+          router.push("/chat");
+        },
+      },
+      {
+        label: "Tài khoản",
+        key: "account_menu",
+        icon: <Icon icon="user-circle-b" size={20} />,
+        type: "submenu",
+        className: "crm-submenu",
+
+        children: [
+          {
+            label: "Thông tin tài khoản",
+            key: "account",
+            onClick: () => {
+              router.push("/account");
+            },
+          },
+          {
+            label: "Cài đặt thông báo",
+            key: "notification",
+            onClick: () => {},
+          },
+          {
+            label: "Đăng xuất",
+            key: "logout",
+            onClick: () => {
+              handleLogout();
+            },
+          },
+        ],
+      },
+    ] as MenuItem[];
+  }, [handleLogout]);
 
   return (
-    <div
-      className={`${
-        isCollapsed ? "w-16" : "w-64"
-      } bg-gray-900 text-white min-h-screen transition-all duration-300 ease-in-out flex flex-col ${
-        isCollapsed ? "items-center" : ""
-      }`}
+    <ConfigProvider
+      theme={{
+        components: {
+          Menu: {
+            darkItemSelectedBg: "#fff",
+            darkItemSelectedColor: "#2b7fff",
+            darkSubMenuItemBg: "#2b7fff",
+            darkPopupBg: "#2b7fff",
+            darkItemColor: "#fff",
+            darkItemHoverBg: "#51a2ff",
+            darkItemBg: "#2b7fff",
+          },
+        },
+      }}
     >
-      {/* Header with Logo */}
-      <div className="flex items-center justify-between p-4 border-b h-16 border-gray-700">
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={() => setCollapsed(!collapsed)}
+        width={220}
+        className="bg-blue-500 h-full border-r border-gray-200 h-screen"
+        trigger={null}
+        theme="dark"
+      >
         <div
-          className={`flex items-center gap-4 cursor-pointer ${
-            isCollapsed ? "justify-center w-full" : ""
-          }`}
-          onClick={() => isCollapsed && setIsCollapsed(false)}
-        >
-          <Image src="/droppii.svg" alt="Logo" width={32} height={32} />
-          {!isCollapsed && (
-            <h1 className="text-lg font-bold whitespace-nowrap overflow-hidden text-ellipsis">
-              Droppii Chat
-            </h1>
+          className={clsx(
+            "flex items-center p-4 border-b justify-center border-b-gray-200 mb-2",
+            collapsed ? "justify-center" : "justify-between"
           )}
-        </div>
-        {!isCollapsed && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsCollapsed(true);
-            }}
-            className="p-1 rounded hover:bg-gray-800 transition-colors ml-auto"
+        >
+          {!collapsed && (
+            <Image src="/droppii.svg" alt="Logo" width={80} height={32} />
+          )}
+          <Button
+            type="text"
+            shape="default"
+            className="text-white w-8 h-8 p-0"
+            onClick={() => setCollapsed(!collapsed)}
           >
-            <Icon icon="control-bar-b" size={16} />
-          </button>
-        )}
-      </div>
-
-      {/* Navigation Menu */}
-      <nav className="flex-1 mt-6">
-        <ul className="space-y-2 px-3">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href as any}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group ${
-                    isActive
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                  }`}
-                >
-                  <div className="flex-shrink-0">
-                    <Icon icon={item.icon} size={20} />
-                  </div>
-                  {!isCollapsed && (
-                    <span className="font-medium whitespace-nowrap overflow-hidden">
-                      {item.label}
-                    </span>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      {/* User Profile Section */}
-      <div className="border-t border-gray-700 h-28 p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-            {user?.avatarFullUrl ? (
-              <Image
-                src={user.avatarFullUrl}
-                alt={user?.personalInfo?.fullName || "Avatar"}
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-            ) : (
-              <svg
-                className="w-4 h-4 text-white"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            )}
-          </div>
-          {!isCollapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium whitespace-nowrap overflow-hidden text-white truncate">
-                {user?.personalInfo?.fullName}
-              </p>
-              <p className="text-xs text-gray-400 whitespace-nowrap overflow-hidden truncate">
-                {user?.email}
-              </p>
-            </div>
-          )}
+            <Icon
+              icon={collapsed ? "angle-right-o" : "angle-left-o"}
+              size={22}
+            />
+          </Button>
         </div>
-
-        <button
-          onClick={async () => {
-            window.localStorage.removeItem("user_token");
-            window.localStorage.removeItem("chat_token");
-            await onLogout?.();
-            router.push("/login");
-          }}
-          className={`w-full flex items-center py-2 rounded-lg transition-colors text-gray-300 hover:bg-red-600 hover:text-white group`}
-        >
-          <span className="w-8 flex justify-center">
-            <Icon icon="logout-o" size={20} className="flex-shrink-0" />
-          </span>
-          {!isCollapsed && (
-            <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-              Đăng xuất
-            </span>
-          )}
-        </button>
-      </div>
-    </div>
+        <Menu
+          mode="inline"
+          items={menuItems}
+          inlineIndent={12}
+          className="crm-sidebar-menu"
+          theme="dark"
+          defaultSelectedKeys={defaultSelectedKeys}
+          defaultOpenKeys={defaultOpenKeys}
+        />
+      </Sider>
+    </ConfigProvider>
   );
 }

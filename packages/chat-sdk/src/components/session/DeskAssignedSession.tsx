@@ -38,8 +38,8 @@ const DeskAssignedSession = () => {
                 tag: undefined,
               });
             },
-            extra: (
-              <span className="text-xs text-gray-500">
+            itemIcon: !collapsed && (
+              <span className="text-xs text-gray-500 ">
                 {sessionSummary?.sessionStatuses?.find(
                   (s) => s.type === SESSION_STATUS_ENUM.UNASSIGNED
                 )?.count || ""}
@@ -62,7 +62,7 @@ const DeskAssignedSession = () => {
                 tag: TAG_ENUM.SLOW_PROCESSING,
               });
             },
-            extra: (
+            itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.SLOW_PROCESSING
@@ -86,7 +86,7 @@ const DeskAssignedSession = () => {
                 tag: undefined,
               });
             },
-            extra: (
+            itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.sessionStatuses?.find(
                   (s) => s.type === SESSION_STATUS_ENUM.WAITING_PROCESS
@@ -110,7 +110,7 @@ const DeskAssignedSession = () => {
                 tag: TAG_ENUM.AWAITING_REPLY,
               });
             },
-            extra: (
+            itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.AWAITING_REPLY
@@ -128,7 +128,7 @@ const DeskAssignedSession = () => {
                 tag: undefined,
               });
             },
-            extra: (
+            itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.sessionStatuses?.find(
                   (s) => s.type === SESSION_STATUS_ENUM.IN_PROCESS
@@ -146,7 +146,7 @@ const DeskAssignedSession = () => {
                 tag: TAG_ENUM.TEMPORARILY_PAUSED,
               });
             },
-            extra: (
+            itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
                   (s) => s.type === TAG_ENUM.TEMPORARILY_PAUSED
@@ -155,25 +155,16 @@ const DeskAssignedSession = () => {
             ),
           },
         ],
-        extra: (
+        itemIcon: !collapsed && (
           <span className="text-xs text-gray-500">
             {sessionSummary?.sessionStatuses?.find(
               (s) => s.type === SESSION_STATUS_ENUM.IN_PROCESS
-            )?.count || "100"}
+            )?.count || ""}
           </span>
         ),
       },
       {
-        label: (
-          <div className="flex items-center gap-2">
-            <span className="ant-menu-title-content ant-menu-title-content-with-extra flex-1">
-              {t("closed_sessions")}
-            </span>
-            <span className="text-xs text-gray-500">
-              {sessionSummary?.completedSessionCount || ""}
-            </span>
-          </div>
-        ),
+        label: t("closed_sessions"),
         key: "CLOSED_SESSIONS",
         icon: <Icon icon="check-square-o" size={20} />,
         onClick: () => {
@@ -182,9 +173,14 @@ const DeskAssignedSession = () => {
             tag: undefined,
           });
         },
+        itemIcon: !collapsed && (
+          <span className="text-xs text-gray-500">
+            {sessionSummary?.completedSessionCount || ""}
+          </span>
+        ),
       },
     ] as MenuItem[];
-  }, [sessionSummary]);
+  }, [sessionSummary, t, collapsed]);
 
   return (
     <Sider

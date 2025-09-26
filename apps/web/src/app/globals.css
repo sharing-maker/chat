@@ -89,3 +89,9 @@
     visibility: visible;
   }
 }
+
+.ant-menu-submenu-selected.crm-submenu div {
+  @apply !text-white;
+}
+  
+  
