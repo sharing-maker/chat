@@ -125,3 +125,10 @@ export function formatTimestamp(
   // khác năm
   return hasTime ? date.format(`HH:mm DD/MM YYYY`) : date.format("DD/MM YYYY");
 }
+
+export function extractLinks(text: string): string[] {
+  // Regex match http:// hoặc https:// và domain
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  return text.match(urlRegex) || [];
+}

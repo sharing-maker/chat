@@ -5,14 +5,9 @@ import {
   PublicUserItem,
 } from "@openim/wasm-client-sdk";
 import { DChatPlatform } from "..";
-import { DChatApplicationType } from "../types/chat";
+import { DChatApplicationType, SessionStatus, SessionTag } from "../types/chat";
 
 export type ConversationListUpdateType = "push" | "filter";
-
-type SessionStatus =
-  (typeof SESSION_STATUS_ENUM)[keyof typeof SESSION_STATUS_ENUM];
-
-type Tag = (typeof TAG_ENUM)[keyof typeof TAG_ENUM];
 
 interface SessionStatusItem {
   type: SessionStatus;
@@ -20,7 +15,7 @@ interface SessionStatusItem {
 }
 
 interface TagItem {
-  type: Tag;
+  type: SessionTag;
   count: number;
 }
 
@@ -37,7 +32,7 @@ interface ISessionByStatus {
   ownerId: string;
   conversationId: string;
   status: SessionStatus;
-  tag: Tag;
+  tag: SessionTag;
   applicationType: DChatApplicationType;
   owner?: {
     id: string;
@@ -50,8 +45,9 @@ interface ISessionByStatus {
 
 interface IFilterSummary {
   status?: SessionStatus;
-  tag?: Tag;
+  tag?: SessionTag;
   searchTerm?: string;
+  conversationIds?: string[];
 }
 
 interface ConversationStore {

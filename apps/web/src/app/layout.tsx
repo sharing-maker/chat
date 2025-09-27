@@ -8,6 +8,29 @@ import { AntdToastProvider } from "@droppii-org/ui";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import useUserStore from "@web/hook/user/useUserStore";
+import { initializeApp } from "firebase/app";
+import { getAnalytics, isSupported } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0BjcMwhRpRb2AgwzcHZxYLfxm1LPrxg8",
+  authDomain: "droppii-crm.firebaseapp.com",
+  projectId: "droppii-crm",
+  storageBucket: "droppii-crm.firebasestorage.app",
+  messagingSenderId: "406416850803",
+  appId: "1:406416850803:web:0194f91ca7efe996924f06",
+  measurementId: "G-3X92Z7RE5X",
+}; // @TODO: Move to environment variables
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+isSupported().then((yes) => {
+  if (yes) {
+    const analytics = getAnalytics(app);
+    console.log("Firebase Analytics initialized");
+  } else {
+    console.log("Analytics not supported in this environment");
+  }
+});
 
 const inter = Inter({ subsets: ["latin"] });
 

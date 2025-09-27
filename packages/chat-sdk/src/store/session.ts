@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { IFilterSummary } from "./type";
-import { SESSION_STATUS_ENUM } from "../constants";
+import { SessionStatus } from "../types/chat";
 
 interface SessionStore {
   filterSummary: IFilterSummary;
@@ -9,7 +9,7 @@ interface SessionStore {
 
 const useSessionStore = create<SessionStore>((set, get) => ({
   filterSummary: {
-    status: SESSION_STATUS_ENUM.IN_PROCESS,
+    status: SessionStatus.IN_PROCESS,
     tag: undefined,
   },
   setFilterSummary: (filterSummary: IFilterSummary) => set({ filterSummary }),

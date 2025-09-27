@@ -1,6 +1,7 @@
 import {
   FileMsgParamsByURL,
   ImageMsgParamsByURL,
+  MessageType,
   Platform,
   SelfUserInfo,
   VideoMsgParamsByURL,
@@ -30,6 +31,12 @@ export enum CustomType {
   CallingCancel = 203,
   CallingHungup = 204,
 }
+
+export enum CustomMessageType {
+  URL = 160,
+}
+
+export type DChatMessageType = CustomMessageType | MessageType;
 
 export interface ChatContextType {
   user: SelfUserInfo | null;
@@ -117,4 +124,18 @@ export interface DChatInitAndLoginConfig {
   accessToken: string;
   userID: string;
   applicationType: DChatApplicationType;
+}
+
+export enum SessionStatus {
+  UNASSIGNED = "UNASSIGNED",
+  WAITING_PROCESS = "WAITING_PROCESS",
+  IN_PROCESS = "IN_PROCESS",
+  COMPLETED = "COMPLETED",
+}
+
+export enum SessionTag {
+  NONE = "NONE",
+  SLOW_PROCESSING = "SLOW_PROCESSING",
+  AWAITING_REPLY = "AWAITING_REPLY",
+  TEMPORARILY_PAUSED = "TEMPORARILY_PAUSED",
 }

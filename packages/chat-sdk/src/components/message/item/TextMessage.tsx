@@ -24,13 +24,13 @@ const TextMessageItem = (props: TextMessageItemProps) => {
     const htmlContent = extendMessageInfo?.messageInfo?.data?.content || "";
     return (
       <div
-        className="!text-sm sm:text-base break-words whitespace-pre-line flex-1"
+        className="!text-sm sm:text-base break-words whitespace-pre-line flex-1 break-all"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     );
   }
   return (
-    <span className="!text-sm sm:text-base whitespace-pre-wrap">
+    <span className="!text-sm sm:text-base whitespace-pre-wrap break-all">
       {message?.textElem?.content || ""}
     </span>
   );

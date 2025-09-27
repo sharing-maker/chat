@@ -104,12 +104,12 @@ export const ToolbarPlugin = () => {
 
   const otherButtons = useMemo(() => {
     return [
-      {
-        key: "link",
-        icon: <LinkOutlined size={22} />,
-        onPress: () => insertLink(),
-        isActive: activeMarks.includes("link"),
-      },
+      // {
+      //   key: "link",
+      //   icon: <LinkOutlined size={22} />,
+      //   onPress: () => insertLink(),
+      //   isActive: activeMarks.includes("link"),
+      // },
       {
         key: "quote",
         icon: quoteIcon,

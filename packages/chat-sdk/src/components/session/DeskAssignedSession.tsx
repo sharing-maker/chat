@@ -3,11 +3,11 @@ import { useBoolean } from "ahooks";
 import { Button, Layout, Menu, MenuProps } from "antd";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { SESSION_STATUS_ENUM, TAG_ENUM } from "../../constants";
 import { Icon } from "../icon";
 import { useGetSessionSummary } from "../../hooks/session/useGetSessionSummary";
 import useSessionStore from "../../store/session";
 import clsx from "clsx";
+import { SessionStatus, SessionTag } from "../../types/chat";
 
 const { Sider } = Layout;
 
@@ -28,27 +28,27 @@ const DeskAssignedSession = () => {
         children: [
           {
             label: t("unassigned"),
-            key: SESSION_STATUS_ENUM.UNASSIGNED,
+            key: SessionStatus.UNASSIGNED,
             icon: (
               <Icon icon="user-del-o" size={18} className="!text-amber-500" />
             ),
             onClick: () => {
               setFilterSummary({
-                status: SESSION_STATUS_ENUM.UNASSIGNED,
+                status: SessionStatus.UNASSIGNED,
                 tag: undefined,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500 ">
                 {sessionSummary?.sessionStatuses?.find(
-                  (s) => s.type === SESSION_STATUS_ENUM.UNASSIGNED
+                  (s) => s.type === SessionStatus.UNASSIGNED
                 )?.count || ""}
               </span>
             ),
           },
           {
             label: t("slow_processing"),
-            key: TAG_ENUM.SLOW_PROCESSING,
+            key: SessionTag.SLOW_PROCESSING,
             icon: (
               <Icon
                 icon="warning-square-o"
@@ -59,20 +59,20 @@ const DeskAssignedSession = () => {
             onClick: () => {
               setFilterSummary({
                 status: undefined,
-                tag: TAG_ENUM.SLOW_PROCESSING,
+                tag: SessionTag.SLOW_PROCESSING,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
-                  (s) => s.type === TAG_ENUM.SLOW_PROCESSING
+                  (s) => s.type === SessionTag.SLOW_PROCESSING
                 )?.count || ""}
               </span>
             ),
           },
           {
             label: t("waiting_process"),
-            key: SESSION_STATUS_ENUM.WAITING_PROCESS,
+            key: SessionStatus.WAITING_PROCESS,
             icon: (
               <Icon
                 icon="time-circle-o"
@@ -82,21 +82,21 @@ const DeskAssignedSession = () => {
             ),
             onClick: () => {
               setFilterSummary({
-                status: SESSION_STATUS_ENUM.WAITING_PROCESS,
+                status: SessionStatus.WAITING_PROCESS,
                 tag: undefined,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.sessionStatuses?.find(
-                  (s) => s.type === SESSION_STATUS_ENUM.WAITING_PROCESS
+                  (s) => s.type === SessionStatus.WAITING_PROCESS
                 )?.count || ""}
               </span>
             ),
           },
           {
             label: t("awaiting_reply"),
-            key: TAG_ENUM.AWAITING_REPLY,
+            key: SessionTag.AWAITING_REPLY,
             icon: (
               <Icon
                 icon="arrow-reply-o"
@@ -107,49 +107,49 @@ const DeskAssignedSession = () => {
             onClick: () => {
               setFilterSummary({
                 status: undefined,
-                tag: TAG_ENUM.AWAITING_REPLY,
+                tag: SessionTag.AWAITING_REPLY,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
-                  (s) => s.type === TAG_ENUM.AWAITING_REPLY
+                  (s) => s.type === SessionTag.AWAITING_REPLY
                 )?.count || ""}
               </span>
             ),
           },
           {
             label: t("in_process"),
-            key: SESSION_STATUS_ENUM.IN_PROCESS,
+            key: SessionStatus.IN_PROCESS,
             icon: <Icon icon="play-circle-o" size={18} />,
             onClick: () => {
               setFilterSummary({
-                status: SESSION_STATUS_ENUM.IN_PROCESS,
+                status: SessionStatus.IN_PROCESS,
                 tag: undefined,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.sessionStatuses?.find(
-                  (s) => s.type === SESSION_STATUS_ENUM.IN_PROCESS
+                  (s) => s.type === SessionStatus.IN_PROCESS
                 )?.count || ""}
               </span>
             ),
           },
           {
             label: t("temporarily_paused"),
-            key: TAG_ENUM.TEMPORARILY_PAUSED,
+            key: SessionTag.TEMPORARILY_PAUSED,
             icon: <Icon icon="pause-o" size={18} />,
             onClick: () => {
               setFilterSummary({
                 status: undefined,
-                tag: TAG_ENUM.TEMPORARILY_PAUSED,
+                tag: SessionTag.TEMPORARILY_PAUSED,
               });
             },
             itemIcon: !collapsed && (
               <span className="text-xs text-gray-500">
                 {sessionSummary?.tagCounts?.find(
-                  (s) => s.type === TAG_ENUM.TEMPORARILY_PAUSED
+                  (s) => s.type === SessionTag.TEMPORARILY_PAUSED
                 )?.count || ""}
               </span>
             ),
@@ -158,7 +158,7 @@ const DeskAssignedSession = () => {
         itemIcon: !collapsed && (
           <span className="text-xs text-gray-500">
             {sessionSummary?.sessionStatuses?.find(
-              (s) => s.type === SESSION_STATUS_ENUM.IN_PROCESS
+              (s) => s.type === SessionStatus.IN_PROCESS
             )?.count || ""}
           </span>
         ),
@@ -169,7 +169,7 @@ const DeskAssignedSession = () => {
         icon: <Icon icon="check-square-o" size={20} />,
         onClick: () => {
           setFilterSummary({
-            status: SESSION_STATUS_ENUM.COMPLETED,
+            status: SessionStatus.COMPLETED,
             tag: undefined,
           });
         },
@@ -212,7 +212,7 @@ const DeskAssignedSession = () => {
         </Button>
       </div>
       <Menu
-        defaultSelectedKeys={[SESSION_STATUS_ENUM.IN_PROCESS]}
+        defaultSelectedKeys={[SessionStatus.IN_PROCESS]}
         defaultOpenKeys={["ACTIVE_SESSIONS"]}
         mode="inline"
         items={menuItems}

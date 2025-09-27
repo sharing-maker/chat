@@ -37,6 +37,7 @@ export const useGetSession = (
         page: pageParam,
         pageSize: options?.pageSize || PAGE_SIZE,
         searchTerm: filter.searchTerm,
+        conversationIds: filter.conversationIds,
       };
       const res = await apiInstance.post<BaseResponse<ISessionByStatus[]>>(
         ENDPOINTS.chatService.getSessionsByTagOrStatus,

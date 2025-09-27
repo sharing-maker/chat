@@ -2,10 +2,12 @@ import {
   MergerMsgParams,
   MessageItem,
   MessageStatus,
+  MessageType,
   PicBaseInfo,
 } from "@openim/wasm-client-sdk";
 import { DChatSDK } from "../../constants/sdk";
 import {
+  CustomMessageType,
   ExtendMessageInfo,
   FileMsgParamsByFile,
   ImageMsgParamsByFile,
@@ -21,6 +23,7 @@ import { UploadFile } from "antd";
 import { RcFile } from "antd/es/upload";
 import useConversationStore from "../../store/conversation";
 import useAuthStore from "../../store/auth";
+import { extractLinks } from "../../utils/common";
 
 export const createTextMessage = async (text: string) => {
   let textMessage = await DChatSDK.createTextMessage(
@@ -106,6 +109,7 @@ export const useSendMessage = () => {
 
   const sendMessage = useCallback(
     async (message: MessageItem) => {
+      console.log("sendMessage", message);
       try {
         pushNewMessage(message);
         emit("CHAT_LIST_SCROLL_TO_BOTTOM");
@@ -140,10 +144,23 @@ export const useSendMessage = () => {
       const extendMessageInfo = generateExtendMessageInfo({
         richText,
       });
-      const messageItem = {
+      const urls = extractLinks(plainText);
+      const isUrlMessage = urls.length > 0;
+      let messageItem = {
         ...textMessage,
         ex: JSON.stringify(extendMessageInfo) || "{}",
-      };
+      } as MessageItem;
+
+      // if (isUrlMessage) {
+      //   messageItem = {
+      //     ...messageItem,
+      //     contentType: CustomMessageType.URL,
+      //     content: JSON.stringify({
+      //       content: plainText,
+      //       url: urls,
+      //     }),
+      //   } as unknown as MessageItem;
+      // }
 
       sendMessage(messageItem);
     },
