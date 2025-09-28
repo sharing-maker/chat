@@ -109,7 +109,6 @@ export const useSendMessage = () => {
 
   const sendMessage = useCallback(
     async (message: MessageItem) => {
-      console.log("sendMessage", message);
       try {
         pushNewMessage(message);
         emit("CHAT_LIST_SCROLL_TO_BOTTOM");

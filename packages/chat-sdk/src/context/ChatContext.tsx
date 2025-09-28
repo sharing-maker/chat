@@ -13,6 +13,7 @@ import { DChatSDK } from "../constants/sdk";
 import MainLayout from "../layout";
 import useAuthStore from "../store/auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ConfigProvider } from "antd";
 
 const queryClient = new QueryClient();
 
@@ -77,9 +78,11 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
         updateSyncStatus,
       }}
     >
-      <QueryClientProvider client={queryClient}>
-        <MainLayout>{children}</MainLayout>
-      </QueryClientProvider>
+      <ConfigProvider getPopupContainer={(triggerNode) => document.body}>
+        <QueryClientProvider client={queryClient}>
+          <MainLayout>{children}</MainLayout>
+        </QueryClientProvider>
+      </ConfigProvider>
     </ChatContext.Provider>
   );
 };

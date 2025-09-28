@@ -81,7 +81,7 @@ const ConversationBySessionItem = ({
                 {displayName}
               </h3>
               <p className="text-xs text-gray-500 truncate mt-0.5">
-                {parseLatestMessage(conversation.latestMsg, user?.userID)}
+                {parseLatestMessage(conversation.latestMsg, user?.userID, t)}
               </p>
             </div>
 

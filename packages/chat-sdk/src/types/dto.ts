@@ -1,6 +1,11 @@
 import { MessageItem, MessageType } from "@openim/wasm-client-sdk";
 import { SessionStatusItem, TagItem } from "../store/type";
-import { DChatApplicationType, SessionStatus, SessionTag } from "./chat";
+import {
+  BusinessNotificationType,
+  DChatApplicationType,
+  SessionStatus,
+  SessionTag,
+} from "./chat";
 
 export interface BaseResponse<T> {
   statusCode: number;
@@ -50,4 +55,22 @@ export interface SessionByTagOrStatusRequest {
   pageSize: number;
   searchTerm?: string;
   conversationIds?: string[];
+}
+
+export interface UpdateSessionResponse {
+  id: string;
+  botId: string;
+  ownerId: string;
+  supporterId?: string;
+  conversationId: string;
+  status: SessionStatus;
+  startSeq: number;
+  endSeq: number;
+  tag: SessionTag;
+  applicationType: DChatApplicationType;
+}
+
+export interface BusinessNotification<T> {
+  data: T;
+  key: BusinessNotificationType;
 }

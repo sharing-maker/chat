@@ -18,7 +18,8 @@ export function renderFileSize(bytes: number): string {
 
 export const parseLatestMessage = (
   latestMsg: string,
-  currentUserId?: string
+  currentUserId?: string,
+  t?: any
 ) => {
   if (!latestMsg) return "";
 
@@ -26,7 +27,7 @@ export const parseLatestMessage = (
     const msgData = JSON.parse(latestMsg);
     const contentType = msgData?.contentType;
     const isMe = currentUserId && msgData.sendID === currentUserId;
-    const sender = isMe ? "Me" : msgData?.senderNickname || msgData.sendID;
+    const sender = isMe ? t("you") : t("customer");
 
     switch (contentType) {
       case MessageType.TextMessage:

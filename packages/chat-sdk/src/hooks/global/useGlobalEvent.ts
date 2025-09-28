@@ -10,12 +10,19 @@ import {
   WSEvent,
   WsResponse,
 } from "@openim/wasm-client-sdk";
-import { ConnectStatus, CustomType, SyncStatus } from "../../types/chat";
+import {
+  BusinessNotificationType,
+  ConnectStatus,
+  CustomType,
+  SyncStatus,
+} from "../../types/chat";
 import { pushNewMessage, updateOneMessage } from "../message/useMessage";
 import { useChatContext } from "../../context/ChatContext";
 import useConversationStore from "../../store/conversation";
 import useAuthStore from "../../store/auth";
 import { useRefetchChatToken } from "../../hooks/init/useChatToken";
+import { BusinessNotification, UpdateSessionResponse } from "../../types/dto";
+import { updateSession } from "../session/useUpdateSession";
 
 const notPushType = [MessageType.TypingMessage, MessageType.RevokeMessage];
 
@@ -158,6 +165,18 @@ export const useGlobalEvent = () => {
     updateSyncStatus(SyncStatus.Failed);
   };
 
+  const businessNotificationHandler = ({
+    data,
+  }: WSEvent<BusinessNotification<string>>) => {
+    switch (data.key) {
+      case BusinessNotificationType.SESSION_STATE_UPDATED:
+        updateSession(JSON.parse(data.data || "{}") as UpdateSessionResponse);
+        break;
+      default:
+        break;
+    }
+  };
+
   const setIMListener = () => {
     //account
     DChatSDK.on(CbEvents.OnUserTokenExpired, userTokenHandler);
@@ -179,6 +198,12 @@ export const useGlobalEvent = () => {
     // conversation
     DChatSDK.on(CbEvents.OnConversationChanged, conversationChangeHandler);
     DChatSDK.on(CbEvents.OnNewConversation, newConversationHandler);
+
+    //busines notification
+    DChatSDK.on(
+      CbEvents.OnRecvCustomBusinessMessage,
+      businessNotificationHandler
+    );
   };
 
   const disposeIMListener = () => {
@@ -201,6 +226,12 @@ export const useGlobalEvent = () => {
     // conversation
     DChatSDK.off(CbEvents.OnConversationChanged, conversationChangeHandler);
     DChatSDK.off(CbEvents.OnNewConversation, newConversationHandler);
+
+    //busines notification
+    DChatSDK.off(
+      CbEvents.OnRecvCustomBusinessMessage,
+      businessNotificationHandler
+    );
   };
 
   // conversation

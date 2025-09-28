@@ -245,14 +245,15 @@ export const getVisibleNeighbor = (
   );
   if (currentIndex === -1) return undefined;
 
-  let index = direction === "prev" ? currentIndex + 1 : currentIndex - 1;
+  const step = direction === "prev" ? 1 : -1;
+  let index = currentIndex + step;
 
   while (index >= 0 && index < allMessages.length) {
     const candidate = allMessages[index];
     if (visibleTypeMessage.includes(candidate.contentType)) {
       return candidate;
     }
-    index = direction === "prev" ? index - 1 : index + 1;
+    index += step;
   }
 
   return undefined;

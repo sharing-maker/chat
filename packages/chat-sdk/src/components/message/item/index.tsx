@@ -57,13 +57,10 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
     dayjs(message.sendTime).diff(previousMessage.sendTime, "minute") >
       BREAK_TIME;
 
-  const nextTimeBreak =
-    !nextMessage ||
-    dayjs(nextMessage.sendTime).diff(message.sendTime, "minute") > BREAK_TIME;
-
   const showTimeBreak = prevTimeBreak;
-  const isFirstInGroup = prevTimeBreak || !prevSameUser;
-  const isLastInGroup = nextTimeBreak || !nextSameUser;
+
+  const showSenderAvatar = !nextSameUser;
+  const showSenderName = !prevSameUser && !isMine;
 
   return (
     <div
@@ -90,7 +87,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
         >
           {!isMine && (
             <div className="flex items-center justify-center w-[32px] h-[32px]">
-              {isLastInGroup && (
+              {showSenderAvatar && (
                 <Avatar src={message?.senderFaceUrl}>
                   {message?.senderNickname?.charAt?.(0) || "A"}
                 </Avatar>
@@ -103,7 +100,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
               isMine ? "items-end" : "items-start"
             )}
           >
-            {isFirstInGroup && !isMine && (
+            {showSenderName && (
               <span className="text-xs text-gray-500 mb-1 px-3">
                 {message?.senderNickname}
               </span>

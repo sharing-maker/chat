@@ -41,3 +41,9 @@
     scale: 100%;
   }
 }
+
+.no-transform {
+  transform: none !important;
+  perspective: none !important;
+  filter: none !important;
+}

@@ -139,3 +139,7 @@ export enum SessionTag {
   AWAITING_REPLY = "AWAITING_REPLY",
   TEMPORARILY_PAUSED = "TEMPORARILY_PAUSED",
 }
+
+export enum BusinessNotificationType {
+  SESSION_STATE_UPDATED = "SESSION_STATE_UPDATED",
+}

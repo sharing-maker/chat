@@ -1,13 +1,14 @@
 "use client";
 import { useBoolean } from "ahooks";
 import { Button, Layout, Menu, MenuProps } from "antd";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "../icon";
 import { useGetSessionSummary } from "../../hooks/session/useGetSessionSummary";
 import useSessionStore from "../../store/session";
 import clsx from "clsx";
 import { SessionStatus, SessionTag } from "../../types/chat";
+import emitter from "../../utils/events";
 
 const { Sider } = Layout;
 
@@ -17,7 +18,7 @@ const DeskAssignedSession = () => {
   const { t } = useTranslation();
   const [collapsed, { toggle }] = useBoolean(false);
   const setFilterSummary = useSessionStore((state) => state.setFilterSummary);
-  const { data: sessionSummary } = useGetSessionSummary();
+  const { data: sessionSummary, refetch } = useGetSessionSummary();
 
   const menuItems = useMemo(() => {
     return [
@@ -181,6 +182,17 @@ const DeskAssignedSession = () => {
       },
     ] as MenuItem[];
   }, [sessionSummary, t, collapsed]);
+
+  useEffect(() => {
+    emitter.on("UPDATE_SESSION", () => {
+      refetch();
+    });
+    return () => {
+      emitter.off("UPDATE_SESSION", () => {
+        refetch();
+      });
+    };
+  }, []);
 
   return (
     <Sider

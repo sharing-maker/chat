@@ -13,6 +13,8 @@ import ConversationBySessionItem from "./ConversationBySessionItem";
 import { ConversationItem } from "@openim/wasm-client-sdk";
 import { useGetSession } from "../../hooks/session/useGetSession";
 import { DChatSDK } from "../../constants/sdk";
+import emitter from "../../utils/events";
+import { UpdateSessionResponse } from "../../types/dto";
 
 const DeskConversationList = () => {
   const searchInputRef = useRef<InputRef>(null);
@@ -43,6 +45,7 @@ const DeskConversationList = () => {
     dataFlatten: sessions,
     hasNextPage,
     fetchNextPage,
+    refetch,
   } = useGetSession(filterSummary);
 
   const debouncedSearch = useDebounce(search, { wait: 500 });
@@ -82,6 +85,22 @@ const DeskConversationList = () => {
       }
     }
   }, [searchParams, conversationList]);
+
+  useEffect(() => {
+    emitter.on("UPDATE_SESSION", (sessionUpdated: UpdateSessionResponse) => {
+      if (
+        sessionUpdated.status !== filterSummary.status ||
+        sessionUpdated.tag !== filterSummary.tag
+      ) {
+        refetch();
+      }
+    });
+    return () => {
+      emitter.off("UPDATE_SESSION", () => {
+        refetch();
+      });
+    };
+  }, [filterSummary]);
 
   return (
     <div

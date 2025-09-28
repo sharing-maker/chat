@@ -23,5 +23,13 @@
   "temporarily_paused": "Tạm chờ",
   "see_more": "Xem thêm",
   "err_get_conversation": "Lỗi khi lấy thông tin cuộc trò chuyện",
-  "enter_message": "Nhập tin nhắn"
+  "enter_message": "Nhập tin nhắn",
+  "update_session_status_title": "Cập nhật status",
+  "update_session_tag_title": "Cập nhật tag",
+  "cancel": "Hủy",
+  "update": "Cập nhật",
+  "update_session_status_failed": "Cập nhật status không thành công",
+  "update_session_tag_failed": "Cập nhật tag không thành công",
+  "customer": "Khách hàng",
+  "you": "Bạn"
 }

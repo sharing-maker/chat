@@ -1,10 +1,11 @@
 "use client";
 
-import { Popover } from "antd";
+import { Modal } from "antd";
 import { SelectSessionOption } from "./MessageHeader";
 import { useBoolean } from "ahooks";
 import { Icon } from "../icon";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 interface SelectSessionProps {
   options: SelectSessionOption[];
@@ -13,49 +14,73 @@ interface SelectSessionProps {
 }
 
 const SelectSession = ({ options, value, onChange }: SelectSessionProps) => {
+  const { t } = useTranslation();
   const [open, { toggle }] = useBoolean(false);
   const selectedOption = options.find((option) => option.value === value);
+
+  const handleSelect = (value: SelectSessionOption["value"]) => {
+    onChange(value);
+    toggle();
+  };
+
   return (
-    <Popover
-      trigger="click"
-      open={open}
-      onOpenChange={toggle}
-      content={
-        <div className="flex flex-col gap-2 py-2">
-          {options.map((option) => (
-            <div
-              className="flex items-center gap-2 px-3 py-1 cursor-pointer"
-              onClick={() => onChange(option.value)}
-            >
-              <div
-                className={clsx(
-                  "w-2 h-2 rounded-full",
-                  `bg-${option.tintColorClassname}`
-                )}
-              />
-              <span className="text-xs font-medium truncate">
-                {option.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      }
-      styles={{ body: { padding: 0 } }}
-      arrow={false}
-    >
+    <>
       <div
         className={clsx(
           "flex items-center gap-2 px-3 py-1 rounded-sm min-w-[64px] cursor-pointer",
-          `bg-${selectedOption?.bgTintColorClassname}`,
-          `text-${selectedOption?.tintColorClassname}`
+          selectedOption?.bgTintColorClassname,
+          selectedOption?.tintColorClassname
         )}
+        onClick={toggle}
       >
         <span className="text-xs font-medium truncate">
           {selectedOption?.label || ""}
         </span>
         <Icon icon="angle-down-o" size={14} />
       </div>
-    </Popover>
+      <Modal
+        title={t("update_session_status_title")}
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={open}
+        onOk={toggle}
+        onCancel={toggle}
+        width={300}
+        styles={{ content: { padding: 12 } }}
+        footer={null}
+      >
+        <div className="flex flex-col gap-1">
+          {options.map((option) => {
+            const isSelected = option.value === value;
+            return (
+              <div
+                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded-sm"
+                onClick={() => onChange(option.value)}
+                key={option.value}
+                onClickCapture={() => handleSelect(option.value)}
+              >
+                <div
+                  className={clsx(
+                    "w-2 h-2 rounded-full",
+                    option.tintColorClassnameBg
+                  )}
+                />
+                <span
+                  className={clsx(
+                    "text-xs truncate flex-1",
+                    isSelected && "font-bold"
+                  )}
+                >
+                  {option.label}
+                </span>
+                {isSelected && (
+                  <Icon icon="check-b" size={18} className="text-blue-500" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </Modal>
+    </>
   );
 };
 
