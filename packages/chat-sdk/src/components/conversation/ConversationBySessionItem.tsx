@@ -89,7 +89,7 @@ const ConversationBySessionItem = ({
               {/* Timestamp */}
               <span className="text-xs text-gray-400">
                 {formatTimestamp(conversation.latestMsgSendTime, {
-                  hasTime: false,
+                  hasTime: true,
                 })}
               </span>
 

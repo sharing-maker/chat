@@ -70,7 +70,7 @@ const SearchItemAsMessage = (props: SearchItemAsMessageProps) => {
           </span>
           <span className="text-xs text-gray-500">
             {formatTimestamp(message.sendTime, {
-              hasTime: false,
+              hasTime: true,
             })}
           </span>
         </div>

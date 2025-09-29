@@ -60,13 +60,7 @@ export interface ExtendMessageInfo {
       content: string;
     };
   };
-  sessionInfo?: {
-    type: "SESSION_INFO";
-    data: {
-      sessionId: string;
-      applicationType: DChatApplicationType;
-    };
-  };
+  sessionId: string;
   applicationType: DChatApplicationType;
 }
 

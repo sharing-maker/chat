@@ -17,6 +17,11 @@ import { useSendMessage } from "../../../hooks/message/useSendMessage";
 import { UploadFile } from "antd";
 import FilePreview from "./FilePreview";
 import { useTranslation } from "react-i18next";
+import { ISessionByStatus } from "../../../store/type";
+
+interface MessageFooterProps {
+  currentSession?: ISessionByStatus;
+}
 
 const theme = {
   text: {
@@ -55,7 +60,7 @@ export const MessageFooterContext = createContext<MessageFooterContextType>({
 
 export const useMessageFooterContext = () => useContext(MessageFooterContext);
 
-const MessageFooterProvider = () => {
+const MessageFooterProvider = ({ currentSession }: MessageFooterProps) => {
   const { t } = useTranslation();
   const { sendTextMessage, sendMergeMessage } = useSendMessage();
   const [listUploadFiles, setListUploadFiles] = useState<UploadFile[]>([]);
@@ -71,13 +76,18 @@ const MessageFooterProvider = () => {
       type: "text" | "file";
     }) => {
       if (type === "text") {
-        sendTextMessage({ plainText, richText });
+        sendTextMessage({ plainText, richText, currentSession });
       } else {
-        sendMergeMessage({ plainText, richText, files: listUploadFiles });
+        sendMergeMessage({
+          plainText,
+          richText,
+          files: listUploadFiles,
+          currentSession,
+        });
       }
       setListUploadFiles([]);
     },
-    [sendMergeMessage, sendTextMessage, listUploadFiles]
+    [sendMergeMessage, sendTextMessage, listUploadFiles, currentSession]
   );
 
   return (

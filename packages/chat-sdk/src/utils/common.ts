@@ -103,28 +103,33 @@ export const highlightSearch = (
 
 interface FormatOptions {
   hasTime?: boolean;
+  dateMonthFormat?: string;
 }
 
 export function formatTimestamp(
   timestamp: number,
   options?: FormatOptions
 ): string {
-  const { hasTime = true } = options || {};
+  const { hasTime = false, dateMonthFormat = "DD/MM" } = options || {};
   const date = dayjs(timestamp);
   const now = dayjs();
 
   if (date.isSame(now, "day")) {
     // hôm nay
-    return date.format("HH:mm");
+    return hasTime ? date.format("HH:mm") : date.format(dateMonthFormat);
   }
 
   if (date.isSame(now, "year")) {
     // cùng năm
-    return hasTime ? date.format(`HH:mm DD/MM`) : date.format("DD/MM");
+    return hasTime
+      ? date.format(`HH:mm ${dateMonthFormat}`)
+      : date.format(dateMonthFormat);
   }
 
   // khác năm
-  return hasTime ? date.format(`HH:mm DD/MM YYYY`) : date.format("DD/MM YYYY");
+  return hasTime
+    ? date.format(`HH:mm ${dateMonthFormat} YYYY`)
+    : date.format(`${dateMonthFormat} YYYY`);
 }
 
 export function extractLinks(text: string): string[] {

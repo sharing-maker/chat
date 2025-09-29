@@ -22,8 +22,6 @@ interface MessageItemProps {
   allMessages: MessageItemType[];
 }
 
-const BREAK_TIME = 5;
-
 const MessageItem = ({ message, allMessages }: MessageItemProps) => {
   const { user } = useChatContext();
 
@@ -56,8 +54,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
 
   const prevTimeBreak =
     !previousMessage ||
-    dayjs(message.sendTime).diff(previousMessage.sendTime, "minute") >
-      BREAK_TIME;
+    !dayjs(message.sendTime).isSame(previousMessage.sendTime, "days");
 
   const showTimeBreak = prevTimeBreak;
 
@@ -73,7 +70,9 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
       {showTimeBreak && (
         <div className="flex justify-center">
           <span className="text-xs text-gray-600 text-center bg-neutral-100 px-2 py-1 rounded-full">
-            {formatTimestamp(message.sendTime)}
+            {formatTimestamp(message.sendTime, {
+              dateMonthFormat: "DD MMMM",
+            })}
           </span>
         </div>
       )}

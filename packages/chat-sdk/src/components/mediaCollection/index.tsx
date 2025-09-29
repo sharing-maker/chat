@@ -18,8 +18,6 @@ export enum MediaCollectionTabKey {
   Link = "link",
 }
 
-export const TOP_OFFSET = 128; /// HEADER + TAB HEIGHT
-
 const MediaCollection = () => {
   const { t } = useTranslation();
   const [isOpen, { toggle }] = useBoolean(false);

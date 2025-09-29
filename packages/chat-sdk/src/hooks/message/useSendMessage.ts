@@ -24,6 +24,7 @@ import { RcFile } from "antd/es/upload";
 import useConversationStore from "../../store/conversation";
 import useAuthStore from "../../store/auth";
 import { extractLinks } from "../../utils/common";
+import { ISessionByStatus } from "../../store/type";
 
 export const createTextMessage = async (text: string) => {
   let textMessage = await DChatSDK.createTextMessage(
@@ -149,9 +150,11 @@ export const useSendMessage = () => {
     async ({
       plainText,
       richText,
+      currentSession,
     }: {
       plainText: string;
       richText: string;
+      currentSession?: ISessionByStatus;
     }) => {
       if (!recvID && !groupID) return;
       const urls = extractLinks(plainText);
@@ -165,6 +168,7 @@ export const useSendMessage = () => {
       if (!message) return;
       const extendMessageInfo = generateExtendMessageInfo({
         richText,
+        currentSession,
       });
       let messageItem = {
         ...message,
@@ -181,10 +185,12 @@ export const useSendMessage = () => {
       richText,
       plainText,
       files,
+      currentSession,
     }: {
       richText: string;
       plainText: string;
       files: UploadFile[];
+      currentSession?: ISessionByStatus;
     }) => {
       if (!recvID && !groupID) return;
       const messageList: MessageItem[] = [];
@@ -267,20 +273,21 @@ export const useSendMessage = () => {
       }
 
       if (!!plainText && plainText.trim() !== "") {
-        const extendMessageInfo = generateExtendMessageInfo({
-          richText,
-        });
         const textMessage = await createTextMessage(plainText);
         if (!textMessage) return;
-        const messageItem = {
-          ...textMessage,
-          ex: JSON.stringify(extendMessageInfo) || "{}",
-        };
-        messageList.push(messageItem);
+        messageList.push(textMessage);
       }
 
       for (const message of messageList) {
-        await sendMessage(message);
+        const extendMessageInfo = generateExtendMessageInfo({
+          richText,
+          currentSession,
+        });
+        const mMessage = {
+          ...message,
+          ex: JSON.stringify(extendMessageInfo) || "{}",
+        };
+        await sendMessage(mMessage);
       }
     },
     [recvID, groupID, sendMessage]
@@ -294,8 +301,10 @@ export const useSendMessage = () => {
 
 export const generateExtendMessageInfo = ({
   richText,
+  currentSession,
 }: {
   richText?: string;
+  currentSession?: ISessionByStatus;
 }) => {
   return {
     messageInfo: {
@@ -305,6 +314,7 @@ export const generateExtendMessageInfo = ({
         content: richText || "",
       },
     },
+    sessionId: currentSession?.id || "",
     applicationType: useAuthStore.getState().applicationType,
   } as ExtendMessageInfo;
 };

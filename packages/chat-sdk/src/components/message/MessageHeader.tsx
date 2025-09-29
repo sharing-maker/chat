@@ -5,19 +5,18 @@ import { Icon } from "../icon";
 import { useConversationDisplayData } from "../../hooks/conversation/useConversation";
 import useConversationStore from "../../store/conversation";
 import MediaCollection from "../mediaCollection";
-import { useGetSession } from "../../hooks/session/useGetSession";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SessionStatus, SessionTag } from "../../types/chat";
 import SelectSession from "./SelectSession";
 import { useUpdateSession } from "../../hooks/session/useUpdateSession";
-import emitter from "../../utils/events";
-import { UpdateSessionResponse } from "../../types/dto";
 import { useChatContext } from "../../context/ChatContext";
 import { adminUserId } from "../../constants";
+import { ISessionByStatus } from "../../store/type";
 
 interface MessageHeaderProps {
   onClose?: () => void;
+  currentSession?: ISessionByStatus;
 }
 
 type SelectSessionValueType = SessionStatus | SessionTag;
@@ -30,17 +29,12 @@ export interface SelectSessionOption {
   bgTintColorClassname: string;
 }
 
-const MessageHeader = ({ onClose }: MessageHeaderProps) => {
+const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
   const { t } = useTranslation();
   const { user } = useChatContext();
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
-  const { dataFlatten: sessions, refetch: refetchSession } = useGetSession({
-    conversationIds: conversationData?.conversationID
-      ? [conversationData.conversationID]
-      : [],
-  });
   const { mutate: updateSession } = useUpdateSession();
 
   const { avatar, displayName } = useConversationDisplayData(conversationData);
@@ -49,12 +43,6 @@ const MessageHeader = ({ onClose }: MessageHeaderProps) => {
     useState<SelectSessionValueType>(SessionStatus.UNASSIGNED);
   const [currentSessionTag, setCurrentSessionTag] =
     useState<SelectSessionValueType>(SessionTag.NONE);
-
-  const currentSession = useMemo(() => {
-    return sessions?.find(
-      (session) => session.conversationId === conversationData?.conversationID
-    );
-  }, [sessions, conversationData]);
 
   const statusOptions: SelectSessionOption[] = useMemo(() => {
     return [
@@ -150,19 +138,6 @@ const MessageHeader = ({ onClose }: MessageHeaderProps) => {
       setCurrentSessionStatus(currentSession.status);
     }
   }, [currentSession]);
-
-  useEffect(() => {
-    emitter.on("UPDATE_SESSION", (sessionUpdated: UpdateSessionResponse) => {
-      if (sessionUpdated.conversationId === conversationData?.conversationID) {
-        refetchSession();
-      }
-    });
-    return () => {
-      emitter.off("UPDATE_SESSION", () => {
-        refetchSession();
-      });
-    };
-  }, [conversationData?.conversationID]);
 
   return (
     <div className="px-4 py-3 flex items-center border-b gap-3 bg-white no-transform">
