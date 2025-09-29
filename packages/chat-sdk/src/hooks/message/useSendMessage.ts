@@ -100,6 +100,22 @@ export const createFileMessageByFile = async (file: FileMsgParamsByFile) => {
   return fileMessage;
 };
 
+export const createUrlTextMessage = async (text: string, urls: string[]) => {
+  let textMessage = await DChatSDK.createUrlTextMessage(
+    text,
+    JSON.stringify(urls),
+    new Date().getTime().toString()
+  )
+    .then(({ data }) => {
+      return data;
+    })
+    .catch(({ errCode, errMsg }) => {
+      console.error("createUrlTextMessage", errCode, errMsg);
+      return null;
+    });
+  return textMessage;
+};
+
 export const useSendMessage = () => {
   const { user } = useChatContext();
   const conversationData = useConversationStore(
@@ -138,28 +154,22 @@ export const useSendMessage = () => {
       richText: string;
     }) => {
       if (!recvID && !groupID) return;
-      const textMessage = await createTextMessage(plainText);
-      if (!textMessage) return;
+      const urls = extractLinks(plainText);
+      const isUrlMessage = urls.length > 0;
+      let message: MessageItem | null = null;
+      if (isUrlMessage) {
+        message = await createUrlTextMessage(plainText, urls);
+      } else {
+        message = await createTextMessage(plainText);
+      }
+      if (!message) return;
       const extendMessageInfo = generateExtendMessageInfo({
         richText,
       });
-      const urls = extractLinks(plainText);
-      const isUrlMessage = urls.length > 0;
       let messageItem = {
-        ...textMessage,
+        ...message,
         ex: JSON.stringify(extendMessageInfo) || "{}",
       } as MessageItem;
-
-      // if (isUrlMessage) {
-      //   messageItem = {
-      //     ...messageItem,
-      //     contentType: CustomMessageType.URL,
-      //     content: JSON.stringify({
-      //       content: plainText,
-      //       url: urls,
-      //     }),
-      //   } as unknown as MessageItem;
-      // }
 
       sendMessage(messageItem);
     },

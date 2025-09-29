@@ -1,0 +1,124 @@
+diff --git a/lib/index.es.js b/lib/index.es.js
+index 70b700d06b57fcbd1d96dfba8c61ee981afc0465..cc0c8d4296f7ae22613a2781b2916ba2c9087dda 100644
+--- a/lib/index.es.js
++++ b/lib/index.es.js
+@@ -1112,6 +1112,7 @@ var MessageType;
+     MessageType[MessageType["GroupNameUpdated"] = 1520] = "GroupNameUpdated";
+     MessageType[MessageType["BurnMessageChange"] = 1701] = "BurnMessageChange";
+     MessageType[MessageType["RevokeMessage"] = 2101] = "RevokeMessage";
++    MessageType[MessageType["UrlTextMessage"] = 160] = "UrlTextMessage";
+ })(MessageType || (MessageType = {}));
+ var SessionType;
+ (function (SessionType) {
+@@ -1271,6 +1272,12 @@ class SDK extends Emitter {
+                 return data[0];
+             });
+         };
++        this.createUrlTextMessage = (text, urls, operationID = v4()) => {
++            return this._invoker('createUrlTextMessage', window.createUrlTextMessage, [operationID, text, urls], data => {
++                // compitable with old version sdk
++                return data[0];
++            });
++        };
+         this.createImageMessageByURL = (params, operationID = v4()) => {
+             return this._invoker('createImageMessageByURL', window.createImageMessageByURL, [
+                 operationID,
+diff --git a/lib/index.js b/lib/index.js
+index 59808cfdf4144291e548d011b51c762b768eb87c..414c50b108a694c93bbd388df12138500ef2a56d 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -1116,6 +1116,7 @@ exports.MessageType = void 0;
+     MessageType[MessageType["GroupNameUpdated"] = 1520] = "GroupNameUpdated";
+     MessageType[MessageType["BurnMessageChange"] = 1701] = "BurnMessageChange";
+     MessageType[MessageType["RevokeMessage"] = 2101] = "RevokeMessage";
++    MessageType[MessageType["UrlTextMessage"] = 160] = "UrlTextMessage";
+ })(exports.MessageType || (exports.MessageType = {}));
+ exports.SessionType = void 0;
+ (function (SessionType) {
+@@ -1275,6 +1276,12 @@ class SDK extends Emitter {
+                 return data[0];
+             });
+         };
++        this.createUrlTextMessage = (text, urls, operationID = v4()) => {
++            return this._invoker('createUrlTextMessage', window.createUrlTextMessage, [operationID, text, urls], data => {
++                // compitable with old version sdk
++                return data[0];
++            });
++        };
+         this.createImageMessageByURL = (params, operationID = v4()) => {
+             return this._invoker('createImageMessageByURL', window.createImageMessageByURL, [
+                 operationID,
+diff --git a/lib/index.umd.js b/lib/index.umd.js
+index 52f8589f112702e5ad661c6b13fe56cd7de967fe..9e37096c34fe61c466807f9329b974e769f7a133 100644
+--- a/lib/index.umd.js
++++ b/lib/index.umd.js
+@@ -1118,6 +1118,7 @@
+       MessageType[MessageType["GroupNameUpdated"] = 1520] = "GroupNameUpdated";
+       MessageType[MessageType["BurnMessageChange"] = 1701] = "BurnMessageChange";
+       MessageType[MessageType["RevokeMessage"] = 2101] = "RevokeMessage";
++      MessageType[MessageType["UrlTextMessage"] = 160] = "UrlTextMessage";
+   })(exports.MessageType || (exports.MessageType = {}));
+   exports.SessionType = void 0;
+   (function (SessionType) {
+@@ -1277,6 +1278,12 @@
+                   return data[0];
+               });
+           };
++          this.createUrlTextMessage = (text, urls, operationID = v4()) => {
++            return this._invoker('createUrlTextMessage', window.createUrlTextMessage, [operationID, text, urls], data => {
++                // compitable with old version sdk
++                return data[0];
++            });
++        };
+           this.createImageMessageByURL = (params, operationID = v4()) => {
+               return this._invoker('createImageMessageByURL', window.createImageMessageByURL, [
+                   operationID,
+diff --git a/lib/sdk/index.d.ts b/lib/sdk/index.d.ts
+index 42e1a5e8af345a705d3e43182304552ff0dccbda..03c52872094401d3947ce534171d425b37ac084a 100644
+--- a/lib/sdk/index.d.ts
++++ b/lib/sdk/index.d.ts
+@@ -27,6 +27,7 @@ declare class SDK extends Emitter {
+     getGroupMessageReaderList: (params: GetGroupMessageReaderParams, operationID?: string) => Promise<WsResponse<GroupMemberItem[]>>;
+     getGroupMemberList: (params: GetGroupMemberParams, operationID?: string) => Promise<WsResponse<GroupMemberItem[]>>;
+     createTextMessage: (text: string, operationID?: string) => Promise<WsResponse<MessageItem>>;
++    createUrlTextMessage: (text: string, urls: string, operationID?: string) => Promise<WsResponse<MessageItem>>;
+     createImageMessageByURL: (params: ImageMsgParamsByURL, operationID?: string) => Promise<WsResponse<MessageItem>>;
+     createImageMessageByFile: (params: ImageMsgParamsByURL & {
+         file: File;
+diff --git a/lib/types/entity.d.ts b/lib/types/entity.d.ts
+index 73cc2e29d9e251044d22354fcba65c143f851da8..4a33c2c5ef6c4b5e0d07b79f3527b0372e85e215 100644
+--- a/lib/types/entity.d.ts
++++ b/lib/types/entity.d.ts
+@@ -210,6 +210,7 @@ export declare type MessageItem = {
+     ex?: string;
+     localEx?: string;
+     textElem?: TextElem;
++    urlTextElem?: UrlTextElem;
+     cardElem?: CardElem;
+     pictureElem?: PictureElem;
+     soundElem?: SoundElem;
+@@ -229,6 +230,10 @@ export declare type MessageItem = {
+ export declare type TextElem = {
+     content: string;
+ };
++export declare type UrlTextElem = {
++    content: string;
++    urls: string[];
++};
+ export declare type CardElem = {
+     userID: string;
+     nickname: string;
+diff --git a/lib/types/enum.d.ts b/lib/types/enum.d.ts
+index 46442bbee42868970ef7be2b04c9dc7aa349925f..b0344345c53098ae33ba634e3cae4b169b06c191 100644
+--- a/lib/types/enum.d.ts
++++ b/lib/types/enum.d.ts
+@@ -91,7 +91,8 @@ export declare enum MessageType {
+     GroupAnnouncementUpdated = 1519,
+     GroupNameUpdated = 1520,
+     BurnMessageChange = 1701,
+-    RevokeMessage = 2101
++    RevokeMessage = 2101,
++    UrlTextMessage = 160
+ }
+ export declare enum SessionType {
+     Single = 1,
