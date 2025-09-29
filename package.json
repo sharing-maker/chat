@@ -51,5 +51,10 @@
   "packageManager": "pnpm@9.15.5",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@openim/wasm-client-sdk@3.8.3-patch.10": "patches/@openim__wasm-client-sdk@3.8.3-patch.10.patch"
+    }
   }
 }

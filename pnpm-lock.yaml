@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@openim/wasm-client-sdk@3.8.3-patch.10':
+    hash: e5cb4dxjo5mwculjlq7aqwg32m
+    path: patches/@openim__wasm-client-sdk@3.8.3-patch.10.patch
+
 importers:
 
   .:
@@ -180,7 +185,7 @@ importers:
         version: 0.34.0
       '@openim/wasm-client-sdk':
         specifier: 3.8.3-patch.10
-        version: 3.8.3-patch.10
+        version: 3.8.3-patch.10(patch_hash=e5cb4dxjo5mwculjlq7aqwg32m)
       '@tailwindcss/postcss':
         specifier: ^4.1.12
         version: 4.1.12
@@ -5121,7 +5126,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@openim/wasm-client-sdk@3.8.3-patch.10': {}
+  '@openim/wasm-client-sdk@3.8.3-patch.10(patch_hash=e5cb4dxjo5mwculjlq7aqwg32m)': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -6297,7 +6302,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -6327,7 +6332,7 @@ snapshots:
       tinyglobby: 0.2.14
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -6342,7 +6347,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9

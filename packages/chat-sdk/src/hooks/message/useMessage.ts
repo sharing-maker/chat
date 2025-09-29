@@ -20,6 +20,7 @@ export const visibleTypeMessage = [
   MessageType.CustomMessage,
   MessageType.QuoteMessage,
   MessageType.FaceMessage,
+  MessageType.UrlTextMessage,
 ];
 
 export const useMessage = (

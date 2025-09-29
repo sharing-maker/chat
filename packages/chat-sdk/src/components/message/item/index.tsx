@@ -39,6 +39,8 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
         return <FileMessageItem message={message} />;
       case MessageType.VideoMessage:
         return <VideoMessageItem message={message} />;
+      case MessageType.UrlTextMessage:
+        return <TextMessageItem message={message} />;
       default:
         return <TextMessageItem message={message} />;
     }
