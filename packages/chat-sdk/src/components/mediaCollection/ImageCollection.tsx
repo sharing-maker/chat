@@ -8,7 +8,6 @@ import dayjs from "dayjs";
 import useConversationStore from "../../store/conversation";
 import { images } from "../../constants/images";
 import { useTranslation } from "react-i18next";
-import { TOP_OFFSET } from ".";
 import { DownloadOutlined } from "@ant-design/icons";
 
 const ImageCollection = () => {

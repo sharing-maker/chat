@@ -17,6 +17,8 @@ import { useDebounceFn } from "ahooks";
 import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../constants";
 import { markConversationMessageAsRead } from "../../hooks/conversation/useConversation";
 import { useChatContext } from "../../context/ChatContext";
+import { useGetSession } from "../../hooks/session/useGetSession";
+import { UpdateSessionResponse } from "../../types/dto";
 
 dayjs.extend(isToday);
 
@@ -44,6 +46,15 @@ const MessageList = (props: MessageListProps) => {
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
+  const { dataFlatten: sessions, refetch: refetchSession } = useGetSession({
+    conversationIds: !!conversationId ? [conversationId] : [],
+  });
+
+  const currentSession = useMemo(() => {
+    return sessions?.find(
+      (session) => session.conversationId === conversationId
+    );
+  }, [sessions, conversationId]);
 
   const handleMarkConversationMessageAsRead = () => {
     const lastMessage = latestLoadState?.current?.messageList?.[0];
@@ -132,6 +143,19 @@ const MessageList = (props: MessageListProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    emitter.on("UPDATE_SESSION", (sessionUpdated: UpdateSessionResponse) => {
+      if (sessionUpdated.conversationId === conversationId) {
+        refetchSession();
+      }
+    });
+    return () => {
+      emitter.off("UPDATE_SESSION", () => {
+        refetchSession();
+      });
+    };
+  }, [conversationId]);
+
   if (!conversationData) {
     return (
       <div className="flex flex-1 items-center justify-center h-full">
@@ -149,7 +173,7 @@ const MessageList = (props: MessageListProps) => {
         backgroundPosition: "center",
       }}
     >
-      <MessageHeader onClose={onClose} />
+      <MessageHeader onClose={onClose} currentSession={currentSession} />
       <div
         id="scrollableMessagesDiv"
         ref={scrollRef}
@@ -195,7 +219,7 @@ const MessageList = (props: MessageListProps) => {
           <Spin />
         </div>
       )}
-      <MessageFooter />
+      <MessageFooter currentSession={currentSession} />
     </div>
   );
 };

@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import { documentIcon } from "../../assets/svg";
 import { shortenFileName } from "../message/footer/FilePreview";
 import { renderFileSize } from "../../utils/common";
-import { TOP_OFFSET } from ".";
 
 const FileCollection = () => {
   const { t } = useTranslation();

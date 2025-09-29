@@ -10,7 +10,6 @@ import { useBoolean } from "ahooks";
 import { images } from "../../constants/images";
 import { Icon } from "../icon";
 import { useTranslation } from "react-i18next";
-import { TOP_OFFSET } from ".";
 
 const VideoCollection = () => {
   const { t } = useTranslation();
