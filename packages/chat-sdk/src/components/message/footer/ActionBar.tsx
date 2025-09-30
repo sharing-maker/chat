@@ -183,13 +183,12 @@ const ActionBar = () => {
         );
       }
       if (isErrorSize) {
-        if (isVideo) {
-          message.error(`Tệp không được vượt quá ${maxSize}MB`);
-        }
         if (isImage) {
           message.error(
             `${file.name} có kích thước tập tin vượt quá ${maxSize}MB`
           );
+        } else {
+          message.error(`Tệp không được vượt quá ${maxSize}MB`);
         }
       }
       return Upload.LIST_IGNORE;
