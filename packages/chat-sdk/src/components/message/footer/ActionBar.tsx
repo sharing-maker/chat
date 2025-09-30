@@ -55,9 +55,27 @@ const EmojiIcon = (
     <path
       d="M7.59997 12.4C7.59997 12.4 8.49997 13.2 9.99997 13.2C11.5 13.2 12.4 12.4 12.4 12.4M14 8.39997C14 8.8418 13.6418 9.19997 13.2 9.19997C12.7581 9.19997 12.4 8.8418 12.4 8.39997C12.4 7.95814 12.7581 7.59997 13.2 7.59997C13.6418 7.59997 14 7.95814 14 8.39997ZM18 9.99997C18 14.4182 14.4182 18 9.99997 18C5.58169 18 1.99997 14.4182 1.99997 9.99997C1.99997 5.58169 5.58169 1.99997 9.99997 1.99997C14.4182 1.99997 18 5.58169 18 9.99997ZM7.59997 8.39997C7.59997 8.8418 7.2418 9.19997 6.79997 9.19997C6.35814 9.19997 5.99997 8.8418 5.99997 8.39997C5.99997 7.95814 6.35814 7.59997 6.79997 7.59997C7.2418 7.59997 7.59997 7.95814 7.59997 8.39997Z"
       stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    ></path>
+  </svg>
+);
+
+const AttachIcon = (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M15.6 10.0001V11.2001C15.6 14.5137 12.9137 17.2001 9.59998 17.2001C6.28626 17.2001 3.59998 14.5137 3.59998 11.2001V6.79999C3.59998 4.59085 5.39084 2.79999 7.59998 2.79999C9.8091 2.79999 11.6 4.59085 11.6 6.79999V11.2C11.6 12.3045 10.7045 13.2 9.59998 13.2C8.49542 13.2 7.59998 12.3045 7.59998 11.2V7.99999"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     ></path>
   </svg>
 );
@@ -68,7 +86,9 @@ const ActionBar = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { listUploadFiles } = useMessageFooterContext();
+  const [isEmptyInput, setIsEmptyInput] = useState(true);
 
+  const canSend = !isEmptyInput || listUploadFiles.length > 0;
   const handleSend = useCallback(() => {
     let plainText = "";
     let richText = "";
@@ -152,31 +172,37 @@ const ActionBar = () => {
       file.type === "image/jpg";
 
     const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? 200 : 5; // MB
+    const isErrorSize = file.size / 1024 / 1024 > maxSize;
 
     // check format
-    if (!isImage && !isVideo) {
-      message.error(
-        `${file.name} không đúng định dạng JPG, JPEG, PNG hoặc VIDEO`
-      );
-      return Upload.LIST_IGNORE;
-    }
-
-    // check size
-    const maxSize = isImage ? 5 : 200; // MB
-    if (file.size / 1024 / 1024 > maxSize) {
-      message.error(`${file.name} có kích thước tập tin vượt quá ${maxSize}MB`);
-      return Upload.LIST_IGNORE;
-    }
-
-    // nếu là video thì chỉ cho 1 cái duy nhất
-    if (isVideo) {
-      const hasVideo = listUploadFiles.some(
-        (f) => f.type?.startsWith("video/")
-      );
-      if (hasVideo) {
-        message.error("Chỉ được phép tải lên 1 video duy nhất");
-        return Upload.LIST_IGNORE;
+    if ((!isImage && !isVideo) || isErrorSize) {
+      if (!isImage && !isVideo) {
+        message.error(
+          `${file.name} không đúng định dạng JPG, JPEG, PNG hoặc VIDEO`
+        );
       }
+      if (isErrorSize) {
+        if (isVideo) {
+          message.error(`Tệp không được vượt quá ${maxSize}MB`);
+        }
+        if (isImage) {
+          message.error(
+            `${file.name} có kích thước tập tin vượt quá ${maxSize}MB`
+          );
+        }
+      }
+      return Upload.LIST_IGNORE;
+    }
+
+    const newVideos = fileList.filter((f) => f.type?.startsWith("video/"));
+    const currentVideos = listUploadFiles.filter(
+      (f) => f.type?.startsWith("video/")
+    );
+
+    if (newVideos.length > 1 || currentVideos.length + newVideos.length > 1) {
+      message.error("Chỉ được phép tải lên 1 video duy nhất");
+      return Upload.LIST_IGNORE;
     }
 
     return false;
@@ -223,6 +249,17 @@ const ActionBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    return editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const root = $getRoot();
+        const textContent = root.getTextContent().trim();
+
+        setIsEmptyInput(textContent.length <= 0);
+      });
+    });
+  }, [editor]);
+
   return (
     <div className="flex items-center justify-between px-4" ref={containerRef}>
       <div className="flex items-center gap-3 relative">
@@ -265,7 +302,7 @@ const ActionBar = () => {
             shape="default"
             className="text-gray-500 w-8 h-8 p-0 text-gray-500"
           >
-            <Icon icon="link-o" size={22} />
+            {AttachIcon}
           </Button>
         </Upload>
 
@@ -282,8 +319,13 @@ const ActionBar = () => {
         shape="default"
         className="text-gray-500 w-8 h-8 p-0"
         onClick={handleSend}
+        disabled={!canSend}
       >
-        <Icon icon="send-b" size={28} className="text-blue-500" />
+        <Icon
+          icon="send-b"
+          size={28}
+          className={`${canSend ? "text-blue-500" : "text-gray-400"}`}
+        />
       </Button>
     </div>
   );

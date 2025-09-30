@@ -12,10 +12,20 @@ import { DChatSDK } from "../../constants/sdk";
 import useAuthStore from "../../store/auth";
 import { PAGE_SIZE } from "../../constants";
 
-export const useGetSession = (
-  filter: IFilterSummary,
-  options?: { pageSize?: number }
-) => {
+interface UseGetSessionProps {
+  filter: IFilterSummary;
+  options?: {
+    pageSize?: number;
+    isEnabled?: boolean;
+  };
+}
+export const useGetSession = ({
+  filter,
+  options = {
+    pageSize: undefined,
+    isEnabled: true,
+  },
+}: UseGetSessionProps) => {
   const conversationList = useConversationStore(
     (state) => state.conversationList
   );
@@ -46,12 +56,13 @@ export const useGetSession = (
 
       //FIND NEW CONVERSATIONS
       const conversationList = useConversationStore.getState().conversationList;
-      const newConversations = res?.data?.data?.filter((session) => {
-        return !conversationList.some(
-          (conversation) =>
-            conversation.conversationID === session.conversationId
-        );
-      });
+      const newConversations =
+        res?.data?.data?.filter?.((session) => {
+          return !conversationList.some(
+            (conversation) =>
+              conversation.conversationID === session.conversationId
+          );
+        }) || [];
       if (newConversations?.length) {
         DChatSDK.getMultipleConversation(
           newConversations.map((session) => session.conversationId)
@@ -69,7 +80,7 @@ export const useGetSession = (
       const currentPage = lastPage?.pageable?.pageNumber || 1;
       return dataLength < pageSize ? undefined : currentPage + 1;
     },
-    enabled: hasValidFilter(filter),
+    enabled: options?.isEnabled && hasValidFilter(filter),
   });
 
   const { dataFlatten } = useMemo(() => {
@@ -84,16 +95,17 @@ export const useGetSession = (
       allItems.map((s) => [s.conversationId, s] as const)
     );
 
-    const merged: ISessionByStatus[] = conversationList
-      .map((conv) => {
-        const session = sessionMap.get(conv.conversationID);
-        if (!session) return null;
-        return {
-          ...session,
-          conversation: conv, // gắn trực tiếp vào
-        };
-      })
-      .filter((x): x is ISessionByStatus => Boolean(x));
+    const merged: ISessionByStatus[] =
+      conversationList
+        ?.map?.((conv) => {
+          const session = sessionMap.get(conv.conversationID);
+          if (!session) return null;
+          return {
+            ...session,
+            conversation: conv, // gắn trực tiếp vào
+          };
+        })
+        ?.filter?.((x): x is ISessionByStatus => Boolean(x)) || [];
 
     return { dataFlatten: merged };
   }, [data, conversationList]);

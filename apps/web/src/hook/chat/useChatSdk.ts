@@ -19,6 +19,7 @@ export const useChatSdkSetup = () => {
         accessToken,
         userID: user?.id,
         applicationType: DChatApplicationType.OBEFE,
+        isCrm: true,
       };
     } else {
       return null;

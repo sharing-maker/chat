@@ -63,7 +63,7 @@ export const useSearchMessage = ({
         dataFlatten: [],
       };
 
-    const allItems = data.pages.flatMap((page) => page.data);
+    const allItems = data?.pages?.flatMap?.((page) => page.data) || [];
 
     const mGroupeddata = allItems.reduce<Record<string, SearchMessageItem[]>>(
       (acc, item) => {

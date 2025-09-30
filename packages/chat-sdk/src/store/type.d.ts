@@ -111,6 +111,8 @@ interface AuthStore {
   wsAddress: string;
   platformID: DChatPlatform;
   userID: string;
+  isCx: boolean;
+  isCrm: boolean;
   applicationType: DChatApplicationType;
   setAccessToken: (token: string) => void;
   setChatToken: (token: string) => void;
@@ -122,6 +124,7 @@ interface AuthStore {
     platformID,
     userID,
     applicationType,
+    isCrm,
   }: {
     accessToken?: string;
     chatToken?: string;
@@ -130,5 +133,6 @@ interface AuthStore {
     platformID?: DChatPlatform;
     userID?: string;
     applicationType: DChatApplicationType;
+    isCrm?: boolean;
   }) => void;
 }

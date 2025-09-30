@@ -10,7 +10,7 @@ import { LinkNode } from "@lexical/link";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { createContext, useCallback, useContext, useState } from "react";
-import EnterHandler from "./EnterHandler";
+// import EnterHandler from "./EnterHandler";
 import ActionBar from "./ActionBar";
 import { MessageFooterContextType } from "../../../types/chat";
 import { useSendMessage } from "../../../hooks/message/useSendMessage";
@@ -116,7 +116,7 @@ const MessageFooterProvider = ({ currentSession }: MessageFooterProps) => {
         </div>
         <LinkPlugin />
         <ListPlugin />
-        <EnterHandler />
+        {/* <EnterHandler /> */}
       </LexicalComposer>
     </MessageFooterContext.Provider>
   );

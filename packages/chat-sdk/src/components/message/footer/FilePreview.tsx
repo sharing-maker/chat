@@ -113,7 +113,7 @@ const FilePreview = () => {
     <div className="overflow-x-auto mb-[-4px]">
       <div className="border-b py-2 px-4">
         <div className="flex items-center gap-2">
-          {listUploadFiles.map((file) => renderFilePreview(file))}
+          {listUploadFiles?.map?.((file) => renderFilePreview(file))}
         </div>
       </div>
     </div>

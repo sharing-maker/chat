@@ -8,13 +8,14 @@ export const conversationSort = (
   conversationList: ConversationItem[],
   originalList?: ConversationItem[]
 ) => {
-  const listWithIndex = conversationList.map((item, index) => ({
-    ...item,
-    originalIndex:
-      originalList?.findIndex(
-        (c) => c.conversationID === item.conversationID
-      ) ?? index,
-  }));
+  const listWithIndex =
+    conversationList?.map((item, index) => ({
+      ...item,
+      originalIndex:
+        originalList?.findIndex(
+          (c) => c.conversationID === item.conversationID
+        ) ?? index,
+    })) || [];
 
   const arr: string[] = [];
   const filterArr = listWithIndex.filter((c) => {

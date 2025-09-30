@@ -10,9 +10,8 @@ import { useTranslation } from "react-i18next";
 import { SessionStatus, SessionTag } from "../../types/chat";
 import SelectSession from "./SelectSession";
 import { useUpdateSession } from "../../hooks/session/useUpdateSession";
-import { useChatContext } from "../../context/ChatContext";
-import { adminUserId } from "../../constants";
 import { ISessionByStatus } from "../../store/type";
+import useAuthStore from "../../store/auth";
 
 interface MessageHeaderProps {
   onClose?: () => void;
@@ -31,7 +30,7 @@ export interface SelectSessionOption {
 
 const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
   const { t } = useTranslation();
-  const { user } = useChatContext();
+  const isCx = useAuthStore((state) => state.isCx);
   const conversationData = useConversationStore(
     (state) => state.conversationData
   );
@@ -141,23 +140,22 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
 
   return (
     <div className="px-4 py-3 flex items-center border-b gap-3 bg-white no-transform">
-      <Avatar src={avatar} size={"large"}>
+      <Avatar src={avatar} size={"large"} className="min-w-10 min-h-10">
         {displayName?.charAt?.(0) || "A"}
       </Avatar>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-hidden flex-1">
         <p className="text-base truncate">{displayName || ""}</p>
-        <p className="text-xs text-gray-500">{"2 thành viên"}</p>
+        <p className="text-xs text-gray-500 truncate">{"2 thành viên"}</p>
       </div>
-      <div className="flex items-center gap-2 flex-1 justify-end">
-        {currentSessionTag !== SessionTag.NONE &&
-          user?.userID === adminUserId && (
-            <SelectSession
-              options={tagOptions}
-              value={currentSessionTag}
-              onChange={(value) => handleUpdateSession(value, "tag")}
-            />
-          )}
-        {user?.userID === adminUserId && (
+      <div className="flex items-center gap-2 justify-end overflow-hidden">
+        {isCx && (
+          <SelectSession
+            options={tagOptions}
+            value={currentSessionTag}
+            onChange={(value) => handleUpdateSession(value, "tag")}
+          />
+        )}
+        {isCx && (
           <SelectSession
             options={statusOptions}
             value={currentSessionStatus}

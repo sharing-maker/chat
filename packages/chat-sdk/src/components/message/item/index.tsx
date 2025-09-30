@@ -16,6 +16,7 @@ import {
 } from "../../../hooks/message/useMessage";
 import { MSG_ITEM_CONTENT_PREFIX, MSG_ITEM_PREFIX } from "../../../constants";
 import { formatTimestamp } from "../../../utils/common";
+import useAuthStore from "../../../store/auth";
 
 interface MessageItemProps {
   message: MessageItemType;
@@ -24,6 +25,7 @@ interface MessageItemProps {
 
 const MessageItem = ({ message, allMessages }: MessageItemProps) => {
   const { user } = useChatContext();
+  const isCx = useAuthStore((state) => state.isCx);
 
   const isVisibleGroup = visibleTypeMessage.includes(message?.contentType);
 

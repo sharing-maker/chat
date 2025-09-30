@@ -118,6 +118,7 @@ export interface DChatInitAndLoginConfig {
   accessToken: string;
   userID: string;
   applicationType: DChatApplicationType;
+  isCrm?: boolean;
 }
 
 export enum SessionStatus {

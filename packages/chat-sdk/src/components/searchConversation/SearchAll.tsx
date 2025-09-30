@@ -32,12 +32,12 @@ const SearchConversationAll = ({
     dataFlatten: sessions,
     isLoading: isLoadingSession,
     hasNextPage: hasNextPageSession,
-  } = useGetSession(
-    {
+  } = useGetSession({
+    filter: {
       searchTerm: searchTerm.trim(),
     },
-    { pageSize: 5 }
-  );
+    options: { pageSize: 5 },
+  });
 
   if (
     searchTerm.trim() === "" ||

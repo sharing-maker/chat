@@ -46,7 +46,9 @@ const DeskConversationList = () => {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useGetSession(filterSummary);
+  } = useGetSession({
+    filter: filterSummary,
+  });
 
   const debouncedSearch = useDebounce(search, { wait: 500 });
 

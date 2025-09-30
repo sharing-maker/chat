@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { AuthStore } from "./type";
 import { Platform } from "@openim/wasm-client-sdk";
 import { DChatApplicationType } from "../types/chat";
+import { jwtDecode } from "jwt-decode";
 
 const useAuthStore = create<AuthStore>((set, get) => ({
   accessToken: "",
@@ -11,6 +12,8 @@ const useAuthStore = create<AuthStore>((set, get) => ({
   platformID: Platform.Web,
   userID: "",
   applicationType: DChatApplicationType.OBEFE,
+  isCx: false,
+  isCrm: false,
   setAccessToken: (token: string) => set({ accessToken: token }),
   setChatToken: (token: string) => set({ chatToken: token }),
   initAuthStore: ({
@@ -21,7 +24,10 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     platformID,
     userID,
     applicationType,
+    isCrm,
   }) => {
+    const jwtParser = !!accessToken ? (jwtDecode(accessToken) as any) : null;
+    const isCx = isCrm && jwtParser?.role?.includes("CRM_LIVE_CHAT");
     set({
       accessToken,
       chatToken,
@@ -30,6 +36,8 @@ const useAuthStore = create<AuthStore>((set, get) => ({
       platformID,
       userID,
       applicationType,
+      isCx,
+      isCrm: !!isCrm,
     });
   },
 }));

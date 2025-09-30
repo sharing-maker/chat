@@ -47,7 +47,9 @@ const MessageList = (props: MessageListProps) => {
     (state) => state.conversationData
   );
   const { dataFlatten: sessions, refetch: refetchSession } = useGetSession({
-    conversationIds: !!conversationId ? [conversationId] : [],
+    filter: {
+      conversationIds: !!conversationId ? [conversationId] : [],
+    },
   });
 
   const currentSession = useMemo(() => {
@@ -179,7 +181,8 @@ const MessageList = (props: MessageListProps) => {
         ref={scrollRef}
         style={{
           height: "100%",
-          overflow: "auto",
+          overflowY: "auto",
+          overflowX: "hidden",
           display: "flex",
           flexDirection: "column-reverse",
           paddingBottom: 12,
