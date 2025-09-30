@@ -27,7 +27,7 @@ const useAuthStore = create<AuthStore>((set, get) => ({
     isCrm,
   }) => {
     const jwtParser = !!accessToken ? (jwtDecode(accessToken) as any) : null;
-    const isCx = isCrm && jwtParser?.role?.includes("CRM_LIVE_CHAT");
+    const isCx = !!isCrm && !!jwtParser?.role?.includes("CRM_LIVE_CHAT");
     set({
       accessToken,
       chatToken,
