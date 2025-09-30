@@ -31,5 +31,6 @@
   "update_session_status_failed": "Cập nhật status không thành công",
   "update_session_tag_failed": "Cập nhật tag không thành công",
   "customer": "Khách hàng",
-  "you": "Bạn"
+  "you": "Bạn",
+  "select_tag": "Chọn tag"
 }

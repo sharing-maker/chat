@@ -11,9 +11,15 @@ interface SelectSessionProps {
   options: SelectSessionOption[];
   value: SelectSessionOption["value"];
   onChange: (value: SelectSessionOption["value"]) => void;
+  excludeOptions?: SelectSessionOption["value"][];
 }
 
-const SelectSession = ({ options, value, onChange }: SelectSessionProps) => {
+const SelectSession = ({
+  options,
+  value,
+  onChange,
+  excludeOptions,
+}: SelectSessionProps) => {
   const { t } = useTranslation();
   const [open, { toggle }] = useBoolean(false);
   const selectedOption = options.find((option) => option.value === value);
@@ -49,35 +55,37 @@ const SelectSession = ({ options, value, onChange }: SelectSessionProps) => {
         footer={null}
       >
         <div className="flex flex-col gap-1">
-          {options.map((option) => {
-            const isSelected = option.value === value;
-            return (
-              <div
-                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded-sm"
-                onClick={() => onChange(option.value)}
-                key={option.value}
-                onClickCapture={() => handleSelect(option.value)}
-              >
+          {options
+            ?.filter?.((option) => !excludeOptions?.includes(option.value))
+            .map((option) => {
+              const isSelected = option.value === value;
+              return (
                 <div
-                  className={clsx(
-                    "w-2 h-2 rounded-full",
-                    option.tintColorClassnameBg
-                  )}
-                />
-                <span
-                  className={clsx(
-                    "text-xs truncate flex-1",
-                    isSelected && "font-bold"
-                  )}
+                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded-sm"
+                  onClick={() => onChange(option.value)}
+                  key={option.value}
+                  onClickCapture={() => handleSelect(option.value)}
                 >
-                  {option.label}
-                </span>
-                {isSelected && (
-                  <Icon icon="check-b" size={18} className="text-blue-500" />
-                )}
-              </div>
-            );
-          })}
+                  <div
+                    className={clsx(
+                      "w-2 h-2 rounded-full",
+                      option.tintColorClassnameBg
+                    )}
+                  />
+                  <span
+                    className={clsx(
+                      "text-xs truncate flex-1",
+                      isSelected && "font-bold"
+                    )}
+                  >
+                    {option.label}
+                  </span>
+                  {isSelected && (
+                    <Icon icon="check-b" size={18} className="text-blue-500" />
+                  )}
+                </div>
+              );
+            })}
         </div>
       </Modal>
     </>

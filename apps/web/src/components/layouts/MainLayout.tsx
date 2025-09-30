@@ -56,7 +56,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <ChatProvider config={chatConfigProps}>
-      <div className="flex bg-white overflow-x-auto">
+      <div className="flex bg-white">
         {shouldShowSidebar && <Sidebar onLogout={logout} />}
         <div className="flex-1 bg-white">{children}</div>
       </div>

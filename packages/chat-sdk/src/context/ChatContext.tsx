@@ -63,6 +63,7 @@ export const ChatProvider = ({ children, config }: ChatProviderProps) => {
         userID: config.userID,
         wsAddress: config.wsAddr,
         applicationType: config.applicationType,
+        isCrm: config.isCrm,
       });
     }
   }, [config]);

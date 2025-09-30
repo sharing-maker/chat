@@ -79,6 +79,13 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
   const tagOptions: SelectSessionOption[] = useMemo(() => {
     return [
       {
+        label: t("select_tag"),
+        value: SessionTag.NONE,
+        tintColorClassname: "text-gray-500",
+        tintColorClassnameBg: "bg-gray-500",
+        bgTintColorClassname: "bg-gray-100",
+      },
+      {
         label: t("awaiting_reply"),
         value: SessionTag.AWAITING_REPLY,
         tintColorClassname: "text-purple-500",
@@ -104,30 +111,40 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
 
   const handleUpdateSession = (
     value: SelectSessionValueType,
-    type: "status" | "tag"
+    type: "status" | "tag",
+    isSameValue?: boolean
   ) => {
+    let newValue = value;
+    if (type === "tag" && value === SessionTag.AWAITING_REPLY && isSameValue) {
+      newValue = SessionTag.NONE;
+    }
     if (currentSession) {
-      updateSession(
-        {
-          sessionId: currentSession.id,
-          [type]: value,
-        },
-        {
-          onError(error: any) {
-            message.error(
-              error?.response?.data?.message ||
-                t(`update_session_${type}_failed`)
-            );
+      if (
+        !isSameValue ||
+        (type === "tag" && value === SessionTag.AWAITING_REPLY)
+      ) {
+        updateSession(
+          {
+            sessionId: currentSession.id,
+            [type]: newValue,
           },
-          onSuccess() {
-            if (type === "status") {
-              setCurrentSessionStatus(value);
-            } else {
-              setCurrentSessionTag(value);
-            }
-          },
-        }
-      );
+          {
+            onError(error: any) {
+              message.error(
+                error?.response?.data?.message ||
+                  t(`update_session_${type}_failed`)
+              );
+            },
+            onSuccess() {
+              if (type === "status") {
+                setCurrentSessionStatus(value);
+              } else {
+                setCurrentSessionTag(value);
+              }
+            },
+          }
+        );
+      }
     }
   };
 
@@ -152,14 +169,23 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
           <SelectSession
             options={tagOptions}
             value={currentSessionTag}
-            onChange={(value) => handleUpdateSession(value, "tag")}
+            onChange={(value) =>
+              handleUpdateSession(value, "tag", value === currentSessionTag)
+            }
+            excludeOptions={[SessionTag.SLOW_PROCESSING, SessionTag.NONE]}
           />
         )}
         {isCx && (
           <SelectSession
             options={statusOptions}
             value={currentSessionStatus}
-            onChange={(value) => handleUpdateSession(value, "status")}
+            onChange={(value) =>
+              handleUpdateSession(
+                value,
+                "status",
+                value === currentSessionStatus
+              )
+            }
           />
         )}
         <Button
