@@ -28,8 +28,8 @@ export const documentIcon = (
     ></path>
     <path
       opacity="0.302"
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M23.2686 5.83301V14.2281H34.1655L23.2686 5.83301Z"
       fill="#edf6ff"
     ></path>

@@ -221,7 +221,6 @@ export const useMessage = (
     };
   }, [conversationId, searchClientMsgID]);
 
-  console.log("loadState", loadState);
   return {
     loadState,
     latestLoadState,

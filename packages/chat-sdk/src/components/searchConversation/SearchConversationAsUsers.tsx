@@ -11,7 +11,9 @@ const SearchConversationAsUsers = (props: SearchConversationAsUsersProps) => {
   const { searchTerm = "" } = props;
   const { t } = useTranslation();
   const { dataFlatten, hasNextPage, fetchNextPage, isLoading } = useGetSession({
-    searchTerm: searchTerm.trim(),
+    filter: {
+      searchTerm: searchTerm.trim(),
+    },
   });
 
   if ((dataFlatten.length === 0 && !isLoading) || searchTerm.trim() === "")

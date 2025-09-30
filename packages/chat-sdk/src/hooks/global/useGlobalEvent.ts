@@ -89,7 +89,7 @@ export const useGlobalEvent = () => {
   };
 
   const newMessageHandler = ({ data }: WSEvent<MessageItem[]>) => {
-    data.map((message) => handleNewMessage(message));
+    data?.map?.((message) => handleNewMessage(message));
   };
 
   const userTokenHandler = () => {
