@@ -43,6 +43,8 @@ export const parseLatestMessage = (
         return `${sender}: [Video]`;
       case MessageType.FileMessage:
         return `${sender}: [File đính kèm]`;
+      case MessageType.UrlTextMessage:
+        return `${sender}: [Liên kết]`;
       default:
         return "Tin nhắn không khả dụng";
     }
