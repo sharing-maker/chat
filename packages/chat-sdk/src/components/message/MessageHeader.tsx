@@ -115,13 +115,17 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
     isSameValue?: boolean
   ) => {
     let newValue = value;
-    if (type === "tag" && value === SessionTag.AWAITING_REPLY && isSameValue) {
+    if (
+      type === "tag" &&
+      value === SessionTag.TEMPORARILY_PAUSED &&
+      isSameValue
+    ) {
       newValue = SessionTag.NONE;
     }
     if (currentSession) {
       if (
         !isSameValue ||
-        (type === "tag" && value === SessionTag.AWAITING_REPLY)
+        (type === "tag" && value === SessionTag.TEMPORARILY_PAUSED)
       ) {
         updateSession(
           {
