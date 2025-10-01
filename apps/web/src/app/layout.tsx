@@ -10,6 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import useUserStore from "@web/hook/user/useUserStore";
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB0BjcMwhRpRb2AgwzcHZxYLfxm1LPrxg8",
@@ -31,6 +32,15 @@ isSupported().then((yes) => {
     console.log("Analytics not supported in this environment");
   }
 });
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then((registration) => {
+      console.log("SW registered:", registration);
+    })
+    .catch((err) => console.error("SW registration failed:", err));
+}
 
 const inter = Inter({ subsets: ["latin"] });
 

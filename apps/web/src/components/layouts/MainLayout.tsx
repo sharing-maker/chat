@@ -10,6 +10,7 @@ import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
+import { getMessaging, getToken } from "firebase/messaging";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,38 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
 
+  const getFcmToken = async () => {
+    console.log("getFcmToken");
+    Notification.requestPermission().then((permission) => {
+      console.log("Notification permission: ", permission);
+      if (permission === "granted") {
+        console.log("Notification permission granted");
+        const messaging = getMessaging();
+        getToken(messaging, {
+          vapidKey:
+            "BLqSEqd-hYfQIvzAvp8IlRpvp7f3BhXTz2YxgUJMPRCn75bKNaXNXldcwtNRDxGgIQHcNLRJaLRKEPfOKIV2Oy4",
+        })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log("Current token: ", currentToken);
+              // Send the token to your server and update the UI if necessary
+              // ...
+            } else {
+              // Show permission request UI
+              console.log(
+                "No registration token available. Request permission to generate one."
+              );
+              // ...
+            }
+          })
+          .catch((err) => {
+            console.log("An error occurred while retrieving token. ", err);
+            // ...
+          });
+      }
+    });
+  };
+
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
     setToken(token);
@@ -33,6 +66,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   useEffect(() => {
     if (token && currentUser?.data) {
+      getFcmToken();
       setUser(currentUser?.data);
       getSelfInfo(currentUser?.data);
     }
