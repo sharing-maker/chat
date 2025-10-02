@@ -140,6 +140,7 @@ export const useSendMessage = () => {
             )}` || "New message",
           ex: JSON.stringify({
             icon: conversationData?.faceURL || "",
+            conversationId: conversationData?.conversationID || "",
           }),
         },
       } as MessageItem;
