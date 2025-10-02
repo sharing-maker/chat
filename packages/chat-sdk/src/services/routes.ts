@@ -6,6 +6,7 @@ export const ENDPOINTS = {
     searchMessage: "chat-service/v1/messages/search",
     updateSession: (sessionId: string) =>
       `chat-service/v1/crm/sessions/${sessionId}`,
+    uploadFcmToken: "chat-service/third/fcm_update_token",
   },
   identityService: {
     getToken: "/identity-service/v1/identity/get-token",

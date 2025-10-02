@@ -24,8 +24,8 @@ interface MessageItemProps {
 }
 
 const MessageItem = ({ message, allMessages }: MessageItemProps) => {
-  const { user } = useChatContext();
   const isCx = useAuthStore((state) => state.isCx);
+  const userID = useAuthStore((state) => state.userID);
 
   const isVisibleGroup = visibleTypeMessage.includes(message?.contentType);
 
@@ -47,7 +47,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
   };
   if (!isVisibleGroup) return null;
 
-  const isMine = message?.sendID === user?.userID;
+  const isMine = message?.sendID === userID;
 
   const previousMessage = getVisibleNeighbor(allMessages, message, "prev");
   const nextMessage = getVisibleNeighbor(allMessages, message, "next");
@@ -125,11 +125,7 @@ const MessageItem = ({ message, allMessages }: MessageItemProps) => {
               ) : (
                 renderMessageByType(message)
               )}
-              <span
-                className={clsx(
-                  "text-xs text-gray-500 text-right text-gray-500"
-                )}
-              >
+              <span className={clsx("text-xs text-gray-500 text-right")}>
                 {dayjs(message?.sendTime).format("HH:mm")}
               </span>
             </div>

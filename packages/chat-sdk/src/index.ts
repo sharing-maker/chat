@@ -15,6 +15,7 @@ export { DChatDeskMessage, DChatBubble, Icon };
 
 //Hooks
 export { useDChatAuth } from "./hooks/user/useAuth";
+export { useUpdateFcmToken } from "./hooks/user/useUpdateFcmToken";
 
 //Store
 export { useUserStore, DChatApplicationType };

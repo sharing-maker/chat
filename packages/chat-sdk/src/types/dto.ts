@@ -6,6 +6,7 @@ import {
   SessionStatus,
   SessionTag,
 } from "./chat";
+import { DChatPlatform } from "..";
 
 export interface BaseResponse<T> {
   statusCode: number;
@@ -73,4 +74,11 @@ export interface UpdateSessionResponse {
 export interface BusinessNotification<T> {
   data: T;
   key: BusinessNotificationType;
+}
+
+export interface UpdateFcmTokenRequest {
+  platformID: DChatPlatform;
+  fcmToken: string;
+  account: string;
+  expireTime: number | null;
 }

@@ -4,14 +4,13 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
-import { ChatProvider, DChatPlatform } from "@droppii-org/chat-sdk";
+import { ChatProvider, useUpdateFcmToken } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { useUpdateFcmToken } from "@web/hook/user/useUpdateFcmToken";
+import { getMessaging, onMessage } from "firebase/messaging";
 import {
   getFcmToken,
   requestNotificationPermission,
@@ -35,14 +34,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   const onGetFcmToken = useCallback(async () => {
     const fcmToken = await getFcmToken();
-    console.log("fcmToken", fcmToken);
+
     if (fcmToken) {
-      mutate({
-        platformID: DChatPlatform.Web,
-        fcmToken,
-        account: currentUser?.data.id || "",
-        expireTime: null,
-      });
+      mutate(fcmToken);
     }
   }, [currentUser]);
 
@@ -50,8 +44,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if ("serviceWorker" in navigator) {
       const messaging = getMessaging();
       onMessage(messaging, (payload) => {
-        console.log("Message received in foreground: ", payload);
-
         // Ví dụ show notification bằng browser Notification API
         if (Notification.permission === "granted") {
           console.log("Notification permission granted");
