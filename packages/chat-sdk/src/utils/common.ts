@@ -16,6 +16,28 @@ export function renderFileSize(bytes: number): string {
   return `${size.toFixed(1)} ${units[index]}`;
 }
 
+export const generateContentBasedOnMessageType = (
+  contentType: MessageType,
+  plainText?: string
+) => {
+  switch (contentType) {
+    case MessageType.TextMessage:
+      return plainText || "";
+    case MessageType.PictureMessage:
+      return `[Hình ảnh]`;
+    case MessageType.VoiceMessage:
+      return `[Tin nhắn thoại]`;
+    case MessageType.VideoMessage:
+      return `[Video]`;
+    case MessageType.FileMessage:
+      return `[File đính kèm]`;
+    case MessageType.UrlTextMessage:
+      return `[Liên kết]`;
+    default:
+      return "";
+  }
+};
+
 export const parseLatestMessage = (
   latestMsg: string,
   currentUserId?: string,
@@ -31,24 +53,23 @@ export const parseLatestMessage = (
 
     switch (contentType) {
       case MessageType.TextMessage:
-        if (msgData.textElem?.content) {
-          return `${sender}: ${msgData.textElem.content}`;
-        }
-        break;
+        return `${sender}: ${generateContentBasedOnMessageType(
+          contentType,
+          msgData?.textElem?.content
+        )}`;
       case MessageType.PictureMessage:
-        return `${sender}: [Hình ảnh]`;
+        return `${sender}: ${generateContentBasedOnMessageType(contentType)}`;
       case MessageType.VoiceMessage:
-        return `${sender}: [Tin nhắn thoại]`;
+        return `${sender}: ${generateContentBasedOnMessageType(contentType)}`;
       case MessageType.VideoMessage:
-        return `${sender}: [Video]`;
+        return `${sender}: ${generateContentBasedOnMessageType(contentType)}`;
       case MessageType.FileMessage:
-        return `${sender}: [File đính kèm]`;
+        return `${sender}: ${generateContentBasedOnMessageType(contentType)}`;
       case MessageType.UrlTextMessage:
-        return `${sender}: [Liên kết]`;
+        return `${sender}: ${generateContentBasedOnMessageType(contentType)}`;
       default:
         return "Tin nhắn không khả dụng";
     }
-    return "Tin nhắn không khả dụng";
   } catch (error) {
     console.error("Error parsing latest message:", error);
     return "";

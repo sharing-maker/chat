@@ -23,7 +23,10 @@ import { UploadFile } from "antd";
 import { RcFile } from "antd/es/upload";
 import useConversationStore from "../../store/conversation";
 import useAuthStore from "../../store/auth";
-import { extractLinks } from "../../utils/common";
+import {
+  extractLinks,
+  generateContentBasedOnMessageType,
+} from "../../utils/common";
 import { ISessionByStatus } from "../../store/type";
 
 export const createTextMessage = async (text: string) => {
@@ -126,19 +129,34 @@ export const useSendMessage = () => {
 
   const sendMessage = useCallback(
     async (message: MessageItem) => {
+      const mMessage = {
+        ...message,
+        offlinePush: {
+          title: conversationData?.showName || "Droppii Chat",
+          desc:
+            `${generateContentBasedOnMessageType(
+              message.contentType,
+              message?.textElem?.content || ""
+            )}` || "New message",
+          ex: JSON.stringify({
+            icon: conversationData?.faceURL || "",
+          }),
+        },
+      } as MessageItem;
+
       try {
-        pushNewMessage(message);
+        pushNewMessage(mMessage);
         emit("CHAT_LIST_SCROLL_TO_BOTTOM");
 
         const { data: successMessage } = await DChatSDK.sendMessage({
           recvID: recvID || "",
           groupID: groupID || "",
-          message,
+          message: mMessage,
         });
         updateOneMessage(successMessage);
       } catch (error) {
         updateOneMessage({
-          ...message,
+          ...mMessage,
           status: MessageStatus.Failed,
         });
       }
@@ -172,16 +190,6 @@ export const useSendMessage = () => {
       });
       let messageItem = {
         ...message,
-        offlinePush: {
-          title: "Test",
-          desc: "Test",
-          ex: JSON.stringify({
-            richText,
-            plainText,
-          }),
-          iOSPushSound: "Test",
-          iOSBadgeCount: true,
-        },
         ex: JSON.stringify(extendMessageInfo) || "{}",
       } as MessageItem;
 

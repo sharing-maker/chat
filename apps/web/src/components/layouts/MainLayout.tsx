@@ -44,6 +44,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if ("serviceWorker" in navigator) {
       const messaging = getMessaging();
       onMessage(messaging, (payload) => {
+        console.log("Message received. ", payload);
         // Ví dụ show notification bằng browser Notification API
         if (Notification.permission === "granted") {
           console.log("Notification permission granted");
