@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 import useUserStore from "@web/hook/user/useUserStore";
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { getMessaging } from "firebase/messaging";
+import { getMessaging, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB0BjcMwhRpRb2AgwzcHZxYLfxm1LPrxg8",

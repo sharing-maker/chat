@@ -24,7 +24,6 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || "New message";
   const notificationOptions = {
     body: payload.notification?.body,
-    icon: "/droppii.svg",
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

@@ -2,6 +2,7 @@
 import { Avatar } from "antd";
 import { ISessionByStatus } from "../../../store/type";
 import { highlightSearch } from "../../../utils/common";
+import { DChatSDK } from "../../../constants/sdk";
 
 interface SearchItemAsUserProps {
   session: ISessionByStatus;
@@ -14,6 +15,9 @@ const SearchItemAsUser = (props: SearchItemAsUserProps) => {
   const ownerName = `${session.owner?.fullName}${
     session.owner?.username ? ` (${session.owner?.username})` : ""
   }`;
+
+  console.log("SearchItemAsUser", session);
+
   return (
     <div
       key={session.id}

@@ -160,7 +160,7 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
   }, [currentSession]);
 
   return (
-    <div className="px-4 py-3 flex items-center border-b gap-3 bg-white no-transform">
+    <div className="px-4 py-3 flex items-center border-b gap-3 bg-white flex-wrap">
       <Avatar src={avatar} size={"large"} className="min-w-10 min-h-10">
         {displayName?.charAt?.(0) || "A"}
       </Avatar>

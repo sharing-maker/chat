@@ -1,16 +1,21 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
-import { ChatProvider } from "@droppii-org/chat-sdk";
+import { ChatProvider, DChatPlatform } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
 import { useDChatAuth } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { useUpdateFcmToken } from "@web/hook/user/useUpdateFcmToken";
+import {
+  getFcmToken,
+  requestNotificationPermission,
+} from "@web/core/notifications/NotificationUtils";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,38 +31,38 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const token = useUserStore((state) => state.accessToken);
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
+  const { mutate } = useUpdateFcmToken();
 
-  const getFcmToken = async () => {
-    console.log("getFcmToken");
-    Notification.requestPermission().then((permission) => {
-      console.log("Notification permission: ", permission);
-      if (permission === "granted") {
-        console.log("Notification permission granted");
-        const messaging = getMessaging();
-        getToken(messaging, {
-          vapidKey:
-            "BLqSEqd-hYfQIvzAvp8IlRpvp7f3BhXTz2YxgUJMPRCn75bKNaXNXldcwtNRDxGgIQHcNLRJaLRKEPfOKIV2Oy4",
-        })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log("Current token: ", currentToken);
-              // Send the token to your server and update the UI if necessary
-              // ...
-            } else {
-              // Show permission request UI
-              console.log(
-                "No registration token available. Request permission to generate one."
-              );
-              // ...
-            }
-          })
-          .catch((err) => {
-            console.log("An error occurred while retrieving token. ", err);
-            // ...
+  const onGetFcmToken = useCallback(async () => {
+    const fcmToken = await getFcmToken();
+    console.log("fcmToken", fcmToken);
+    if (fcmToken) {
+      mutate({
+        platformID: DChatPlatform.Web,
+        fcmToken,
+        account: currentUser?.data.id || "",
+        expireTime: null,
+      });
+    }
+  }, [currentUser]);
+
+  const handleOnMessage = useCallback(() => {
+    if ("serviceWorker" in navigator) {
+      const messaging = getMessaging();
+      onMessage(messaging, (payload) => {
+        console.log("Message received in foreground: ", payload);
+
+        // Ví dụ show notification bằng browser Notification API
+        if (Notification.permission === "granted") {
+          console.log("Notification permission granted");
+          new Notification(payload?.notification?.title || "New message", {
+            body: payload?.notification?.body,
+            // icon: payload?.notification?.icon,
           });
-      }
-    });
-  };
+        }
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
@@ -66,9 +71,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   useEffect(() => {
     if (token && currentUser?.data) {
-      getFcmToken();
+      requestNotificationPermission();
+      onGetFcmToken();
       setUser(currentUser?.data);
       getSelfInfo(currentUser?.data);
+      handleOnMessage();
     }
   }, [currentUser, setUser, token]);
 

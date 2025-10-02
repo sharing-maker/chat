@@ -172,6 +172,16 @@ export const useSendMessage = () => {
       });
       let messageItem = {
         ...message,
+        offlinePush: {
+          title: "Test",
+          desc: "Test",
+          ex: JSON.stringify({
+            richText,
+            plainText,
+          }),
+          iOSPushSound: "Test",
+          iOSBadgeCount: true,
+        },
         ex: JSON.stringify(extendMessageInfo) || "{}",
       } as MessageItem;
 
