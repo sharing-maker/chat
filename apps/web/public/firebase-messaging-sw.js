@@ -20,10 +20,17 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log("Received background message", payload);
+  let ex = {};
+  try {
+    ex = JSON.parse(payload.data?.ex || "{}");
+  } catch (error) {
+    ex = {};
+  }
 
   const notificationTitle = payload.notification?.title || "New message";
   const notificationOptions = {
     body: payload.notification?.body,
+    icon: payload.notification?.icon || "/droppii.jpeg",
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

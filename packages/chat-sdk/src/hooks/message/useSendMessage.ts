@@ -129,35 +129,33 @@ export const useSendMessage = () => {
 
   const sendMessage = useCallback(
     async (message: MessageItem) => {
-      const mMessage = {
-        ...message,
-        offlinePush: {
-          title: conversationData?.showName || "Droppii Chat",
-          desc:
-            `${generateContentBasedOnMessageType(
-              message.contentType,
-              message?.textElem?.content || ""
-            )}` || "New message",
-          ex: JSON.stringify({
-            icon: conversationData?.faceURL || "",
-            conversationId: conversationData?.conversationID || "",
-          }),
-        },
-      } as MessageItem;
-
       try {
-        pushNewMessage(mMessage);
+        pushNewMessage(message);
         emit("CHAT_LIST_SCROLL_TO_BOTTOM");
 
         const { data: successMessage } = await DChatSDK.sendMessage({
           recvID: recvID || "",
           groupID: groupID || "",
-          message: mMessage,
+          message: message,
+          offlinePushInfo: {
+            title: conversationData?.showName || "Droppii Chat",
+            desc:
+              `${generateContentBasedOnMessageType(
+                message.contentType,
+                message?.textElem?.content || ""
+              )}` || "New message",
+            ex: JSON.stringify({
+              icon: conversationData?.faceURL || "",
+              conversationId: conversationData?.conversationID || "",
+            }),
+            iOSPushSound: "default",
+            iOSBadgeCount: true,
+          },
         });
         updateOneMessage(successMessage);
       } catch (error) {
         updateOneMessage({
-          ...mMessage,
+          ...message,
           status: MessageStatus.Failed,
         });
       }

@@ -15,6 +15,7 @@ import {
   getFcmToken,
   requestNotificationPermission,
 } from "@web/core/notifications/NotificationUtils";
+import useAuthStore from "../../../../../packages/chat-sdk/src/store/auth";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { data: currentUser } = useFetchCurrentUser(!token);
   const getSelfInfo = UStore((state) => state.getSelfInfo);
   const { mutate } = useUpdateFcmToken();
+  const chatToken = useAuthStore((state) => state.chatToken);
 
   const onGetFcmToken = useCallback(async () => {
     const fcmToken = await getFcmToken();
@@ -50,7 +52,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
           console.log("Notification permission granted");
           new Notification(payload?.notification?.title || "New message", {
             body: payload?.notification?.body,
-            // icon: payload?.notification?.icon,
+            icon: payload?.notification?.icon || "/droppii.jpeg",
           });
         }
       });
@@ -65,12 +67,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     if (token && currentUser?.data) {
       requestNotificationPermission();
-      onGetFcmToken();
       setUser(currentUser?.data);
       getSelfInfo(currentUser?.data);
       handleOnMessage();
     }
   }, [currentUser, setUser, token]);
+
+  useEffect(() => {
+    if (chatToken) {
+      onGetFcmToken();
+    }
+  }, [chatToken]);
 
   useEffect(() => {
     setMounted(true);

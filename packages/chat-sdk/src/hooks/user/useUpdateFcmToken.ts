@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { apiInstance } from "../../services/api";
-import { BaseResponse, UpdateFcmTokenRequest } from "../../types/dto";
+import { BaseResponse } from "../../types/dto";
 import { ENDPOINTS } from "../../services/routes";
 import { DChatPlatform } from "../..";
 import useAuthStore from "../../store/auth";
