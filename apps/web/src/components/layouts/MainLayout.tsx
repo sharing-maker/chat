@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
@@ -22,6 +22,7 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
+  const router = useRouter();
   const { chatConfigProps } = useChatSdkSetup();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
@@ -46,18 +47,42 @@ export default function MainLayout({ children }: MainLayoutProps) {
     if ("serviceWorker" in navigator) {
       const messaging = getMessaging();
       onMessage(messaging, (payload) => {
-        console.log("Message received. ", payload);
-        // Ví dụ show notification bằng browser Notification API
         if (Notification.permission === "granted") {
-          console.log("Notification permission granted");
-          new Notification(payload?.notification?.title || "New message", {
-            body: payload?.notification?.body,
-            icon: payload?.notification?.icon || "/droppii.jpeg",
-          });
+          let ex: any = {};
+          try {
+            ex = JSON.parse(payload.data?.ex || "{}");
+          } catch (error) {
+            ex = {};
+          }
+          const notification = new Notification(
+            payload?.notification?.title || "New message",
+            {
+              body: payload?.notification?.body,
+              icon: ex?.icon || "/droppii.jpeg",
+              data: ex,
+            }
+          );
+
+          const audio = document.getElementById(
+            "notiSound"
+          ) as HTMLAudioElement | null;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+          }
+
+          notification.onclick = (e) => {
+            notification.close();
+            // Ví dụ: điều hướng trong tab đang mở
+            if (ex?.conversationId) {
+              router.push(`/chat?threadId=${ex.conversationId}`);
+            }
+            window?.focus();
+          };
         }
       });
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const token = window.localStorage.getItem("user_token") || "";
@@ -80,6 +105,18 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }, [chatToken]);
 
   useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      // Bắt sự kiện từ SW gửi về
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "onNotificationNewMessageClick") {
+          const { conversationId } = event.data;
+          router.push(`/chat?threadId=${conversationId}`);
+        }
+      });
+    }
+  }, [router]);
+
+  useEffect(() => {
     setMounted(true);
     document.documentElement.classList.add("hydrated");
   }, []);
@@ -100,6 +137,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="flex bg-white">
         {shouldShowSidebar && <Sidebar onLogout={logout} />}
         <div className="flex-1 bg-white">{children}</div>
+        <audio
+          id="notiSound"
+          src="/sound/noti-sound.mp3"
+          preload="auto"
+          autoPlay={false}
+          className="hidden"
+        ></audio>
       </div>
     </ChatProvider>
   );

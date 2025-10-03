@@ -1,8 +1,9 @@
 "use client";
-import { Avatar } from "antd";
+import { Avatar, message } from "antd";
 import { ISessionByStatus } from "../../../store/type";
 import { highlightSearch } from "../../../utils/common";
-import { DChatSDK } from "../../../constants/sdk";
+import useConversationStore from "../../../store/conversation";
+import { useTranslation } from "react-i18next";
 
 interface SearchItemAsUserProps {
   session: ISessionByStatus;
@@ -11,17 +12,27 @@ interface SearchItemAsUserProps {
 
 const SearchItemAsUser = (props: SearchItemAsUserProps) => {
   const { session, searchTerm = "" } = props;
+  const { t } = useTranslation();
 
   const ownerName = `${session.owner?.fullName}${
     session.owner?.username ? ` (${session.owner?.username})` : ""
   }`;
 
-  console.log("SearchItemAsUser", session);
+  const onPressItem = async () => {
+    if (!session?.conversation) {
+      return message.error(t("err_get_conversation"));
+    }
+    useConversationStore.getState().setConversationData(session.conversation);
+    useConversationStore
+      .getState()
+      .setSelectedConversationId(session.conversationId);
+  };
 
   return (
     <div
       key={session.id}
       className="py-3 px-2 flex items-center gap-3 hover:bg-gray-100 hover:rounded-sm cursor-pointer border-b mx-1"
+      onClick={onPressItem}
     >
       <Avatar
         size={"large"}

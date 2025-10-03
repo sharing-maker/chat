@@ -141,9 +141,9 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
             },
             onSuccess() {
               if (type === "status") {
-                setCurrentSessionStatus(value);
+                setCurrentSessionStatus(newValue);
               } else {
-                setCurrentSessionTag(value);
+                setCurrentSessionTag(newValue);
               }
             },
           }

@@ -19,7 +19,6 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log("Received background message", payload);
   let ex = {};
   try {
     ex = JSON.parse(payload.data?.ex || "{}");
@@ -30,8 +29,37 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || "New message";
   const notificationOptions = {
     body: payload.notification?.body,
-    icon: payload.notification?.icon || "/droppii.jpeg",
+    icon: ex?.icon || "/droppii.jpeg",
+    data: ex,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        if (clientList.length > 0) {
+          // focus tab đầu tiên
+          const client = clientList[0];
+          client.focus();
+
+          // Gửi message cho tab đó để next/router handle
+          if (event.notification.data?.conversationId) {
+            client.postMessage({
+              type: "onNotificationNewMessageClick",
+              conversationId: event.notification.data?.conversationId,
+            });
+          }
+          return;
+        }
+
+        // Nếu chưa có tab nào → mở mới (full reload)
+        return clients.openWindow(self.location.origin);
+      })
+  );
 });
