@@ -6,7 +6,7 @@ import Sidebar from "../common/Sidebar";
 import { MainLayoutSkeleton } from "../common/LoadingSkeleton";
 import { ChatProvider, useUpdateFcmToken } from "@droppii-org/chat-sdk";
 import { useChatSdkSetup } from "@web/hook/chat/useChatSdk";
-import { useDChatAuth } from "@droppii-org/chat-sdk";
+import { useDChatAuth, useAuthStore } from "@droppii-org/chat-sdk";
 import useUserStore from "@web/hook/user/useUserStore";
 import { useFetchCurrentUser } from "@web/hook/user/useFetchCurrentUser";
 import { useUserStore as UStore } from "@droppii-org/chat-sdk";
@@ -15,7 +15,7 @@ import {
   getFcmToken,
   requestNotificationPermission,
 } from "@web/core/notifications/NotificationUtils";
-import useAuthStore from "../../../../../packages/chat-sdk/src/store/auth";
+import useConversationStore from "../../../../../packages/chat-sdk/src/store/conversation";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -34,6 +34,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const getSelfInfo = UStore((state) => state.getSelfInfo);
   const { mutate } = useUpdateFcmToken();
   const chatToken = useAuthStore((state) => state.chatToken);
+  const selectedConversationId = useConversationStore(
+    (state) => state.selectedConversationId
+  );
 
   const onGetFcmToken = useCallback(async () => {
     const fcmToken = await getFcmToken();
@@ -54,31 +57,33 @@ export default function MainLayout({ children }: MainLayoutProps) {
           } catch (error) {
             ex = {};
           }
-          const notification = new Notification(
-            payload?.notification?.title || "New message",
-            {
-              body: payload?.notification?.body,
+          if (
+            selectedConversationId &&
+            selectedConversationId !== ex?.conversationId
+          ) {
+            const notification = new Notification(ex?.title || "New message", {
+              body: ex?.desc,
               icon: ex?.icon || "/droppii.jpeg",
               data: ex,
-            }
-          );
+            });
 
-          const audio = document.getElementById(
-            "notiSound"
-          ) as HTMLAudioElement | null;
-          if (audio) {
-            audio.currentTime = 0;
-            audio.play();
+            const audio = document.getElementById(
+              "notiSound"
+            ) as HTMLAudioElement | null;
+            if (audio) {
+              audio.currentTime = 0;
+              audio.play();
+            }
+
+            notification.onclick = (e) => {
+              notification.close();
+              // Ví dụ: điều hướng trong tab đang mở
+              if (ex?.conversationId) {
+                router.push(`/chat?threadId=${ex.conversationId}`);
+              }
+              window?.focus();
+            };
           }
-
-          notification.onclick = (e) => {
-            notification.close();
-            // Ví dụ: điều hướng trong tab đang mở
-            if (ex?.conversationId) {
-              router.push(`/chat?threadId=${ex.conversationId}`);
-            }
-            window?.focus();
-          };
         }
       });
     }

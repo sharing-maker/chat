@@ -158,6 +158,16 @@ const MessageList = (props: MessageListProps) => {
     };
   }, [conversationId]);
 
+  useEffect(() => {
+    if (!loadState.hasMoreNew && !loadState.initLoading) {
+      handleMarkConversationMessageAsRead();
+    }
+  }, [
+    loadState.hasMoreNew,
+    loadState.initLoading,
+    handleMarkConversationMessageAsRead,
+  ]);
+
   if (!conversationData) {
     return (
       <div className="flex flex-1 items-center justify-center h-full">
