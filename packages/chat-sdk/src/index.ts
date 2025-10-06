@@ -6,6 +6,7 @@ import { Platform, LogLevel, SessionType } from "@openim/wasm-client-sdk";
 import { Icon } from "./components/icon";
 import useUserStore from "./store/user";
 import { DChatInitAndLoginConfig, DChatApplicationType } from "./types/chat";
+import useAuthStore from "./store/auth";
 
 // Main exports for the SDK
 export { ChatProvider, useChatContext } from "./context/ChatContext";
@@ -18,7 +19,7 @@ export { useDChatAuth } from "./hooks/user/useAuth";
 export { useUpdateFcmToken } from "./hooks/user/useUpdateFcmToken";
 
 //Store
-export { useUserStore, DChatApplicationType };
+export { useUserStore, DChatApplicationType, useAuthStore };
 
 // export * from "./types/sdk";
 

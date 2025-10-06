@@ -157,7 +157,7 @@ export function formatTimestamp(
 
 export function extractLinks(text: string): string[] {
   // Regex match http:// hoặc https:// và domain
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urlRegex = /(https?:\/\/[^\s"'<>()[\]{}.,!?]+)/g;
 
   return text.match(urlRegex) || [];
 }
