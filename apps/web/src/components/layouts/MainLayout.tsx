@@ -61,14 +61,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
             selectedConversationId &&
             selectedConversationId !== ex?.conversationId
           ) {
-            const notification = new Notification(
-              payload?.notification?.title || "New message",
-              {
-                body: payload?.notification?.body,
-                icon: ex?.icon || "/droppii.jpeg",
-                data: ex,
-              }
-            );
+            const notification = new Notification(ex?.title || "New message", {
+              body: ex?.desc,
+              icon: ex?.icon || "/droppii.jpeg",
+              data: ex,
+            });
 
             const audio = document.getElementById(
               "notiSound"

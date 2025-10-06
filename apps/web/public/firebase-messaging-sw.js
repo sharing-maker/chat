@@ -26,9 +26,9 @@ messaging.onBackgroundMessage((payload) => {
     ex = {};
   }
 
-  const notificationTitle = payload.notification?.title || "New message";
+  const notificationTitle = ex?.title || "New message";
   const notificationOptions = {
-    body: payload.notification?.body,
+    body: ex?.desc,
     icon: ex?.icon || "/droppii.jpeg",
     data: ex,
   };

@@ -147,6 +147,12 @@ export const useSendMessage = () => {
             ex: JSON.stringify({
               icon: conversationData?.faceURL || "",
               conversationId: conversationData?.conversationID || "",
+              title: conversationData?.showName || "Droppii Chat",
+              desc:
+                `${generateContentBasedOnMessageType(
+                  message.contentType,
+                  message?.textElem?.content || ""
+                )}` || "New message",
             }),
             iOSPushSound: "default",
             iOSBadgeCount: true,
