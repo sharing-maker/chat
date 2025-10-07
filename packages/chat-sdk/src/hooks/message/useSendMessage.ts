@@ -143,7 +143,7 @@ export const useSendMessage = () => {
               `${generateContentBasedOnMessageType(
                 message.contentType,
                 message?.textElem?.content || ""
-              )}` || "New message",
+              )}` || "Bạn có tin nhắn mới",
             ex: JSON.stringify({
               icon: conversationData?.faceURL || "",
               conversationId: conversationData?.conversationID || "",
@@ -152,7 +152,7 @@ export const useSendMessage = () => {
                 `${generateContentBasedOnMessageType(
                   message.contentType,
                   message?.textElem?.content || ""
-                )}` || "New message",
+                )}` || "Bạn có tin nhắn mới",
             }),
             iOSPushSound: "default",
             iOSBadgeCount: true,

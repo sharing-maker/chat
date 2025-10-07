@@ -34,9 +34,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const getSelfInfo = UStore((state) => state.getSelfInfo);
   const { mutate } = useUpdateFcmToken();
   const chatToken = useAuthStore((state) => state.chatToken);
-  const selectedConversationId = useConversationStore(
-    (state) => state.selectedConversationId
-  );
 
   const onGetFcmToken = useCallback(async () => {
     const fcmToken = await getFcmToken();
@@ -58,10 +55,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
             ex = {};
           }
           if (
-            selectedConversationId &&
-            selectedConversationId !== ex?.conversationId
+            useConversationStore?.getState?.()?.selectedConversationId &&
+            useConversationStore?.getState?.()?.selectedConversationId !==
+              ex?.conversationId
           ) {
-            const notification = new Notification(ex?.title || "New message", {
+            const notification = new Notification(ex?.title || "Droppii Chat", {
               body: ex?.desc,
               icon: ex?.icon || "/droppii.jpeg",
               data: ex,

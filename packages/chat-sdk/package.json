@@ -1,6 +1,6 @@
 {
   "name": "@droppii-org/chat-sdk",
-  "version": "0.0.48",
+  "version": "0.0.49",
   "description": "Droppii React Chat SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
