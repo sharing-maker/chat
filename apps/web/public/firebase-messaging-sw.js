@@ -10,6 +10,7 @@ importScripts(
 );
 
 importScripts("/droppii-messaging/droppii-firebase-message.js");
+importScripts("/droppii-messaging/droppii-helper.js");
 
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
@@ -18,23 +19,34 @@ firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  let ex = {};
+async function onPushNotification(e) {
   try {
-    ex = JSON.parse(payload.data?.ex || "{}");
+    const payload = e?.data?.json();
+    let ex = {};
+    try {
+      ex = JSON.parse(payload?.data?.ex || "{}");
+    } catch (error) {
+      ex = {};
+    }
+
+    const clientList = await getClientList();
+    if (hasVisibleClients(clientList)) return;
+
+    const notificationTitle = ex?.title || "Droppii Chat";
+    const notificationBody = ex?.desc || "Bạn có tin nhắn mới";
+    const notificationOptions = {
+      body: notificationBody,
+      icon: ex?.icon || "/droppii.jpeg",
+      data: ex,
+    };
+    return self.registration.showNotification(
+      notificationTitle,
+      notificationOptions
+    );
   } catch (error) {
-    ex = {};
+    console.error(error, "[firebase-messaging-sw.js] error");
   }
-
-  const notificationTitle = ex?.title || "New message";
-  const notificationOptions = {
-    body: ex?.desc,
-    icon: ex?.icon || "/droppii.jpeg",
-    data: ex,
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
+}
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
@@ -62,4 +74,8 @@ self.addEventListener("notificationclick", function (event) {
         return clients.openWindow(self.location.origin);
       })
   );
+});
+
+self.addEventListener("push", (e) => {
+  e.waitUntil(onPushNotification(e));
 });

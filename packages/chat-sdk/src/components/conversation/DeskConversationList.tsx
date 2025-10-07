@@ -146,7 +146,7 @@ const DeskConversationList = () => {
         id="scrollableConversationsDiv"
         style={{
           height: "100%",
-          overflow: "auto",
+          overflow: showSearch ? "hidden" : "auto",
           position: "relative",
         }}
       >
