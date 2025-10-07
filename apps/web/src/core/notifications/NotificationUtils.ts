@@ -14,7 +14,7 @@ export const getFcmToken = async () => {
   let fcmToken = "";
   const messaging = getMessaging();
   await getToken(messaging, {
-    vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+    vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
   })
     .then((currentToken) => {
       if (currentToken) {

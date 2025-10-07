@@ -17,6 +17,8 @@ importScripts("/droppii-messaging/droppii-helper.js");
 // https://firebase.google.com/docs/web/setup#config-object
 firebase.initializeApp(firebaseConfig);
 
+const messaging = firebase.messaging();
+
 async function onPushNotification(e) {
   try {
     const payload = e?.data?.json();
