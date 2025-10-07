@@ -44,7 +44,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }, [currentUser]);
 
   const handleOnMessage = useCallback(() => {
-    if ("serviceWorker" in navigator) {
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       const messaging = getMessaging();
       onMessage(messaging, (payload) => {
         if (Notification.permission === "granted") {
@@ -108,7 +108,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   }, [chatToken]);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
       // Bắt sự kiện từ SW gửi về
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.type === "onNotificationNewMessageClick") {
