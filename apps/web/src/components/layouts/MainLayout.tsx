@@ -59,7 +59,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             useConversationStore?.getState?.()?.selectedConversationId !==
               ex?.conversationId
           ) {
-            const notification = new Notification(ex?.title || "New message", {
+            const notification = new Notification(ex?.title || "Droppii Chat", {
               body: ex?.desc,
               icon: ex?.icon || "/droppii.jpeg",
               data: ex,
