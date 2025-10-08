@@ -1,4 +1,4 @@
-import { Empty, Spin } from "antd";
+import { Dropdown, Empty, Spin } from "antd";
 import { useTranslation } from "react-i18next";
 import useConversationStore from "../../store/conversation";
 import { useSearchMessage } from "../../hooks/search/useSearchMessage";
@@ -6,8 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import { SearchMessageItem } from "../../types/dto";
 import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { MessageType } from "@openim/wasm-client-sdk";
+import { MessageType, SessionType } from "@openim/wasm-client-sdk";
 import { Icon } from "../icon";
+import { DChatSDK } from "../../constants/sdk";
+import { useChatContext } from "../../context/ChatContext";
+import { message as antdMessage } from "antd";
 
 const LinkPreview = ({ url }: { url: string }) => {
   const [title, setTitle] = useState<string>("");
@@ -57,11 +60,35 @@ const LinkPreview = ({ url }: { url: string }) => {
   );
 };
 
-const LinkCollection = () => {
+const LinkCollection = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
   const selectedSourceId = useConversationStore(
     (state) => state.selectedSourceId
   );
+  const { user } = useChatContext();
+
+  const onPressItem = async (message: any) => {
+    const { data } = await DChatSDK.getOneConversation({
+      sourceID:
+        message.sessionType === SessionType.Group
+          ? message.groupID
+          : user?.userID !== message.sendID
+          ? message.sendID
+          : message.recvID,
+      sessionType: message.sessionType,
+    });
+    if (!data) {
+      return antdMessage.error(t("err_get_conversation"));
+    }
+    useConversationStore
+      .getState()
+      .setConversationData(data, message.clientMsgID);
+    useConversationStore
+      .getState()
+      .setSelectedConversationId(data.conversationID);
+
+    onClose();
+  };
 
   const { groupedData, fetchNextPage, hasNextPage, dataFlatten, isLoading } =
     useSearchMessage({
@@ -81,6 +108,14 @@ const LinkCollection = () => {
           {items.map((item) => {
             const urls = JSON.parse(item?.chatLog?.content || "{}")?.urls || [];
 
+            const menuItems = [
+              {
+                key: "open",
+                label: "Xem tin nhắn",
+                onClick: () => onPressItem(item.chatLog),
+              },
+            ];
+
             return (
               <div key={item.chatLog?.clientMsgID}>
                 {urls.map((url: string, index: number) => (
@@ -88,8 +123,26 @@ const LinkCollection = () => {
                     key={`${item.chatLog?.clientMsgID}-${index}`}
                     className="bg-gray-100 flex gap-2 items-center p-2 mb-1"
                   >
-                    <Icon icon="link-b" size={16} className="shrink-0" />
-                    <LinkPreview url={url} />
+                    <div className="flex items-center justify-center shrink-0">
+                      <Icon icon="link-b" size={16} />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <LinkPreview url={url} />
+                    </div>
+
+                    <Dropdown
+                      menu={{ items: menuItems }}
+                      trigger={["click"]}
+                      placement="bottomRight"
+                    >
+                      <div
+                        className="flex items-center justify-center shrink-0 cursor-pointer p-1 hover:bg-gray-200 rounded ml-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Icon icon="more-horizontal-b" size={16} />
+                      </div>
+                    </Dropdown>
                   </div>
                 ))}
               </div>

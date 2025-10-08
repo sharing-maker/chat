@@ -44,7 +44,7 @@ const MediaCollection = () => {
       {
         key: MediaCollectionTabKey.Link,
         label: t("link"),
-        children: <LinkCollection />,
+        children: <LinkCollection onClose={toggle} />,
       },
     ];
   }, [isOpen, t]);
