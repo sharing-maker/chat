@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SearchMessageItem } from "../../types/dto";
 import dayjs from "dayjs";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { MessageType, SessionType } from "@openim/wasm-client-sdk";
+import { MessageItem, MessageType, SessionType } from "@openim/wasm-client-sdk";
 import { Icon } from "../icon";
 import { DChatSDK } from "../../constants/sdk";
 import { useChatContext } from "../../context/ChatContext";
@@ -67,7 +67,7 @@ const LinkCollection = ({ onClose }: { onClose: () => void }) => {
   );
   const { user } = useChatContext();
 
-  const onPressItem = async (message: any) => {
+  const onPressItem = async (message: MessageItem) => {
     const { data } = await DChatSDK.getOneConversation({
       sourceID:
         message.sessionType === SessionType.Group
