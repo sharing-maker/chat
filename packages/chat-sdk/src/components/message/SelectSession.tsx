@@ -1,17 +1,17 @@
 "use client";
 
-import { Modal } from "antd";
-import { SelectSessionOption } from "./MessageHeader";
-import { useBoolean } from "ahooks";
+import { Select } from "antd";
 import { Icon } from "../icon";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import type { SelectSessionOption } from "./MessageHeader";
 
 interface SelectSessionProps {
   options: SelectSessionOption[];
   value: SelectSessionOption["value"];
   onChange: (value: SelectSessionOption["value"]) => void;
   excludeOptions?: SelectSessionOption["value"][];
+  placeholder?: string;
 }
 
 const SelectSession = ({
@@ -19,76 +19,54 @@ const SelectSession = ({
   value,
   onChange,
   excludeOptions,
+  placeholder,
 }: SelectSessionProps) => {
   const { t } = useTranslation();
-  const [open, { toggle }] = useBoolean(false);
   const selectedOption = options.find((option) => option.value === value);
 
-  const handleSelect = (value: SelectSessionOption["value"]) => {
-    onChange(value);
-    toggle();
+  // Filter out excluded options
+  const filteredOptions = options.filter(
+    (option) => !excludeOptions?.includes(option.value)
+  );
+
+  // Transform options for Ant Design Select
+  const selectOptions = filteredOptions.map((option) => ({
+    label: (
+      <div className="flex items-center gap-2">
+        <div
+          className={clsx(
+            "w-2 h-2 rounded-full",
+            option.tintColorClassnameBg
+          )}
+        />
+        <span className={clsx("text-xs truncate flex-1", option.tintColorClassname)}>
+          {option.label}
+        </span>
+      </div>
+    ),
+    value: option.value,
+  }));
+
+  // Handle selection change
+  const handleSelect = (val: SelectSessionOption["value"]) => {
+    onChange(val);
   };
 
   return (
-    <>
-      <div
-        className={clsx(
-          "flex items-center gap-2 px-3 py-1 rounded-sm min-w-[64px] cursor-pointer",
-          selectedOption?.bgTintColorClassname,
-          selectedOption?.tintColorClassname
-        )}
-        onClick={toggle}
-      >
-        <span className="text-xs font-medium truncate">
-          {selectedOption?.label || ""}
-        </span>
-        <Icon icon="angle-down-o" size={14} />
-      </div>
-      <Modal
-        title={t("update_session_status_title")}
-        closable={{ "aria-label": "Custom Close Button" }}
-        open={open}
-        onOk={toggle}
-        onCancel={toggle}
-        width={300}
-        styles={{ content: { padding: 12 } }}
-        footer={null}
-      >
-        <div className="flex flex-col gap-1">
-          {options
-            ?.filter?.((option) => !excludeOptions?.includes(option.value))
-            .map((option) => {
-              const isSelected = option.value === value;
-              return (
-                <div
-                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 rounded-sm"
-                  onClick={() => onChange(option.value)}
-                  key={option.value}
-                  onClickCapture={() => handleSelect(option.value)}
-                >
-                  <div
-                    className={clsx(
-                      "w-2 h-2 rounded-full",
-                      option.tintColorClassnameBg
-                    )}
-                  />
-                  <span
-                    className={clsx(
-                      "text-xs truncate flex-1",
-                      isSelected && "font-bold"
-                    )}
-                  >
-                    {option.label}
-                  </span>
-                  {isSelected && (
-                    <Icon icon="check-b" size={18} className="text-blue-500" />
-                  )}
-                </div>
-              );
-            })}
-        </div>
-      </Modal>
-    </>
+    <div className="relative">
+      <Select
+        className={`${selectedOption?.bgTintColorClassname} custom-select min-w-[150px]`}
+        placement="bottomLeft"
+        placeholder={placeholder}
+        options={selectOptions}
+        value={selectedOption?.value}
+        onChange={handleSelect}
+        suffixIcon={<Icon icon='angle-down-o' className={`${selectedOption?.tintColorClassname} mt-[2px]`} size={14} />}
+        menuItemSelectedIcon={null}
+        labelRender={(option) => (['NONE', ''] as any).includes(option.value) ? placeholder : option.label }
+        
+      />
+    </div>
   );
 };
 
