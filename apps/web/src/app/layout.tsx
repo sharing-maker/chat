@@ -32,7 +32,7 @@ isSupported().then((yes) => {
   }
 });
 
-if ("serviceWorker" in navigator) {
+if ( typeof navigator !== "undefined" && "serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js")
     .then((registration) => {

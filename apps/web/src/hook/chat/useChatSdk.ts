@@ -14,8 +14,8 @@ export const useChatSdkSetup = () => {
     if (accessToken && user?.id) {
       return {
         platformID: DChatPlatform.Web,
-        apiAddr: "https://apistg.droppii.com",
-        wsAddr: "wss://apistg.droppii.com",
+        apiAddr: process.env.NEXT_PUBLIC_API_BASE_URL || "",
+        wsAddr: process.env.NEXT_PUBLIC_API_BASE_URL || "",
         accessToken,
         userID: user?.id,
         applicationType: DChatApplicationType.OBEFE,
