@@ -48,30 +48,30 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
       {
         label: t("unassigned"),
         value: SessionStatus.UNASSIGNED,
-        tintColorClassname: "text-amber-500",
-        tintColorClassnameBg: "bg-amber-500",
-        bgTintColorClassname: "bg-amber-100",
+        tintColorClassname: "!text-amber-500",
+        tintColorClassnameBg: "!bg-amber-500",
+        bgTintColorClassname: "!bg-amber-100",
       },
       {
         label: t("waiting_process"),
         value: SessionStatus.WAITING_PROCESS,
-        tintColorClassname: "text-orange-500",
-        tintColorClassnameBg: "bg-orange-500",
-        bgTintColorClassname: "bg-orange-100",
+        tintColorClassname: "!text-orange-500",
+        tintColorClassnameBg: "!bg-orange-500",
+        bgTintColorClassname: "!bg-orange-100",
       },
       {
         label: t("in_process"),
         value: SessionStatus.IN_PROCESS,
-        tintColorClassname: "text-blue-500",
-        tintColorClassnameBg: "bg-blue-500",
-        bgTintColorClassname: "bg-blue-100",
+        tintColorClassname: "!text-blue-500",
+        tintColorClassnameBg: "!bg-blue-500",
+        bgTintColorClassname: "!bg-blue-100",
       },
       {
         label: t("completed"),
         value: SessionStatus.COMPLETED,
-        tintColorClassname: "text-green-500",
-        tintColorClassnameBg: "bg-green-500",
-        bgTintColorClassname: "bg-green-100",
+        tintColorClassname: "!text-green-500",
+        tintColorClassnameBg: "!bg-green-500",
+        bgTintColorClassname: "!bg-green-100",
       },
     ];
   }, [t]);
@@ -81,30 +81,30 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
       {
         label: t("select_tag"),
         value: SessionTag.NONE,
-        tintColorClassname: "text-gray-500",
-        tintColorClassnameBg: "bg-gray-500",
-        bgTintColorClassname: "bg-gray-100",
+        tintColorClassname: "!text-gray-500",
+        tintColorClassnameBg: "!bg-gray-500",
+        bgTintColorClassname: "!bg-gray-100",
       },
       {
         label: t("awaiting_reply"),
         value: SessionTag.AWAITING_REPLY,
-        tintColorClassname: "text-purple-500",
-        tintColorClassnameBg: "bg-purple-500",
-        bgTintColorClassname: "bg-purple-100",
+        tintColorClassname: "!text-purple-500",
+        tintColorClassnameBg: "!bg-purple-500",
+        bgTintColorClassname: "!bg-purple-100",
       },
       {
         label: t("slow_processing"),
         value: SessionTag.SLOW_PROCESSING,
-        tintColorClassname: "text-red-500",
-        tintColorClassnameBg: "bg-red-500",
-        bgTintColorClassname: "bg-red-100",
+        tintColorClassname: "!text-red-500",
+        tintColorClassnameBg: "!bg-red-500",
+        bgTintColorClassname: "!bg-red-100",
       },
       {
         label: t("temporarily_paused"),
         value: SessionTag.TEMPORARILY_PAUSED,
-        tintColorClassname: "text-gray-500",
-        tintColorClassnameBg: "bg-gray-500",
-        bgTintColorClassname: "bg-gray-100",
+        tintColorClassname: "!text-gray-500",
+        tintColorClassnameBg: "!bg-gray-500",
+        bgTintColorClassname: "!bg-gray-100",
       },
     ];
   }, [t]);
@@ -171,6 +171,7 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
       <div className="flex items-center gap-2 justify-end overflow-hidden">
         {isCx && (
           <SelectSession
+            placeholder={t("select_tag")}
             options={tagOptions}
             value={currentSessionTag}
             onChange={(value) =>
@@ -181,6 +182,7 @@ const MessageHeader = ({ onClose, currentSession }: MessageHeaderProps) => {
         )}
         {isCx && (
           <SelectSession
+          placeholder={t("select_status")}
             options={statusOptions}
             value={currentSessionStatus}
             onChange={(value) =>

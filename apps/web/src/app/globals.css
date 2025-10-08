@@ -73,7 +73,7 @@
   }
 
   /* Smooth transitions after hydration */
-  .hydrated * {
+  .hydrated *:not(.ant-select-dropdown):not(.ant-dropdown):not(.ant-picker-dropdown):not(.ant-tooltip):not(.ant-popover) {
     transition-duration: 0.2s;
     transition-timing-function: ease-in-out;
   }
@@ -95,3 +95,16 @@
 }
   
   
+.custom-select.ant-select {
+  border-radius: 8px;
+  outline: none;
+}
+.custom-select .ant-select-selector {
+  border: none !important;
+  outline: none;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.custom-select .ant-select-selection-item {
+  font-size: 13px;
+}
